@@ -13,7 +13,7 @@ import { Route as SignupRouteImport } from './routes/signup'
 import { Route as PublishRouteImport } from './routes/publish'
 import { Route as ProfileRouteImport } from './routes/profile'
 import { Route as LoginRouteImport } from './routes/login'
-import { Route as IndexRouteImport } from './routes/index'
+import { Route as CatalogRouteImport } from './routes/catalog'
 import { Route as MessagesIndexRouteImport } from './routes/messages.index'
 import { Route as MessagesIdRouteImport } from './routes/messages.$id'
 import { Route as BookIdRouteImport } from './routes/book.$id'
@@ -38,9 +38,9 @@ const LoginRoute = LoginRouteImport.update({
   path: '/login',
   getParentRoute: () => rootRouteImport,
 } as any)
-const IndexRoute = IndexRouteImport.update({
-  id: '/',
-  path: '/',
+const CatalogRoute = CatalogRouteImport.update({
+  id: '/catalog',
+  path: '/catalog',
   getParentRoute: () => rootRouteImport,
 } as any)
 const MessagesIndexRoute = MessagesIndexRouteImport.update({
@@ -60,7 +60,7 @@ const BookIdRoute = BookIdRouteImport.update({
 } as any)
 
 export interface FileRoutesByFullPath {
-  '/': typeof IndexRoute
+  '/catalog': typeof CatalogRoute
   '/login': typeof LoginRoute
   '/profile': typeof ProfileRoute
   '/publish': typeof PublishRoute
@@ -70,7 +70,7 @@ export interface FileRoutesByFullPath {
   '/messages/': typeof MessagesIndexRoute
 }
 export interface FileRoutesByTo {
-  '/': typeof IndexRoute
+  '/catalog': typeof CatalogRoute
   '/login': typeof LoginRoute
   '/profile': typeof ProfileRoute
   '/publish': typeof PublishRoute
@@ -81,7 +81,7 @@ export interface FileRoutesByTo {
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
-  '/': typeof IndexRoute
+  '/catalog': typeof CatalogRoute
   '/login': typeof LoginRoute
   '/profile': typeof ProfileRoute
   '/publish': typeof PublishRoute
@@ -93,7 +93,7 @@ export interface FileRoutesById {
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
-    | '/'
+    | '/catalog'
     | '/login'
     | '/profile'
     | '/publish'
@@ -103,7 +103,7 @@ export interface FileRouteTypes {
     | '/messages/'
   fileRoutesByTo: FileRoutesByTo
   to:
-    | '/'
+    | '/catalog'
     | '/login'
     | '/profile'
     | '/publish'
@@ -113,7 +113,7 @@ export interface FileRouteTypes {
     | '/messages'
   id:
     | '__root__'
-    | '/'
+    | '/catalog'
     | '/login'
     | '/profile'
     | '/publish'
@@ -124,7 +124,7 @@ export interface FileRouteTypes {
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
-  IndexRoute: typeof IndexRoute
+  CatalogRoute: typeof CatalogRoute
   LoginRoute: typeof LoginRoute
   ProfileRoute: typeof ProfileRoute
   PublishRoute: typeof PublishRoute
@@ -164,11 +164,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof LoginRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/': {
-      id: '/'
-      path: '/'
-      fullPath: '/'
-      preLoaderRoute: typeof IndexRouteImport
+    '/catalog': {
+      id: '/catalog'
+      path: '/catalog'
+      fullPath: '/catalog'
+      preLoaderRoute: typeof CatalogRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/messages/': {
@@ -196,7 +196,7 @@ declare module '@tanstack/react-router' {
 }
 
 const rootRouteChildren: RootRouteChildren = {
-  IndexRoute: IndexRoute,
+  CatalogRoute: CatalogRoute,
   LoginRoute: LoginRoute,
   ProfileRoute: ProfileRoute,
   PublishRoute: PublishRoute,

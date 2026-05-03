@@ -15,7 +15,7 @@ import {
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from "@/components/ui/command";
 
-export const Route = createFileRoute("/")({
+export const Route = createFileRoute("/catalog")({
   component: Home,
 });
 
