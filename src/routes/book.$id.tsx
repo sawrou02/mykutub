@@ -58,6 +58,16 @@ function BookDetailPage() {
     }
   };
 
+  const handleShare = async () => {
+    const url = window.location.href;
+    const title = book?.title ?? "MYKUTUB";
+    if (navigator.share) {
+      try { await navigator.share({ title, url }); return; } catch { /* cancelled */ }
+    }
+    try { await navigator.clipboard.writeText(url); toast.success("Lien copié !"); }
+    catch { toast.error("Impossible de copier le lien."); }
+  };
+
   if (loading) return <div className="p-10 text-center">Chargement...</div>;
   if (!book) return <div className="p-10 text-center">Livre introuvable</div>;
 
