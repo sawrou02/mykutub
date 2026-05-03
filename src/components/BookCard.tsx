@@ -82,7 +82,7 @@ export function BookCard({ book }: { book: Book }) {
           </p>
         )}
         <p className="text-[10px] text-muted-foreground truncate">
-          {book.city}
+          {book.city} · {new Date(book.created_at).toLocaleDateString("fr-FR")}
         </p>
       </div>
     </Link>
