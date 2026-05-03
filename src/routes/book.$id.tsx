@@ -72,69 +72,67 @@ function BookDetailPage() {
   if (!book) return <div className="p-10 text-center">Livre introuvable</div>;
 
   return (
-    <div className="bg-card min-h-screen pb-32">
-      <div className="fixed top-0 left-1/2 -translate-x-1/2 w-full max-w-xl z-50 flex items-center justify-between px-4 h-14">
-        <button onClick={() => history.back()} className="p-2 rounded-full bg-card/80 backdrop-blur-md shadow-sm">
-          <ChevronLeft size={20} />
+    <div className="bg-background min-h-screen pb-20">
+      <div className="fixed top-0 left-1/2 -translate-x-1/2 w-full max-w-3xl z-50 flex items-center justify-between px-3 h-12">
+        <button onClick={() => history.back()} className="p-1.5 rounded-full bg-card/90 backdrop-blur-md shadow-sm">
+          <ChevronLeft size={16} />
         </button>
-        <button onClick={handleShare} className="p-2 rounded-full bg-card/80 backdrop-blur-md shadow-sm"><Share2 size={20} /></button>
+        <button onClick={handleShare} className="p-1.5 rounded-full bg-card/90 backdrop-blur-md shadow-sm"><Share2 size={16} /></button>
       </div>
 
-      <div className="relative aspect-[3/4] w-full bg-muted">
-        <img src={book.image_url} alt={book.title} className="absolute inset-0 w-full h-full object-cover" />
-        {book.is_donation && (
-          <div className="absolute bottom-6 left-6 z-10">
-            <Badge className="bg-secondary text-secondary-foreground font-black px-4 py-2 text-sm uppercase tracking-widest shadow-lg">Sadaqa</Badge>
-          </div>
-        )}
-      </div>
+      <div className="max-w-3xl mx-auto">
+        <div className="relative aspect-[4/3] sm:aspect-[16/9] w-full bg-muted">
+          <img src={book.image_url} alt={book.title} className="absolute inset-0 w-full h-full object-cover" />
+          {book.is_donation && (
+            <Badge className="absolute bottom-3 left-3 bg-secondary text-secondary-foreground text-[10px] font-bold uppercase px-2 py-0.5">Sadaqa</Badge>
+          )}
+        </div>
 
-      <div className="px-6 py-8 space-y-8 bg-card -mt-4 rounded-t-3xl relative z-10 shadow-[0_-8px_30px_rgb(0,0,0,0.04)]">
-        <div className="space-y-4">
-          <div className="flex justify-between items-start gap-4">
-            <h1 className="font-headline text-2xl font-bold leading-tight flex-1">{book.title}</h1>
-            <p className="font-headline text-3xl font-black text-primary">
-              {book.is_donation ? "GRATUIT" : `${book.price}€`}
+        <div className="px-4 py-4 space-y-4 bg-card">
+          <div className="space-y-2">
+            <p className="font-bold text-xl text-foreground">
+              {book.is_donation ? "Gratuit" : `${book.price} €`}
             </p>
+            <h1 className="font-semibold text-base leading-tight">{book.title}</h1>
+            <div className="flex items-center gap-1 text-xs text-muted-foreground">
+              <MapPin size={12} /> {book.city}
+            </div>
           </div>
-          <div className="flex flex-wrap gap-2">
-            <Badge variant="outline" className="rounded-lg border-primary/20 text-primary py-1.5 px-3 font-bold bg-primary/5">
-              <BookOpen size={14} className="mr-1.5" /> {book.category}
-            </Badge>
-            <Badge variant="outline" className="rounded-lg border-border py-1.5 px-3 font-medium">
-              <ShieldCheck size={14} className="mr-1.5" /> {book.condition}
-            </Badge>
-            <Badge variant="outline" className={`rounded-lg py-1.5 px-3 font-medium ${book.can_deliver ? "border-green-600/30 text-green-700 bg-green-50" : "border-border text-muted-foreground"}`}>
-              {book.can_deliver ? <><Truck size={14} className="mr-1.5" /> Livraison possible</> : <><Package size={14} className="mr-1.5" /> Retrait uniquement</>}
-            </Badge>
-          </div>
-        </div>
 
-        <div className="grid grid-cols-2 gap-4 border-y py-6 border-dashed">
-          <div className="flex flex-col gap-1">
-            <span className="text-[10px] text-muted-foreground uppercase font-black tracking-widest">Localisation</span>
-            <div className="flex items-center font-bold text-sm"><MapPin size={16} className="mr-2 text-primary" />{book.city}</div>
+          <div className="flex flex-wrap gap-1.5 text-[11px]">
+            <Badge variant="outline" className="rounded-md py-0.5 px-2 font-normal">
+              <BookOpen size={10} className="mr-1" /> {book.category}
+            </Badge>
+            <Badge variant="outline" className="rounded-md py-0.5 px-2 font-normal">
+              <ShieldCheck size={10} className="mr-1" /> {book.condition}
+            </Badge>
+            <Badge variant="outline" className={`rounded-md py-0.5 px-2 font-normal ${book.can_deliver ? "border-green-600/30 text-green-700 bg-green-50" : ""}`}>
+              {book.can_deliver ? <><Truck size={10} className="mr-1" /> Livraison</> : <><Package size={10} className="mr-1" /> Retrait</>}
+            </Badge>
           </div>
-          <div className="flex flex-col gap-1">
-            <span className="text-[10px] text-muted-foreground uppercase font-black tracking-widest">Vendeur</span>
-            <div className="flex items-center font-bold text-sm">{book.seller_name}</div>
+
+          <div className="border-t pt-3">
+            <h2 className="font-semibold text-sm mb-1.5">Description</h2>
+            <p className="text-muted-foreground text-xs leading-relaxed whitespace-pre-wrap">{book.description || "Aucune description fournie."}</p>
           </div>
-        </div>
 
-        <div className="space-y-3">
-          <h2 className="font-headline font-bold text-lg text-primary border-l-4 border-secondary pl-3">Description</h2>
-          <p className="text-muted-foreground leading-relaxed text-sm">{book.description || "Aucune description fournie."}</p>
-        </div>
+          <div className="border-t pt-3 flex items-center justify-between">
+            <div>
+              <p className="text-[10px] text-muted-foreground uppercase tracking-wide">Vendeur</p>
+              <p className="font-semibold text-sm">{book.seller_name}</p>
+            </div>
+          </div>
 
-        <div className="pt-4 border-t">
-          <SellerReviews sellerId={book.seller_id} />
+          <div className="border-t pt-3">
+            <SellerReviews sellerId={book.seller_id} />
+          </div>
         </div>
       </div>
 
-      <div className="fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-xl p-4 bg-card/80 backdrop-blur-xl border-t z-50 pb-8">
+      <div className="fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-3xl p-3 bg-card/95 backdrop-blur-xl border-t z-50">
         <Button disabled={creating} onClick={handleContactSeller}
-          className="w-full h-14 rounded-2xl text-lg font-bold flex items-center justify-center gap-2 bg-primary">
-          {creating ? "Ouverture..." : <><MessageCircle size={22} /> Contacter le vendeur</>}
+          className="w-full h-10 rounded-full text-sm font-semibold flex items-center justify-center gap-1.5">
+          {creating ? "Ouverture..." : <><MessageCircle size={14} /> Contacter le vendeur</>}
         </Button>
       </div>
     </div>
