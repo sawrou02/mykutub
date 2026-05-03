@@ -23,6 +23,7 @@ import { Route as AdminRouteImport } from './routes/admin'
 import { Route as AboutRouteImport } from './routes/about'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as MessagesIndexRouteImport } from './routes/messages.index'
+import { Route as UserIdRouteImport } from './routes/user.$id'
 import { Route as MessagesIdRouteImport } from './routes/messages.$id'
 import { Route as BookIdRouteImport } from './routes/book.$id'
 
@@ -96,6 +97,11 @@ const MessagesIndexRoute = MessagesIndexRouteImport.update({
   path: '/messages/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const UserIdRoute = UserIdRouteImport.update({
+  id: '/user/$id',
+  path: '/user/$id',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const MessagesIdRoute = MessagesIdRouteImport.update({
   id: '/messages/$id',
   path: '/messages/$id',
@@ -123,6 +129,7 @@ export interface FileRoutesByFullPath {
   '/signup': typeof SignupRoute
   '/book/$id': typeof BookIdRoute
   '/messages/$id': typeof MessagesIdRoute
+  '/user/$id': typeof UserIdRoute
   '/messages/': typeof MessagesIndexRoute
 }
 export interface FileRoutesByTo {
@@ -141,6 +148,7 @@ export interface FileRoutesByTo {
   '/signup': typeof SignupRoute
   '/book/$id': typeof BookIdRoute
   '/messages/$id': typeof MessagesIdRoute
+  '/user/$id': typeof UserIdRoute
   '/messages': typeof MessagesIndexRoute
 }
 export interface FileRoutesById {
@@ -160,6 +168,7 @@ export interface FileRoutesById {
   '/signup': typeof SignupRoute
   '/book/$id': typeof BookIdRoute
   '/messages/$id': typeof MessagesIdRoute
+  '/user/$id': typeof UserIdRoute
   '/messages/': typeof MessagesIndexRoute
 }
 export interface FileRouteTypes {
@@ -180,6 +189,7 @@ export interface FileRouteTypes {
     | '/signup'
     | '/book/$id'
     | '/messages/$id'
+    | '/user/$id'
     | '/messages/'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -198,6 +208,7 @@ export interface FileRouteTypes {
     | '/signup'
     | '/book/$id'
     | '/messages/$id'
+    | '/user/$id'
     | '/messages'
   id:
     | '__root__'
@@ -216,6 +227,7 @@ export interface FileRouteTypes {
     | '/signup'
     | '/book/$id'
     | '/messages/$id'
+    | '/user/$id'
     | '/messages/'
   fileRoutesById: FileRoutesById
 }
@@ -235,6 +247,7 @@ export interface RootRouteChildren {
   SignupRoute: typeof SignupRoute
   BookIdRoute: typeof BookIdRoute
   MessagesIdRoute: typeof MessagesIdRoute
+  UserIdRoute: typeof UserIdRoute
   MessagesIndexRoute: typeof MessagesIndexRoute
 }
 
@@ -338,6 +351,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof MessagesIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/user/$id': {
+      id: '/user/$id'
+      path: '/user/$id'
+      fullPath: '/user/$id'
+      preLoaderRoute: typeof UserIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/messages/$id': {
       id: '/messages/$id'
       path: '/messages/$id'
@@ -371,6 +391,7 @@ const rootRouteChildren: RootRouteChildren = {
   SignupRoute: SignupRoute,
   BookIdRoute: BookIdRoute,
   MessagesIdRoute: MessagesIdRoute,
+  UserIdRoute: UserIdRoute,
   MessagesIndexRoute: MessagesIndexRoute,
 }
 export const routeTree = rootRouteImport
