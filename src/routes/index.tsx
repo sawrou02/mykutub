@@ -66,27 +66,8 @@ function Landing() {
         </div>
       </section>
 
-      {/* Values */}
-      <section className="max-w-7xl mx-auto px-4 md:px-8 py-16 md:py-24">
-        <div className="grid md:grid-cols-3 gap-6 md:gap-8">
-          {[
-            { icon: BookOpen, title: t("home.valueA_title"), text: t("home.valueA_text") },
-            { icon: Heart, title: t("home.valueB_title"), text: t("home.valueB_text") },
-            { icon: ShieldCheck, title: t("home.valueC_title"), text: t("home.valueC_text") },
-          ].map((v) => (
-            <div key={v.title} className="bg-card border rounded-3xl p-8 hover:shadow-lg transition-shadow">
-              <div className="w-12 h-12 rounded-2xl bg-primary/10 text-primary flex items-center justify-center mb-4">
-                <v.icon size={22} />
-              </div>
-              <h3 className="font-headline font-bold text-xl mb-2">{v.title}</h3>
-              <p className="text-muted-foreground">{v.text}</p>
-            </div>
-          ))}
-        </div>
-      </section>
-
       {/* Featured catalog */}
-      <section className="max-w-7xl mx-auto px-4 md:px-8 pb-16 md:pb-24">
+      <section className="max-w-7xl mx-auto px-4 md:px-8 py-16 md:py-24">
         <div className="flex items-end justify-between mb-8">
           <div>
             <h2 className="font-headline text-3xl md:text-4xl font-black">{t("home.latest")}</h2>
@@ -105,6 +86,25 @@ function Landing() {
             {featured.map((b) => <BookCard key={b.id} book={b} />)}
           </div>
         )}
+      </section>
+
+      {/* Values */}
+      <section className="max-w-7xl mx-auto px-4 md:px-8 pb-16 md:pb-24">
+        <div className="grid md:grid-cols-3 gap-6 md:gap-8">
+          {[
+            { icon: BookOpen, title: t("home.valueA_title"), text: t("home.valueA_text") },
+            { icon: Heart, title: t("home.valueB_title"), text: t("home.valueB_text") },
+            { icon: ShieldCheck, title: t("home.valueC_title"), text: t("home.valueC_text") },
+          ].map((v) => (
+            <div key={v.title} className="bg-card border rounded-3xl p-8 hover:shadow-lg transition-shadow">
+              <div className="w-12 h-12 rounded-2xl bg-primary/10 text-primary flex items-center justify-center mb-4">
+                <v.icon size={22} />
+              </div>
+              <h3 className="font-headline font-bold text-xl mb-2">{v.title}</h3>
+              <p className="text-muted-foreground">{v.text}</p>
+            </div>
+          ))}
+        </div>
       </section>
 
       {/* CTA */}
