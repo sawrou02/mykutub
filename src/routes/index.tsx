@@ -1,0 +1,122 @@
+import { createFileRoute, Link } from "@tanstack/react-router";
+import { useEffect, useState } from "react";
+import { Button } from "@/components/ui/button";
+import { ArrowRight, BookOpen, Heart, ShieldCheck, Sparkles } from "lucide-react";
+import { BookCard } from "@/components/BookCard";
+import { supabase } from "@/integrations/supabase/client";
+import type { Book } from "@/lib/mykutub";
+import heroImage from "@/assets/hero-books.jpg";
+
+export const Route = createFileRoute("/")({
+  head: () => ({
+    meta: [
+      { title: "MYKUTUB — Marketplace de livres de science islamique" },
+      { name: "description", content: "Achetez, vendez et donnez vos livres de science islamique d'occasion en France. Une seconde vie pour le savoir." },
+      { property: "og:title", content: "MYKUTUB — Marketplace de livres de science islamique" },
+      { property: "og:description", content: "Donnez une seconde vie à vos livres de science islamique." },
+    ],
+  }),
+  component: Landing,
+});
+
+function Landing() {
+  const [featured, setFeatured] = useState<Book[]>([]);
+
+  useEffect(() => {
+    supabase.from("books").select("*").order("created_at", { ascending: false }).limit(8).then(({ data }) => {
+      setFeatured((data as Book[]) ?? []);
+    });
+  }, []);
+
+  return (
+    <div>
+      {/* Hero */}
+      <section className="relative overflow-hidden bg-card">
+        <div className="max-w-7xl mx-auto px-4 md:px-8 py-12 md:py-24 grid md:grid-cols-2 gap-8 md:gap-12 items-center">
+          <div className="space-y-6 md:space-y-8 z-10">
+            <div className="inline-flex items-center gap-2 bg-primary/5 text-primary px-3 py-1.5 rounded-full text-xs font-bold uppercase tracking-wider">
+              <Sparkles size={14} /> Sadaqa Jariya
+            </div>
+            <h1 className="font-headline text-4xl md:text-6xl lg:text-7xl font-black leading-[1.05] tracking-tight">
+              Le savoir<br /><span className="text-primary">se partage.</span>
+            </h1>
+            <p className="text-lg md:text-xl text-muted-foreground max-w-lg">
+              Achetez, vendez et donnez vos livres de science islamique. Une plateforme dédiée, sécurisée, et au service de la communauté.
+            </p>
+            <div className="flex flex-wrap gap-3">
+              <Button asChild size="lg" className="gap-2 h-14 rounded-2xl text-base font-bold px-8">
+                <Link to="/catalog">Explorer le catalogue <ArrowRight size={18} /></Link>
+              </Button>
+              <Button asChild size="lg" variant="outline" className="gap-2 h-14 rounded-2xl text-base font-bold px-8">
+                <Link to="/publish">Publier un livre</Link>
+              </Button>
+            </div>
+          </div>
+          <div className="relative aspect-[4/3] md:aspect-square rounded-3xl overflow-hidden shadow-2xl">
+            <img
+              src={heroImage}
+              alt="Livres de science islamique empilés"
+              width={1536}
+              height={1024}
+              className="absolute inset-0 w-full h-full object-cover"
+            />
+          </div>
+        </div>
+      </section>
+
+      {/* Values */}
+      <section className="max-w-7xl mx-auto px-4 md:px-8 py-16 md:py-24">
+        <div className="grid md:grid-cols-3 gap-6 md:gap-8">
+          {[
+            { icon: BookOpen, title: "Une seconde vie", text: "Vos livres trouvent de nouveaux lecteurs. Le savoir continue de circuler." },
+            { icon: Heart, title: "Esprit de Sadaqa", text: "Donnez gratuitement ou vendez à prix juste. La plateforme est gratuite." },
+            { icon: ShieldCheck, title: "Communauté de confiance", text: "Échanges directs entre membres vérifiés, messagerie intégrée." },
+          ].map((v) => (
+            <div key={v.title} className="bg-card border rounded-3xl p-8 hover:shadow-lg transition-shadow">
+              <div className="w-12 h-12 rounded-2xl bg-primary/10 text-primary flex items-center justify-center mb-4">
+                <v.icon size={22} />
+              </div>
+              <h3 className="font-headline font-bold text-xl mb-2">{v.title}</h3>
+              <p className="text-muted-foreground">{v.text}</p>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* Featured catalog */}
+      <section className="max-w-7xl mx-auto px-4 md:px-8 pb-16 md:pb-24">
+        <div className="flex items-end justify-between mb-8">
+          <div>
+            <h2 className="font-headline text-3xl md:text-4xl font-black">Derniers livres ajoutés</h2>
+            <p className="text-muted-foreground mt-2">Les nouveautés de la communauté</p>
+          </div>
+          <Button asChild variant="ghost" className="hidden sm:inline-flex gap-2">
+            <Link to="/catalog">Voir tout <ArrowRight size={16} /></Link>
+          </Button>
+        </div>
+        {featured.length === 0 ? (
+          <div className="text-center py-16 text-muted-foreground bg-muted/30 rounded-3xl">
+            Aucun livre publié pour l'instant. <Link to="/publish" className="text-primary font-bold underline">Publiez le premier !</Link>
+          </div>
+        ) : (
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6">
+            {featured.map((b) => <BookCard key={b.id} book={b} />)}
+          </div>
+        )}
+      </section>
+
+      {/* CTA */}
+      <section className="max-w-7xl mx-auto px-4 md:px-8 pb-16 md:pb-24">
+        <div className="bg-primary rounded-3xl p-8 md:p-16 text-primary-foreground text-center md:text-left md:flex md:items-center md:justify-between gap-8 shadow-xl">
+          <div className="space-y-3 max-w-xl">
+            <h2 className="font-headline text-3xl md:text-4xl font-black">Prêt à partager le savoir ?</h2>
+            <p className="opacity-90 text-lg">Rejoignez la communauté MYKUTUB en quelques secondes.</p>
+          </div>
+          <Button asChild size="lg" variant="secondary" className="mt-6 md:mt-0 h-14 rounded-2xl font-bold px-8 text-base">
+            <Link to="/signup">Créer mon compte</Link>
+          </Button>
+        </div>
+      </section>
+    </div>
+  );
+}
