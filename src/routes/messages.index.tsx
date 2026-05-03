@@ -46,60 +46,53 @@ function MessagesPage() {
   }
 
   return (
-    <div className="bg-background min-h-screen pb-24">
-      <header className="sticky top-0 z-40 bg-card border-b px-6 py-6 shadow-sm">
-        <h1 className="font-headline font-black text-3xl text-primary tracking-tight">Messages</h1>
+    <div className="bg-background min-h-screen pb-20">
+      <header className="sticky top-0 z-40 bg-card border-b px-4 py-3">
+        <h1 className="font-bold text-base">Messages</h1>
       </header>
 
-      <div className="p-4">
-        <div className="relative mb-8">
-          <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground" size={18} />
-          <Input placeholder="Rechercher une conversation..." className="pl-12 h-14 bg-card border-none rounded-2xl shadow-sm" />
+      <div className="max-w-3xl mx-auto p-3">
+        <div className="relative mb-3">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" size={14} />
+          <Input placeholder="Rechercher..." className="pl-9 h-9 text-sm bg-card rounded-lg" />
         </div>
 
-        <div className="space-y-3">
+        <div className="divide-y border rounded-lg bg-card">
           {loading ? (
-            Array.from({ length: 3 }).map((_, i) => <div key={i} className="h-24 bg-card rounded-3xl animate-pulse" />)
+            Array.from({ length: 3 }).map((_, i) => <div key={i} className="h-16 animate-pulse bg-muted/30" />)
           ) : chats.length > 0 ? (
             chats.map(chat => {
               const lastUpdate = chat.last_message_at ? new Date(chat.last_message_at) : null;
               const isUnread = chat.unread_by?.includes(user.id);
               return (
                 <Link key={chat.id} to="/messages/$id" params={{ id: chat.id }}
-                  className="flex items-center gap-4 p-4 rounded-3xl bg-card hover:bg-muted/30 transition-all border border-transparent hover:border-border group shadow-sm">
-                  <div className="relative w-16 h-16 rounded-2xl overflow-hidden bg-muted flex-shrink-0">
+                  className="flex items-center gap-2.5 px-3 py-2.5 hover:bg-muted/30 transition-colors">
+                  <div className="relative w-11 h-11 rounded-md overflow-hidden bg-muted flex-shrink-0">
                     {chat.book_image_url && <img src={chat.book_image_url} alt={chat.book_title ?? ""} className="w-full h-full object-cover" />}
                   </div>
-                  <div className="flex-1 min-w-0 py-1">
-                    <div className="flex justify-between items-baseline mb-0.5">
-                      <h3 className="font-black text-sm truncate">Conversation</h3>
-                      <span className="text-[10px] text-muted-foreground font-bold">
+                  <div className="flex-1 min-w-0">
+                    <div className="flex justify-between items-baseline gap-2">
+                      <p className="text-[11px] font-semibold text-primary truncate">{chat.book_title}</p>
+                      <span className="text-[10px] text-muted-foreground flex-shrink-0">
                         {lastUpdate ? formatDistanceToNow(lastUpdate, { addSuffix: true, locale: fr }) : ""}
                       </span>
                     </div>
-                    <p className="text-[11px] font-black text-primary mb-1 truncate uppercase tracking-tight">{chat.book_title}</p>
-                    <p className={`text-xs truncate ${isUnread ? "font-bold text-foreground" : "text-muted-foreground"}`}>
+                    <p className={`text-xs truncate mt-0.5 ${isUnread ? "font-semibold text-foreground" : "text-muted-foreground"}`}>
                       {chat.last_message}
                     </p>
                   </div>
-                  <div className="flex flex-col items-center gap-2">
-                    {isUnread && <div className="w-3 h-3 rounded-full bg-secondary shadow-lg" />}
-                    <ChevronRight size={16} className="text-muted-foreground group-hover:translate-x-1 transition-transform" />
-                  </div>
+                  {isUnread && <div className="w-2 h-2 rounded-full bg-destructive flex-shrink-0" />}
+                  <ChevronRight size={14} className="text-muted-foreground flex-shrink-0" />
                 </Link>
               );
             })
           ) : (
-            <div className="flex flex-col items-center justify-center py-24 text-center space-y-4">
-              <div className="p-8 bg-muted/50 rounded-full text-muted-foreground/30">
-                <MessageSquare size={60} />
-              </div>
-              <div>
-                <p className="font-black text-xl">Silence radio...</p>
-                <p className="text-sm text-muted-foreground font-medium mt-1">
-                  Vos conversations s'afficheront ici une fois<br/>que vous aurez contacté un vendeur.
-                </p>
-              </div>
+            <div className="flex flex-col items-center justify-center py-12 text-center">
+              <MessageSquare size={36} className="text-muted-foreground/30 mb-2" />
+              <p className="font-semibold text-sm">Aucune conversation</p>
+              <p className="text-xs text-muted-foreground mt-1">
+                Contactez un vendeur pour démarrer une discussion.
+              </p>
             </div>
           )}
         </div>
