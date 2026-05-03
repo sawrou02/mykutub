@@ -16,6 +16,7 @@ export type Database = {
     Tables: {
       books: {
         Row: {
+          can_deliver: boolean
           category: string
           city: string
           condition: string
@@ -30,6 +31,7 @@ export type Database = {
           title: string
         }
         Insert: {
+          can_deliver?: boolean
           category: string
           city: string
           condition: string
@@ -44,6 +46,7 @@ export type Database = {
           title: string
         }
         Update: {
+          can_deliver?: boolean
           category?: string
           city?: string
           condition?: string
@@ -162,6 +165,60 @@ export type Database = {
           id?: string
           title?: string | null
           updated_at?: string
+        }
+        Relationships: []
+      }
+      reviews: {
+        Row: {
+          chat_id: string | null
+          comment: string | null
+          created_at: string
+          id: string
+          rating: number
+          reviewer_id: string
+          reviewer_name: string
+          seller_id: string
+        }
+        Insert: {
+          chat_id?: string | null
+          comment?: string | null
+          created_at?: string
+          id?: string
+          rating: number
+          reviewer_id: string
+          reviewer_name: string
+          seller_id: string
+        }
+        Update: {
+          chat_id?: string | null
+          comment?: string | null
+          created_at?: string
+          id?: string
+          rating?: number
+          reviewer_id?: string
+          reviewer_name?: string
+          seller_id?: string
+        }
+        Relationships: []
+      }
+      search_history: {
+        Row: {
+          created_at: string
+          id: string
+          query: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          query: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          query?: string
+          user_id?: string
         }
         Relationships: []
       }
