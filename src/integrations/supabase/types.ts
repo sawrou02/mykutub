@@ -14,7 +14,157 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      books: {
+        Row: {
+          category: string
+          city: string
+          condition: string
+          created_at: string
+          description: string | null
+          id: string
+          image_url: string
+          is_donation: boolean
+          price: number
+          seller_id: string
+          seller_name: string
+          title: string
+        }
+        Insert: {
+          category: string
+          city: string
+          condition: string
+          created_at?: string
+          description?: string | null
+          id?: string
+          image_url: string
+          is_donation?: boolean
+          price?: number
+          seller_id: string
+          seller_name: string
+          title: string
+        }
+        Update: {
+          category?: string
+          city?: string
+          condition?: string
+          created_at?: string
+          description?: string | null
+          id?: string
+          image_url?: string
+          is_donation?: boolean
+          price?: number
+          seller_id?: string
+          seller_name?: string
+          title?: string
+        }
+        Relationships: []
+      }
+      chats: {
+        Row: {
+          book_id: string | null
+          book_image_url: string | null
+          book_title: string | null
+          created_at: string
+          id: string
+          last_message: string | null
+          last_message_at: string | null
+          participants: string[]
+          unread_by: string[] | null
+        }
+        Insert: {
+          book_id?: string | null
+          book_image_url?: string | null
+          book_title?: string | null
+          created_at?: string
+          id?: string
+          last_message?: string | null
+          last_message_at?: string | null
+          participants: string[]
+          unread_by?: string[] | null
+        }
+        Update: {
+          book_id?: string | null
+          book_image_url?: string | null
+          book_title?: string | null
+          created_at?: string
+          id?: string
+          last_message?: string | null
+          last_message_at?: string | null
+          participants?: string[]
+          unread_by?: string[] | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "chats_book_id_fkey"
+            columns: ["book_id"]
+            isOneToOne: false
+            referencedRelation: "books"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      messages: {
+        Row: {
+          chat_id: string
+          created_at: string
+          id: string
+          sender_id: string
+          sender_name: string
+          text: string
+        }
+        Insert: {
+          chat_id: string
+          created_at?: string
+          id?: string
+          sender_id: string
+          sender_name: string
+          text: string
+        }
+        Update: {
+          chat_id?: string
+          created_at?: string
+          id?: string
+          sender_id?: string
+          sender_name?: string
+          text?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "messages_chat_id_fkey"
+            columns: ["chat_id"]
+            isOneToOne: false
+            referencedRelation: "chats"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      profiles: {
+        Row: {
+          birthdate: string | null
+          created_at: string
+          display_name: string | null
+          id: string
+          title: string | null
+          updated_at: string
+        }
+        Insert: {
+          birthdate?: string | null
+          created_at?: string
+          display_name?: string | null
+          id: string
+          title?: string | null
+          updated_at?: string
+        }
+        Update: {
+          birthdate?: string | null
+          created_at?: string
+          display_name?: string | null
+          id?: string
+          title?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
