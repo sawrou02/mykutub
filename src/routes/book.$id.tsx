@@ -129,12 +129,14 @@ function BookDetailPage() {
         </div>
       </div>
 
-      <div className="fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-3xl p-3 bg-card/95 backdrop-blur-xl border-t z-50">
-        <Button disabled={creating} onClick={handleContactSeller}
-          className="w-full h-10 rounded-full text-sm font-semibold flex items-center justify-center gap-1.5">
-          {creating ? "Ouverture..." : <><MessageCircle size={14} /> Contacter le vendeur</>}
-        </Button>
-      </div>
+      {user?.id !== book.seller_id && (
+        <div className="fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-3xl p-3 bg-card/95 backdrop-blur-xl border-t z-50">
+          <Button disabled={creating} onClick={handleContactSeller}
+            className="w-full h-10 rounded-full text-sm font-semibold flex items-center justify-center gap-1.5">
+            {creating ? "Ouverture..." : <><MessageCircle size={14} /> Contacter le vendeur</>}
+          </Button>
+        </div>
+      )}
     </div>
   );
 }
