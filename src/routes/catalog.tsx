@@ -63,16 +63,28 @@ function Catalog() {
     setSelectedConditions(p => p.includes(c) ? p.filter(x => x !== c) : [...p, c]);
 
   return (
-    <div className="flex flex-col min-h-screen bg-background pb-20">
-      <header className="sticky top-0 z-40 bg-card/95 backdrop-blur-md px-4 py-4 space-y-4 border-b">
-        <div className="flex items-center justify-between">
-          <button onClick={() => { setSearchQuery(""); setSelectedCategory("Tout"); }} className="hover:opacity-80 transition-opacity active:scale-95 transform duration-200">
-            <h1 className="font-headline text-2xl font-bold text-primary tracking-tight">MYKUTUB</h1>
-          </button>
+    <div className="max-w-7xl mx-auto w-full px-4 md:px-8 py-6 md:py-10">
+      <div className="mb-6 md:mb-10">
+        <h1 className="font-headline text-3xl md:text-5xl font-black">Catalogue</h1>
+        <p className="text-muted-foreground mt-2">Tous les livres disponibles dans la communauté.</p>
+      </div>
+
+      <div className="sticky top-16 z-30 bg-background/95 backdrop-blur-md py-4 -mx-4 px-4 md:-mx-8 md:px-8 space-y-4 border-b mb-6">
+        <div className="flex flex-wrap gap-2 items-center">
+          <div className="relative flex-1 min-w-[200px]">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" size={18} />
+            <Input placeholder="Livre, auteur..." value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} className="pl-10 h-12 bg-muted/50 border-none rounded-xl" />
+            {searchQuery && (
+              <button onClick={() => setSearchQuery("")} className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground">
+                <X size={16} />
+              </button>
+            )}
+          </div>
+
           <Popover>
             <PopoverTrigger asChild>
-              <Button variant="outline" size="sm" className={cn("rounded-full border-primary/20 gap-2 h-9 px-3", selectedCity && "bg-primary/5 border-primary text-primary")}>
-                <MapPin size={16} className={selectedCity ? "text-primary" : "text-muted-foreground"} />
+              <Button variant="outline" className={cn("rounded-xl h-12 gap-2 px-4", selectedCity && "bg-primary/5 border-primary text-primary")}>
+                <MapPin size={16} />
                 <span className="text-xs font-bold">{selectedCity || "Toute la France"}</span>
               </Button>
             </PopoverTrigger>
@@ -97,18 +109,7 @@ function Catalog() {
               </Command>
             </PopoverContent>
           </Popover>
-        </div>
 
-        <div className="flex gap-2">
-          <div className="relative group flex-1">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" size={18} />
-            <Input placeholder="Livre, auteur..." value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} className="pl-10 h-12 bg-muted/50 border-none rounded-xl" />
-            {searchQuery && (
-              <button onClick={() => setSearchQuery("")} className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground">
-                <X size={16} />
-              </button>
-            )}
-          </div>
           <Sheet>
             <SheetTrigger asChild>
               <Button variant="secondary" size="icon" className={cn("h-12 w-12 rounded-xl", (selectedConditions.length > 0 || sortBy !== "recent") && "bg-primary text-primary-foreground")}>
@@ -151,7 +152,7 @@ function Catalog() {
           </Sheet>
         </div>
 
-        <ScrollArea className="w-full whitespace-nowrap -mx-4 px-4 pb-1">
+        <ScrollArea className="w-full whitespace-nowrap">
           <div className="flex space-x-2">
             {CATEGORIES.map(cat => (
               <Badge key={cat} onClick={() => setSelectedCategory(cat)} variant={selectedCategory === cat ? "default" : "secondary"} className={cn("px-4 py-2 cursor-pointer text-xs font-bold border", selectedCategory === cat ? "bg-primary border-primary" : "bg-card border-border text-muted-foreground")}>
@@ -161,24 +162,15 @@ function Catalog() {
           </div>
           <ScrollBar orientation="horizontal" className="hidden" />
         </ScrollArea>
-      </header>
-
-      <div className="px-4 py-6">
-        <div className="bg-primary rounded-2xl p-6 text-primary-foreground relative overflow-hidden shadow-lg">
-          <div className="relative z-10 space-y-2 max-w-[85%]">
-            <h2 className="font-headline text-xl font-black leading-tight">Partagez le savoir</h2>
-            <p className="text-sm opacity-90">Donnez une seconde vie à vos livres de science islamique.</p>
-          </div>
-        </div>
       </div>
 
-      <div className="px-4 grid grid-cols-2 gap-4 pb-8">
+      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 md:gap-6 pb-8">
         {loading ? (
-          Array.from({ length: 4 }).map((_, i) => (
+          Array.from({ length: 8 }).map((_, i) => (
             <div key={i} className="aspect-[3/4] bg-muted rounded-2xl animate-pulse" />
           ))
         ) : filteredBooks.length === 0 ? (
-          <div className="col-span-2 text-center py-20 text-muted-foreground">
+          <div className="col-span-full text-center py-20 text-muted-foreground">
             Aucun livre trouvé.
           </div>
         ) : (
