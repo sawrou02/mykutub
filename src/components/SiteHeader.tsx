@@ -4,12 +4,15 @@ import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { Menu, BookOpen, MessageCircle, User, PlusCircle } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useAuth } from "@/hooks/useAuth";
+import { useIsAdmin } from "@/hooks/useIsAdmin";
 import { useTranslation } from "react-i18next";
 import { LanguageSwitcher } from "./LanguageSwitcher";
+import { ShieldCheck } from "lucide-react";
 
 export function SiteHeader() {
   const { pathname } = useLocation();
   const { user } = useAuth();
+  const { isAdmin } = useIsAdmin();
   const { t } = useTranslation();
 
   const links = [
@@ -54,6 +57,11 @@ export function SiteHeader() {
           </Button>
           {user ? (
             <>
+              {isAdmin && (
+                <Button asChild variant="ghost" size="icon" title="Admin">
+                  <Link to="/admin"><ShieldCheck size={18} className="text-primary" /></Link>
+                </Button>
+              )}
               <Button asChild variant="ghost" size="icon">
                 <Link to="/messages"><MessageCircle size={18} /></Link>
               </Button>
