@@ -1,9 +1,10 @@
 import { Link, useLocation } from "@tanstack/react-router";
-import { Home, PlusCircle, MessageCircle, User } from "lucide-react";
+import { Home, PlusCircle, MessageCircle, User, BookOpen } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 const navItems = [
   { label: "Accueil", to: "/", icon: Home },
+  { label: "Catalogue", to: "/catalog", icon: BookOpen },
   { label: "Publier", to: "/publish", icon: PlusCircle },
   { label: "Messages", to: "/messages", icon: MessageCircle },
   { label: "Compte", to: "/profile", icon: User },
@@ -12,7 +13,7 @@ const navItems = [
 export function BottomNav() {
   const { pathname } = useLocation();
   return (
-    <nav className="fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-xl h-16 bg-card border-t flex items-center justify-around z-50 px-4">
+    <nav className="md:hidden fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-xl h-16 bg-card border-t flex items-center justify-around z-50 px-2">
       {navItems.map((item) => {
         const isActive = pathname === item.to;
         const Icon = item.icon;
