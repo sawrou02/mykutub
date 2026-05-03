@@ -7,6 +7,7 @@ import { useUnreadChats } from "@/hooks/useUnreadChats";
 export function BottomNav() {
   const { pathname } = useLocation();
   const { t } = useTranslation();
+  const unreadCount = useUnreadChats();
   const navItems = [
     { label: t("nav.home"), to: "/", icon: Home },
     { label: t("nav.catalog"), to: "/catalog", icon: BookOpen },
