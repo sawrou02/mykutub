@@ -21,6 +21,7 @@ function PublishPage() {
   const { user } = useAuth();
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [isDonation, setIsDonation] = useState(false);
+  const [canDeliver, setCanDeliver] = useState(false);
   const [loading, setLoading] = useState(false);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
 
@@ -57,6 +58,7 @@ function PublishPage() {
       description: fd.get("description") as string,
       price: isDonation ? 0 : Number(fd.get("price")),
       is_donation: isDonation,
+      can_deliver: canDeliver,
       seller_id: user.id,
       seller_name: user.user_metadata?.display_name || user.email?.split("@")[0] || "Utilisateur",
       image_url: imagePreview,
@@ -144,6 +146,14 @@ function PublishPage() {
         <div className="flex items-center gap-3 p-4 bg-secondary/10 rounded-2xl">
           <Checkbox id="donation" checked={isDonation} onCheckedChange={(v) => setIsDonation(!!v)} />
           <Label htmlFor="donation" className="font-bold text-sm cursor-pointer">Je donne ce livre (Sadaqa)</Label>
+        </div>
+
+        <div className="flex items-start gap-3 p-4 bg-primary/5 rounded-2xl">
+          <Checkbox id="delivery" checked={canDeliver} onCheckedChange={(v) => setCanDeliver(!!v)} className="mt-0.5" />
+          <div className="flex-1">
+            <Label htmlFor="delivery" className="font-bold text-sm cursor-pointer">Livraison possible</Label>
+            <p className="text-xs text-muted-foreground mt-0.5">Cochez si vous proposez la livraison à l'acheteur.</p>
+          </div>
         </div>
 
         {!isDonation && (

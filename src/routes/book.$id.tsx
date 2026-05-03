@@ -1,12 +1,13 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
-import { ChevronLeft, MapPin, Share2, ShieldCheck, BookOpen, MessageCircle } from "lucide-react";
+import { ChevronLeft, MapPin, Share2, ShieldCheck, BookOpen, MessageCircle, Truck, Package } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import type { Book } from "@/lib/mykutub";
+import { SellerReviews } from "@/components/SellerReviews";
 
 export const Route = createFileRoute("/book/$id")({
   component: BookDetailPage,
@@ -57,6 +58,16 @@ function BookDetailPage() {
     }
   };
 
+  const handleShare = async () => {
+    const url = window.location.href;
+    const title = book?.title ?? "MYKUTUB";
+    if (navigator.share) {
+      try { await navigator.share({ title, url }); return; } catch { /* cancelled */ }
+    }
+    try { await navigator.clipboard.writeText(url); toast.success("Lien copié !"); }
+    catch { toast.error("Impossible de copier le lien."); }
+  };
+
   if (loading) return <div className="p-10 text-center">Chargement...</div>;
   if (!book) return <div className="p-10 text-center">Livre introuvable</div>;
 
@@ -66,7 +77,7 @@ function BookDetailPage() {
         <button onClick={() => history.back()} className="p-2 rounded-full bg-card/80 backdrop-blur-md shadow-sm">
           <ChevronLeft size={20} />
         </button>
-        <button className="p-2 rounded-full bg-card/80 backdrop-blur-md shadow-sm"><Share2 size={20} /></button>
+        <button onClick={handleShare} className="p-2 rounded-full bg-card/80 backdrop-blur-md shadow-sm"><Share2 size={20} /></button>
       </div>
 
       <div className="relative aspect-[3/4] w-full bg-muted">
@@ -93,6 +104,9 @@ function BookDetailPage() {
             <Badge variant="outline" className="rounded-lg border-border py-1.5 px-3 font-medium">
               <ShieldCheck size={14} className="mr-1.5" /> {book.condition}
             </Badge>
+            <Badge variant="outline" className={`rounded-lg py-1.5 px-3 font-medium ${book.can_deliver ? "border-green-600/30 text-green-700 bg-green-50" : "border-border text-muted-foreground"}`}>
+              {book.can_deliver ? <><Truck size={14} className="mr-1.5" /> Livraison possible</> : <><Package size={14} className="mr-1.5" /> Retrait uniquement</>}
+            </Badge>
           </div>
         </div>
 
@@ -110,6 +124,10 @@ function BookDetailPage() {
         <div className="space-y-3">
           <h2 className="font-headline font-bold text-lg text-primary border-l-4 border-secondary pl-3">Description</h2>
           <p className="text-muted-foreground leading-relaxed text-sm">{book.description || "Aucune description fournie."}</p>
+        </div>
+
+        <div className="pt-4 border-t">
+          <SellerReviews sellerId={book.seller_id} />
         </div>
       </div>
 

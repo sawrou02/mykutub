@@ -5,6 +5,8 @@ import { BottomNav } from "@/components/BottomNav";
 import { SiteHeader } from "@/components/SiteHeader";
 import { SiteFooter } from "@/components/SiteFooter";
 import { Toaster } from "@/components/ui/sonner";
+import { I18nProvider } from "@/components/I18nProvider";
+import "@/lib/i18n";
 
 function NotFoundComponent() {
   return (
@@ -62,15 +64,17 @@ function RootComponent() {
 
   return (
     <AuthProvider>
-      <div className="min-h-screen bg-background flex flex-col">
-        {!hideAll && <SiteHeader />}
-        <main className="flex-1 pb-20 md:pb-0">
-          <Outlet />
-        </main>
-        {!hideFooter && <SiteFooter />}
-      </div>
-      {!hideBottomNav && <BottomNav />}
-      <Toaster />
+      <I18nProvider>
+        <div className="min-h-screen bg-background flex flex-col">
+          {!hideAll && <SiteHeader />}
+          <main className="flex-1 pb-20 md:pb-0">
+            <Outlet />
+          </main>
+          {!hideFooter && <SiteFooter />}
+        </div>
+        {!hideBottomNav && <BottomNav />}
+        <Toaster />
+      </I18nProvider>
     </AuthProvider>
   );
 }

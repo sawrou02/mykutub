@@ -2286,6 +2286,18 @@ export type Book = {
   image_url: string;
   seller_id: string;
   seller_name: string;
+  can_deliver?: boolean;
+  created_at: string;
+};
+
+export type Review = {
+  id: string;
+  seller_id: string;
+  reviewer_id: string;
+  reviewer_name: string;
+  rating: number;
+  comment: string | null;
+  chat_id: string | null;
   created_at: string;
 };
 

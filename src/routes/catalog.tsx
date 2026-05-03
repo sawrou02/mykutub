@@ -2,13 +2,14 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useMemo, useState } from "react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Search, SlidersHorizontal, MapPin, X, Check } from "lucide-react";
+import { Search, SlidersHorizontal, MapPin, X, Check, History, Trash2 } from "lucide-react";
 import { BookCard } from "@/components/BookCard";
 import { Badge } from "@/components/ui/badge";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import { CATEGORIES, CONDITIONS, ALL_CITIES, type Book } from "@/lib/mykutub";
 import { cn } from "@/lib/utils";
 import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/hooks/useAuth";
 import {
   Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger, SheetFooter, SheetClose,
 } from "@/components/ui/sheet";
@@ -26,6 +27,7 @@ export const Route = createFileRoute("/catalog")({
 });
 
 function Catalog() {
+  const { user } = useAuth();
   const [books, setBooks] = useState<Book[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedCategory, setSelectedCategory] = useState("Tout");
@@ -33,6 +35,8 @@ function Catalog() {
   const [selectedCity, setSelectedCity] = useState<string | null>(null);
   const [selectedConditions, setSelectedConditions] = useState<string[]>([]);
   const [sortBy, setSortBy] = useState<"recent" | "price-asc" | "price-desc">("recent");
+  const [history, setHistory] = useState<{ id: string; query: string }[]>([]);
+  const [searchFocused, setSearchFocused] = useState(false);
 
   useEffect(() => {
     let active = true;
@@ -43,6 +47,32 @@ function Catalog() {
     });
     return () => { active = false; };
   }, []);
+
+  const loadHistory = () => {
+    if (!user) { setHistory([]); return; }
+    supabase.from("search_history").select("id, query")
+      .eq("user_id", user.id).order("created_at", { ascending: false }).limit(8)
+      .then(({ data }) => setHistory((data as { id: string; query: string }[]) ?? []));
+  };
+
+  useEffect(() => { loadHistory(); }, [user]);
+
+  // Debounced save
+  useEffect(() => {
+    if (!user || !searchQuery.trim() || searchQuery.trim().length < 2) return;
+    const q = searchQuery.trim();
+    const t = setTimeout(async () => {
+      await supabase.from("search_history").insert({ user_id: user.id, query: q });
+      loadHistory();
+    }, 1200);
+    return () => clearTimeout(t);
+  }, [searchQuery, user]);
+
+  const clearHistory = async () => {
+    if (!user) return;
+    await supabase.from("search_history").delete().eq("user_id", user.id);
+    setHistory([]);
+  };
 
   const filteredBooks = useMemo(() => {
     return books.filter(b => {
@@ -73,11 +103,43 @@ function Catalog() {
         <div className="flex flex-wrap gap-2 items-center">
           <div className="relative flex-1 min-w-[200px]">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" size={18} />
-            <Input placeholder="Livre, auteur..." value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} className="pl-10 h-12 bg-muted/50 border-none rounded-xl" />
+            <Input
+              placeholder="Livre, auteur..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              onFocus={() => setSearchFocused(true)}
+              onBlur={() => setTimeout(() => setSearchFocused(false), 150)}
+              className="pl-10 h-12 bg-muted/50 border-none rounded-xl"
+            />
             {searchQuery && (
               <button onClick={() => setSearchQuery("")} className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground">
                 <X size={16} />
               </button>
+            )}
+            {searchFocused && !searchQuery && history.length > 0 && (
+              <div className="absolute left-0 right-0 top-full mt-2 bg-card border rounded-xl shadow-lg z-50 overflow-hidden">
+                <div className="flex items-center justify-between px-3 py-2 border-b bg-muted/30">
+                  <div className="flex items-center gap-1.5 text-xs font-bold text-muted-foreground uppercase tracking-wider">
+                    <History size={12} /> Recherches récentes
+                  </div>
+                  <button onMouseDown={(e) => { e.preventDefault(); clearHistory(); }} className="text-xs text-destructive hover:underline flex items-center gap-1">
+                    <Trash2 size={12} /> Effacer
+                  </button>
+                </div>
+                <ul className="max-h-64 overflow-y-auto">
+                  {history.map(h => (
+                    <li key={h.id}>
+                      <button
+                        onMouseDown={(e) => { e.preventDefault(); setSearchQuery(h.query); setSearchFocused(false); }}
+                        className="w-full text-left px-3 py-2 text-sm hover:bg-muted flex items-center gap-2"
+                      >
+                        <Search size={14} className="text-muted-foreground" />
+                        {h.query}
+                      </button>
+                    </li>
+                  ))}
+                </ul>
+              </div>
             )}
           </div>
 
