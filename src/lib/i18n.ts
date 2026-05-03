@@ -1,6 +1,5 @@
 import i18n from "i18next";
 import { initReactI18next } from "react-i18next";
-import LanguageDetector from "i18next-browser-languagedetector";
 
 const fr = {
   nav: {
@@ -8,6 +7,7 @@ const fr = {
     about: "À propos", faq: "FAQ", contact: "Contact",
     publish: "Publier", login: "Connexion", signup: "S'inscrire",
     account: "Mon compte", messages: "Messages", profile: "Profil",
+    publishBook: "Publier un livre", createAccount: "Créer un compte", platform: "Plateforme", company: "Entreprise", accountSection: "Compte",
   },
   common: {
     loading: "Chargement...", search: "Rechercher", cancel: "Annuler",
@@ -16,8 +16,10 @@ const fr = {
     leaveReview: "Laisser un avis", yourRating: "Votre note", comment: "Commentaire",
     submit: "Envoyer", linkCopied: "Lien copié !",
     delivery: "Livraison possible", noDelivery: "Retrait uniquement",
-    history: "Historique", clearHistory: "Effacer l'historique",
-    recentSearches: "Recherches récentes",
+    history: "Historique", clearHistory: "Effacer", recentSearches: "Recherches récentes",
+    seeAll: "Voir tout", apply: "Appliquer", reset: "Réinitialiser", filters: "Filtres",
+    allFrance: "Toute la France", noResults: "Aucun livre trouvé.", explore: "Explorer le catalogue",
+    sending: "Envoi…", send: "Envoyer le message",
   },
   publish: {
     canDeliver: "Je peux livrer ce livre",
@@ -25,7 +27,72 @@ const fr = {
   },
   catalog: {
     title: "Catalogue", subtitle: "Tous les livres disponibles dans la communauté.",
-    placeholder: "Livre, auteur...", allFrance: "Toute la France",
+    placeholder: "Livre, auteur...", condition: "État du livre", sortBy: "Trier par",
+    sortRecent: "Plus récents", sortPriceAsc: "Prix croissant", sortPriceDesc: "Prix décroissant",
+    cityPlaceholder: "Rechercher une ville...", cityEmpty: "Aucune ville trouvée.",
+  },
+  home: {
+    badge: "Sadaqa Jariya",
+    h1a: "Le savoir", h1b: "se partage.",
+    intro: "Achetez, vendez et donnez vos livres de science islamique. Une plateforme dédiée, sécurisée, et au service de la communauté.",
+    publishBtn: "Publier un livre",
+    valueA_title: "Une seconde vie", valueA_text: "Vos livres trouvent de nouveaux lecteurs. Le savoir continue de circuler.",
+    valueB_title: "Esprit de Sadaqa", valueB_text: "Donnez gratuitement ou vendez à prix juste. La plateforme est gratuite.",
+    valueC_title: "Communauté de confiance", valueC_text: "Échanges directs entre membres vérifiés, messagerie intégrée.",
+    latest: "Derniers livres ajoutés", latestSub: "Les nouveautés de la communauté",
+    empty: "Aucun livre publié pour l'instant.", emptyCta: "Publiez le premier !",
+    ctaTitle: "Prêt à partager le savoir ?", ctaText: "Rejoignez la communauté MYKUTUB en quelques secondes.",
+    ctaBtn: "Créer mon compte",
+  },
+  about: {
+    title: "Notre mission",
+    intro: "MYKUTUB est née d'un constat simple : trop de livres de science islamique restent oubliés dans les étagères, alors qu'ils pourraient nourrir d'autres lecteurs assoiffés de connaissance.",
+    a_title: "Faire circuler le savoir", a_text: "Chaque livre revendu ou donné est une nouvelle opportunité d'apprentissage.",
+    b_title: "Encourager la Sadaqa", b_text: "Donner ses livres, c'est offrir une aumône qui continue à porter ses fruits.",
+    c_title: "Unir la communauté", c_text: "Une plateforme par et pour les francophones musulmans, partout en France.",
+    freeTitle: "Une plateforme gratuite",
+    freeText: "MYKUTUB ne prélève aucune commission. Les échanges se font directement entre membres via la messagerie intégrée. L'esprit reste le même : partager, transmettre, élever.",
+    join: "Rejoindre la communauté",
+  },
+  hiw: {
+    title: "Comment ça marche ?", subtitle: "Une plateforme simple, transparente et 100% gratuite.",
+    sellHead: "Vous voulez vendre ou donner",
+    s1t: "1. Photographiez", s1x: "Prenez une photo claire de votre livre et remplissez le formulaire en moins de 2 minutes.",
+    s2t: "2. Échangez", s2x: "Recevez les messages des intéressés via la messagerie intégrée.",
+    s3t: "3. Remettez le livre", s3x: "Convenez d'un point de rencontre ou d'un envoi postal.",
+    publishMine: "Publier mon livre",
+    buyHead: "Vous cherchez un livre",
+    b1t: "1. Cherchez", b1x: "Filtrez par catégorie, ville, état du livre ou prix.",
+    b2t: "2. Contactez", b2x: "Posez vos questions au vendeur en un clic.",
+    b3t: "3. Récupérez", b3x: "Achetez ou recevez gratuitement votre livre.",
+    seeCatalog: "Voir le catalogue",
+    sadaqaTitle: "L'esprit Sadaqa",
+    sadaqaText: "Vous pouvez choisir de donner gratuitement votre livre. Une aumône continue, accessible en un clic.",
+  },
+  faq: {
+    title: "Questions fréquentes", subtitle: "Tout ce que vous devez savoir pour démarrer.",
+    moreTitle: "Une autre question ?", moreText: "Notre équipe répond dans la journée.", contactUs: "Nous contacter",
+    items: [
+      { q: "MYKUTUB est-elle gratuite ?", a: "Oui, totalement. Aucune commission, aucun frais de mise en ligne. La plateforme est financée pour servir la communauté." },
+      { q: "Comment se passe le paiement ?", a: "Le paiement se fait directement entre acheteur et vendeur (espèces lors de la remise, virement, etc.). MYKUTUB n'intervient pas dans la transaction." },
+      { q: "Puis-je donner un livre gratuitement ?", a: "Bien sûr ! Lors de la publication, cochez l'option « Don ». Votre annonce apparaîtra avec le badge Sadaqa." },
+      { q: "Comment se fait la livraison ?", a: "Vous convenez librement avec le vendeur : remise en main propre, point relais, ou envoi postal." },
+      { q: "Quels types de livres sont acceptés ?", a: "Uniquement des livres de science islamique : Coran, Hadith, Fiqh, Aqida, Sira, livres pour enfants, moutoun, etc." },
+      { q: "Comment signaler un problème ?", a: "Contactez-nous via le formulaire de contact. Nous traitons chaque signalement avec sérieux." },
+      { q: "Puis-je supprimer une annonce ?", a: "Oui, à tout moment depuis votre profil. La suppression est immédiate et définitive." },
+    ],
+  },
+  contact: {
+    title: "Restons en contact",
+    subtitle: "Une question, un signalement, une suggestion ? Écrivez-nous.",
+    email: "Email", reply: "Réponse", replyTime: "Sous 24h en moyenne",
+    coverage: "Couverture", coverageVal: "France entière",
+    name: "Nom", subject: "Sujet", message: "Message",
+    success: "Message envoyé ! Nous reviendrons vers vous rapidement.",
+  },
+  footer: {
+    tagline: "La marketplace dédiée aux livres de science islamique d'occasion.",
+    copyright: "Partagez le savoir",
   },
 };
 
@@ -35,6 +102,7 @@ const en = {
     about: "About", faq: "FAQ", contact: "Contact",
     publish: "Publish", login: "Login", signup: "Sign up",
     account: "My account", messages: "Messages", profile: "Profile",
+    publishBook: "Publish a book", createAccount: "Create account", platform: "Platform", company: "Company", accountSection: "Account",
   },
   common: {
     loading: "Loading...", search: "Search", cancel: "Cancel",
@@ -43,8 +111,10 @@ const en = {
     leaveReview: "Leave a review", yourRating: "Your rating", comment: "Comment",
     submit: "Submit", linkCopied: "Link copied!",
     delivery: "Delivery available", noDelivery: "Pickup only",
-    history: "History", clearHistory: "Clear history",
-    recentSearches: "Recent searches",
+    history: "History", clearHistory: "Clear", recentSearches: "Recent searches",
+    seeAll: "See all", apply: "Apply", reset: "Reset", filters: "Filters",
+    allFrance: "All France", noResults: "No books found.", explore: "Explore catalog",
+    sending: "Sending…", send: "Send message",
   },
   publish: {
     canDeliver: "I can deliver this book",
@@ -52,7 +122,72 @@ const en = {
   },
   catalog: {
     title: "Catalog", subtitle: "All books available in the community.",
-    placeholder: "Book, author...", allFrance: "All France",
+    placeholder: "Book, author...", condition: "Book condition", sortBy: "Sort by",
+    sortRecent: "Most recent", sortPriceAsc: "Price ascending", sortPriceDesc: "Price descending",
+    cityPlaceholder: "Search a city...", cityEmpty: "No city found.",
+  },
+  home: {
+    badge: "Sadaqa Jariya",
+    h1a: "Knowledge", h1b: "is shared.",
+    intro: "Buy, sell and give away your Islamic science books. A dedicated, secure platform for the community.",
+    publishBtn: "Publish a book",
+    valueA_title: "A second life", valueA_text: "Your books find new readers. Knowledge keeps flowing.",
+    valueB_title: "Sadaqa spirit", valueB_text: "Give for free or sell at fair price. The platform is free.",
+    valueC_title: "Trusted community", valueC_text: "Direct exchanges between verified members, built-in messaging.",
+    latest: "Latest books added", latestSub: "New from the community",
+    empty: "No books published yet.", emptyCta: "Publish the first one!",
+    ctaTitle: "Ready to share knowledge?", ctaText: "Join the MYKUTUB community in seconds.",
+    ctaBtn: "Create my account",
+  },
+  about: {
+    title: "Our mission",
+    intro: "MYKUTUB was born from a simple observation: too many Islamic science books remain forgotten on shelves, while they could feed other readers thirsty for knowledge.",
+    a_title: "Spread knowledge", a_text: "Every book resold or donated is a new learning opportunity.",
+    b_title: "Encourage Sadaqa", b_text: "Giving away your books is offering an alms that keeps bearing fruit.",
+    c_title: "Unite the community", c_text: "A platform by and for French-speaking Muslims, all over France.",
+    freeTitle: "A free platform",
+    freeText: "MYKUTUB takes no commission. Exchanges happen directly between members via built-in messaging. The spirit stays the same: share, transmit, elevate.",
+    join: "Join the community",
+  },
+  hiw: {
+    title: "How does it work?", subtitle: "A simple, transparent and 100% free platform.",
+    sellHead: "You want to sell or give",
+    s1t: "1. Photograph", s1x: "Take a clear photo of your book and fill the form in under 2 minutes.",
+    s2t: "2. Chat", s2x: "Receive messages from interested buyers via built-in messaging.",
+    s3t: "3. Hand it over", s3x: "Agree on a meeting point or postal shipping.",
+    publishMine: "Publish my book",
+    buyHead: "You're looking for a book",
+    b1t: "1. Search", b1x: "Filter by category, city, condition or price.",
+    b2t: "2. Contact", b2x: "Ask the seller your questions in one click.",
+    b3t: "3. Pick up", b3x: "Buy or receive your book for free.",
+    seeCatalog: "See the catalog",
+    sadaqaTitle: "The Sadaqa spirit",
+    sadaqaText: "You can choose to give your book away for free. Continuous alms, one click away.",
+  },
+  faq: {
+    title: "Frequently asked questions", subtitle: "Everything you need to know to start.",
+    moreTitle: "Another question?", moreText: "Our team replies within the day.", contactUs: "Contact us",
+    items: [
+      { q: "Is MYKUTUB free?", a: "Yes, totally. No commission, no listing fee. The platform is funded to serve the community." },
+      { q: "How does payment work?", a: "Payment happens directly between buyer and seller (cash on hand-over, transfer, etc.). MYKUTUB does not intervene." },
+      { q: "Can I give a book for free?", a: "Of course! When publishing, check the “Donation” option. Your listing will appear with the Sadaqa badge." },
+      { q: "How is delivery handled?", a: "You agree freely with the seller: hand-over, parcel point, or postal shipping." },
+      { q: "What types of books are accepted?", a: "Only Islamic science books: Quran, Hadith, Fiqh, Aqida, Sira, kids books, mutun, etc." },
+      { q: "How do I report an issue?", a: "Contact us via the contact form. Every report is taken seriously." },
+      { q: "Can I delete a listing?", a: "Yes, anytime from your profile. Deletion is immediate and final." },
+    ],
+  },
+  contact: {
+    title: "Let's stay in touch",
+    subtitle: "A question, a report, a suggestion? Write to us.",
+    email: "Email", reply: "Reply", replyTime: "Within 24h on average",
+    coverage: "Coverage", coverageVal: "All France",
+    name: "Name", subject: "Subject", message: "Message",
+    success: "Message sent! We'll get back to you quickly.",
+  },
+  footer: {
+    tagline: "The marketplace dedicated to second-hand Islamic science books.",
+    copyright: "Share knowledge",
   },
 };
 
@@ -62,6 +197,7 @@ const ar = {
     about: "حول", faq: "الأسئلة الشائعة", contact: "اتصل بنا",
     publish: "نشر", login: "تسجيل الدخول", signup: "إنشاء حساب",
     account: "حسابي", messages: "الرسائل", profile: "الملف الشخصي",
+    publishBook: "نشر كتاب", createAccount: "إنشاء حساب", platform: "المنصة", company: "الشركة", accountSection: "الحساب",
   },
   common: {
     loading: "جار التحميل...", search: "بحث", cancel: "إلغاء",
@@ -70,8 +206,10 @@ const ar = {
     leaveReview: "اترك تقييمًا", yourRating: "تقييمك", comment: "تعليق",
     submit: "إرسال", linkCopied: "تم نسخ الرابط!",
     delivery: "التوصيل متاح", noDelivery: "الاستلام فقط",
-    history: "السجل", clearHistory: "مسح السجل",
-    recentSearches: "عمليات البحث الأخيرة",
+    history: "السجل", clearHistory: "مسح", recentSearches: "عمليات البحث الأخيرة",
+    seeAll: "عرض الكل", apply: "تطبيق", reset: "إعادة تعيين", filters: "الفلاتر",
+    allFrance: "كل فرنسا", noResults: "لا توجد كتب.", explore: "تصفح الكتالوج",
+    sending: "جاري الإرسال…", send: "إرسال الرسالة",
   },
   publish: {
     canDeliver: "يمكنني توصيل هذا الكتاب",
@@ -79,21 +217,87 @@ const ar = {
   },
   catalog: {
     title: "الكتالوج", subtitle: "جميع الكتب المتاحة في المجتمع.",
-    placeholder: "كتاب، مؤلف...", allFrance: "كل فرنسا",
+    placeholder: "كتاب، مؤلف...", condition: "حالة الكتاب", sortBy: "ترتيب حسب",
+    sortRecent: "الأحدث", sortPriceAsc: "السعر تصاعدي", sortPriceDesc: "السعر تنازلي",
+    cityPlaceholder: "ابحث عن مدينة...", cityEmpty: "لم يتم العثور على مدينة.",
+  },
+  home: {
+    badge: "صدقة جارية",
+    h1a: "العلم", h1b: "يُتقاسم.",
+    intro: "اشتري، بِع وتبرع بكتب العلوم الإسلامية. منصة مخصصة وآمنة في خدمة المجتمع.",
+    publishBtn: "نشر كتاب",
+    valueA_title: "حياة ثانية", valueA_text: "كتبك تجد قراءً جددًا. العلم يستمر في الانتشار.",
+    valueB_title: "روح الصدقة", valueB_text: "تبرع مجانًا أو بِع بسعر عادل. المنصة مجانية.",
+    valueC_title: "مجتمع موثوق", valueC_text: "تبادلات مباشرة بين أعضاء موثقين مع رسائل مدمجة.",
+    latest: "أحدث الكتب المضافة", latestSub: "جديد المجتمع",
+    empty: "لم يتم نشر أي كتاب بعد.", emptyCta: "كن أول الناشرين!",
+    ctaTitle: "هل أنت مستعد لمشاركة العلم؟", ctaText: "انضم إلى مجتمع MYKUTUB في ثوانٍ.",
+    ctaBtn: "إنشاء حسابي",
+  },
+  about: {
+    title: "مهمتنا",
+    intro: "ولدت MYKUTUB من ملاحظة بسيطة: الكثير من كتب العلوم الإسلامية تبقى منسية على الرفوف، بينما يمكن أن تغذي قراءً آخرين متعطشين للمعرفة.",
+    a_title: "نشر العلم", a_text: "كل كتاب يُعاد بيعه أو يُهدى هو فرصة تعلم جديدة.",
+    b_title: "تشجيع الصدقة", b_text: "التبرع بكتبك هو تقديم صدقة تستمر في إعطاء ثمارها.",
+    c_title: "توحيد المجتمع", c_text: "منصة من قبل ومن أجل المسلمين الناطقين بالفرنسية في كل فرنسا.",
+    freeTitle: "منصة مجانية",
+    freeText: "MYKUTUB لا تأخذ أي عمولة. تتم التبادلات مباشرة بين الأعضاء عبر الرسائل المدمجة. الروح تبقى نفسها: المشاركة، النقل، والارتقاء.",
+    join: "انضم إلى المجتمع",
+  },
+  hiw: {
+    title: "كيف يعمل؟", subtitle: "منصة بسيطة وشفافة ومجانية 100%.",
+    sellHead: "تريد البيع أو التبرع",
+    s1t: "1. صور", s1x: "التقط صورة واضحة لكتابك واملأ النموذج في أقل من دقيقتين.",
+    s2t: "2. تواصل", s2x: "استقبل رسائل المهتمين عبر الرسائل المدمجة.",
+    s3t: "3. سلّم الكتاب", s3x: "اتفق على نقطة لقاء أو إرسال بريدي.",
+    publishMine: "نشر كتابي",
+    buyHead: "تبحث عن كتاب",
+    b1t: "1. ابحث", b1x: "صفِّ حسب الفئة أو المدينة أو الحالة أو السعر.",
+    b2t: "2. تواصل", b2x: "اطرح أسئلتك على البائع بنقرة واحدة.",
+    b3t: "3. استلم", b3x: "اشترِ أو احصل على كتابك مجانًا.",
+    seeCatalog: "عرض الكتالوج",
+    sadaqaTitle: "روح الصدقة",
+    sadaqaText: "يمكنك اختيار التبرع بكتابك مجانًا. صدقة جارية بنقرة واحدة.",
+  },
+  faq: {
+    title: "الأسئلة الشائعة", subtitle: "كل ما تحتاج معرفته للبدء.",
+    moreTitle: "سؤال آخر؟", moreText: "فريقنا يرد خلال اليوم.", contactUs: "تواصل معنا",
+    items: [
+      { q: "هل MYKUTUB مجانية؟", a: "نعم، تمامًا. لا عمولة ولا رسوم نشر. المنصة ممولة لخدمة المجتمع." },
+      { q: "كيف يتم الدفع؟", a: "يتم الدفع مباشرة بين المشتري والبائع (نقدًا عند التسليم، تحويل، إلخ). MYKUTUB لا تتدخل." },
+      { q: "هل يمكنني التبرع بكتاب مجانًا؟", a: "بالطبع! عند النشر، حدد خيار «تبرع». سيظهر إعلانك بشارة صدقة." },
+      { q: "كيف يتم التوصيل؟", a: "تتفق بحرية مع البائع: تسليم باليد، نقطة استلام، أو إرسال بريدي." },
+      { q: "ما أنواع الكتب المقبولة؟", a: "كتب العلوم الإسلامية فقط: قرآن، حديث، فقه، عقيدة، سيرة، كتب أطفال، متون، إلخ." },
+      { q: "كيف أبلغ عن مشكلة؟", a: "تواصل معنا عبر نموذج الاتصال. نتعامل مع كل بلاغ بجدية." },
+      { q: "هل يمكنني حذف إعلان؟", a: "نعم، في أي وقت من ملفك الشخصي. الحذف فوري ونهائي." },
+    ],
+  },
+  contact: {
+    title: "لنبقَ على تواصل",
+    subtitle: "سؤال، بلاغ، اقتراح؟ اكتب لنا.",
+    email: "البريد الإلكتروني", reply: "الرد", replyTime: "في غضون 24 ساعة في المتوسط",
+    coverage: "التغطية", coverageVal: "كل فرنسا",
+    name: "الاسم", subject: "الموضوع", message: "الرسالة",
+    success: "تم إرسال الرسالة! سنعود إليك قريبًا.",
+  },
+  footer: {
+    tagline: "السوق المخصص لكتب العلوم الإسلامية المستعملة.",
+    copyright: "شارك العلم",
   },
 };
 
 if (!i18n.isInitialized) {
-  i18n.use(LanguageDetector).use(initReactI18next).init({
+  i18n.use(initReactI18next).init({
     resources: {
       fr: { translation: fr },
       en: { translation: en },
       ar: { translation: ar },
     },
+    lng: "fr",
     fallbackLng: "fr",
     supportedLngs: ["fr", "en", "ar"],
     interpolation: { escapeValue: false },
-    detection: { order: ["localStorage", "navigator"], caches: ["localStorage"] },
+    react: { useSuspense: false },
   });
 }
 
@@ -104,7 +308,5 @@ export function applyDirection(lng: string) {
   document.documentElement.dir = dir;
   document.documentElement.lang = lng;
 }
-
-i18n.on("languageChanged", applyDirection);
 
 export default i18n;
