@@ -2,6 +2,8 @@ import { Outlet, Link, createRootRoute, HeadContent, Scripts, useLocation } from
 import appCss from "../styles.css?url";
 import { AuthProvider } from "@/hooks/useAuth";
 import { BottomNav } from "@/components/BottomNav";
+import { SiteHeader } from "@/components/SiteHeader";
+import { SiteFooter } from "@/components/SiteFooter";
 import { Toaster } from "@/components/ui/sonner";
 
 function NotFoundComponent() {
@@ -54,13 +56,20 @@ function RootShell({ children }: { children: React.ReactNode }) {
 
 function RootComponent() {
   const { pathname } = useLocation();
-  const hideNav = pathname.startsWith("/login") || pathname.startsWith("/signup") || pathname.startsWith("/messages/") || pathname.startsWith("/book/");
+  const hideAll = pathname.startsWith("/login") || pathname.startsWith("/signup") || pathname.startsWith("/messages/") || pathname.startsWith("/book/");
+  const hideBottomNav = hideAll;
+  const hideFooter = hideAll || pathname.startsWith("/messages") || pathname.startsWith("/publish");
+
   return (
     <AuthProvider>
-      <main className="max-w-xl mx-auto min-h-screen bg-background relative">
-        <Outlet />
-      </main>
-      {!hideNav && <BottomNav />}
+      <div className="min-h-screen bg-background flex flex-col">
+        {!hideAll && <SiteHeader />}
+        <main className="flex-1 pb-20 md:pb-0">
+          <Outlet />
+        </main>
+        {!hideFooter && <SiteFooter />}
+      </div>
+      {!hideBottomNav && <BottomNav />}
       <Toaster />
     </AuthProvider>
   );

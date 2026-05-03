@@ -1,184 +1,122 @@
-import { createFileRoute } from "@tanstack/react-router";
-import { useEffect, useMemo, useState } from "react";
-import { Input } from "@/components/ui/input";
+import { createFileRoute, Link } from "@tanstack/react-router";
+import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Search, SlidersHorizontal, MapPin, X, Check } from "lucide-react";
+import { ArrowRight, BookOpen, Heart, ShieldCheck, Sparkles } from "lucide-react";
 import { BookCard } from "@/components/BookCard";
-import { Badge } from "@/components/ui/badge";
-import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
-import { CATEGORIES, CONDITIONS, ALL_CITIES, type Book } from "@/lib/mykutub";
-import { cn } from "@/lib/utils";
 import { supabase } from "@/integrations/supabase/client";
-import {
-  Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger, SheetFooter, SheetClose,
-} from "@/components/ui/sheet";
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from "@/components/ui/command";
+import type { Book } from "@/lib/mykutub";
+import heroImage from "@/assets/hero-books.jpg";
 
 export const Route = createFileRoute("/")({
-  component: Home,
+  head: () => ({
+    meta: [
+      { title: "MYKUTUB — Marketplace de livres de science islamique" },
+      { name: "description", content: "Achetez, vendez et donnez vos livres de science islamique d'occasion en France. Une seconde vie pour le savoir." },
+      { property: "og:title", content: "MYKUTUB — Marketplace de livres de science islamique" },
+      { property: "og:description", content: "Donnez une seconde vie à vos livres de science islamique." },
+    ],
+  }),
+  component: Landing,
 });
 
-function Home() {
-  const [books, setBooks] = useState<Book[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [selectedCategory, setSelectedCategory] = useState("Tout");
-  const [searchQuery, setSearchQuery] = useState("");
-  const [selectedCity, setSelectedCity] = useState<string | null>(null);
-  const [selectedConditions, setSelectedConditions] = useState<string[]>([]);
-  const [sortBy, setSortBy] = useState<"recent" | "price-asc" | "price-desc">("recent");
+function Landing() {
+  const [featured, setFeatured] = useState<Book[]>([]);
 
   useEffect(() => {
-    let active = true;
-    supabase.from("books").select("*").order("created_at", { ascending: false }).then(({ data }) => {
-      if (!active) return;
-      setBooks((data as Book[]) ?? []);
-      setLoading(false);
+    supabase.from("books").select("*").order("created_at", { ascending: false }).limit(8).then(({ data }) => {
+      setFeatured((data as Book[]) ?? []);
     });
-    return () => { active = false; };
   }, []);
 
-  const filteredBooks = useMemo(() => {
-    return books.filter(b => {
-      const okCat = selectedCategory === "Tout" || b.category === selectedCategory;
-      const q = searchQuery.toLowerCase();
-      const okSearch = b.title.toLowerCase().includes(q) || (b.description?.toLowerCase() || "").includes(q);
-      const okCity = !selectedCity || b.city === selectedCity;
-      const okCond = selectedConditions.length === 0 || selectedConditions.includes(b.condition);
-      return okCat && okSearch && okCity && okCond;
-    }).sort((a, b) => {
-      if (sortBy === "price-asc") return a.price - b.price;
-      if (sortBy === "price-desc") return b.price - a.price;
-      return 0;
-    });
-  }, [books, selectedCategory, searchQuery, selectedCity, selectedConditions, sortBy]);
-
-  const toggleCondition = (c: string) =>
-    setSelectedConditions(p => p.includes(c) ? p.filter(x => x !== c) : [...p, c]);
-
   return (
-    <div className="flex flex-col min-h-screen bg-background pb-20">
-      <header className="sticky top-0 z-40 bg-card/95 backdrop-blur-md px-4 py-4 space-y-4 border-b">
-        <div className="flex items-center justify-between">
-          <button onClick={() => { setSearchQuery(""); setSelectedCategory("Tout"); }} className="hover:opacity-80 transition-opacity active:scale-95 transform duration-200">
-            <h1 className="font-headline text-2xl font-bold text-primary tracking-tight">MYKUTUB</h1>
-          </button>
-          <Popover>
-            <PopoverTrigger asChild>
-              <Button variant="outline" size="sm" className={cn("rounded-full border-primary/20 gap-2 h-9 px-3", selectedCity && "bg-primary/5 border-primary text-primary")}>
-                <MapPin size={16} className={selectedCity ? "text-primary" : "text-muted-foreground"} />
-                <span className="text-xs font-bold">{selectedCity || "Toute la France"}</span>
+    <div>
+      {/* Hero */}
+      <section className="relative overflow-hidden bg-card">
+        <div className="max-w-7xl mx-auto px-4 md:px-8 py-12 md:py-24 grid md:grid-cols-2 gap-8 md:gap-12 items-center">
+          <div className="space-y-6 md:space-y-8 z-10">
+            <div className="inline-flex items-center gap-2 bg-primary/5 text-primary px-3 py-1.5 rounded-full text-xs font-bold uppercase tracking-wider">
+              <Sparkles size={14} /> Sadaqa Jariya
+            </div>
+            <h1 className="font-headline text-4xl md:text-6xl lg:text-7xl font-black leading-[1.05] tracking-tight">
+              Le savoir<br /><span className="text-primary">se partage.</span>
+            </h1>
+            <p className="text-lg md:text-xl text-muted-foreground max-w-lg">
+              Achetez, vendez et donnez vos livres de science islamique. Une plateforme dédiée, sécurisée, et au service de la communauté.
+            </p>
+            <div className="flex flex-wrap gap-3">
+              <Button asChild size="lg" className="gap-2 h-14 rounded-2xl text-base font-bold px-8">
+                <Link to="/catalog">Explorer le catalogue <ArrowRight size={18} /></Link>
               </Button>
-            </PopoverTrigger>
-            <PopoverContent className="w-[240px] p-0" align="end">
-              <Command>
-                <CommandInput placeholder="Rechercher une ville..." />
-                <CommandList>
-                  <CommandEmpty>Aucune ville trouvée.</CommandEmpty>
-                  <CommandGroup>
-                    <CommandItem onSelect={() => setSelectedCity(null)} className="cursor-pointer font-bold">
-                      <Check className={cn("mr-2 h-4 w-4", !selectedCity ? "opacity-100" : "opacity-0")} />
-                      Toute la France
-                    </CommandItem>
-                    {ALL_CITIES.map(city => (
-                      <CommandItem key={city} onSelect={() => setSelectedCity(city)} className="cursor-pointer">
-                        <Check className={cn("mr-2 h-4 w-4", selectedCity === city ? "opacity-100" : "opacity-0")} />
-                        {city}
-                      </CommandItem>
-                    ))}
-                  </CommandGroup>
-                </CommandList>
-              </Command>
-            </PopoverContent>
-          </Popover>
-        </div>
-
-        <div className="flex gap-2">
-          <div className="relative group flex-1">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" size={18} />
-            <Input placeholder="Livre, auteur..." value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} className="pl-10 h-12 bg-muted/50 border-none rounded-xl" />
-            {searchQuery && (
-              <button onClick={() => setSearchQuery("")} className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground">
-                <X size={16} />
-              </button>
-            )}
+              <Button asChild size="lg" variant="outline" className="gap-2 h-14 rounded-2xl text-base font-bold px-8">
+                <Link to="/publish">Publier un livre</Link>
+              </Button>
+            </div>
           </div>
-          <Sheet>
-            <SheetTrigger asChild>
-              <Button variant="secondary" size="icon" className={cn("h-12 w-12 rounded-xl", (selectedConditions.length > 0 || sortBy !== "recent") && "bg-primary text-primary-foreground")}>
-                <SlidersHorizontal size={20} />
-              </Button>
-            </SheetTrigger>
-            <SheetContent side="right" className="w-[300px] flex flex-col">
-              <SheetHeader className="text-left border-b pb-4">
-                <SheetTitle className="text-2xl font-black text-primary">Filtres</SheetTitle>
-              </SheetHeader>
-              <div className="flex-1 overflow-y-auto py-6 space-y-8">
-                <div className="space-y-4">
-                  <h3 className="font-bold text-xs uppercase tracking-widest text-muted-foreground">État du livre</h3>
-                  <div className="flex flex-wrap gap-2">
-                    {CONDITIONS.map(c => (
-                      <Badge key={c} variant={selectedConditions.includes(c) ? "default" : "outline"} onClick={() => toggleCondition(c)} className="cursor-pointer px-4 py-2 text-xs font-bold">
-                        {c}
-                      </Badge>
-                    ))}
-                  </div>
-                </div>
-                <div className="space-y-4">
-                  <h3 className="font-bold text-xs uppercase tracking-widest text-muted-foreground">Trier par</h3>
-                  <div className="grid grid-cols-1 gap-2">
-                    {[{ id: "recent", label: "Plus récents" }, { id: "price-asc", label: "Prix croissant" }, { id: "price-desc", label: "Prix décroissant" }].map(o => (
-                      <Button key={o.id} variant={sortBy === o.id ? "default" : "outline"} onClick={() => setSortBy(o.id as typeof sortBy)} className="justify-start font-bold h-12 rounded-xl">
-                        {o.label}
-                      </Button>
-                    ))}
-                  </div>
-                </div>
+          <div className="relative aspect-[4/3] md:aspect-square rounded-3xl overflow-hidden shadow-2xl">
+            <img
+              src={heroImage}
+              alt="Livres de science islamique empilés"
+              width={1536}
+              height={1024}
+              className="absolute inset-0 w-full h-full object-cover"
+            />
+          </div>
+        </div>
+      </section>
+
+      {/* Values */}
+      <section className="max-w-7xl mx-auto px-4 md:px-8 py-16 md:py-24">
+        <div className="grid md:grid-cols-3 gap-6 md:gap-8">
+          {[
+            { icon: BookOpen, title: "Une seconde vie", text: "Vos livres trouvent de nouveaux lecteurs. Le savoir continue de circuler." },
+            { icon: Heart, title: "Esprit de Sadaqa", text: "Donnez gratuitement ou vendez à prix juste. La plateforme est gratuite." },
+            { icon: ShieldCheck, title: "Communauté de confiance", text: "Échanges directs entre membres vérifiés, messagerie intégrée." },
+          ].map((v) => (
+            <div key={v.title} className="bg-card border rounded-3xl p-8 hover:shadow-lg transition-shadow">
+              <div className="w-12 h-12 rounded-2xl bg-primary/10 text-primary flex items-center justify-center mb-4">
+                <v.icon size={22} />
               </div>
-              <SheetFooter className="border-t pt-6 flex flex-col gap-3 mt-auto">
-                <Button onClick={() => { setSelectedConditions([]); setSortBy("recent"); }} variant="ghost" className="w-full font-bold">Réinitialiser</Button>
-                <SheetClose asChild>
-                  <Button className="w-full h-14 rounded-2xl font-bold bg-primary text-lg">Appliquer</Button>
-                </SheetClose>
-              </SheetFooter>
-            </SheetContent>
-          </Sheet>
+              <h3 className="font-headline font-bold text-xl mb-2">{v.title}</h3>
+              <p className="text-muted-foreground">{v.text}</p>
+            </div>
+          ))}
         </div>
+      </section>
 
-        <ScrollArea className="w-full whitespace-nowrap -mx-4 px-4 pb-1">
-          <div className="flex space-x-2">
-            {CATEGORIES.map(cat => (
-              <Badge key={cat} onClick={() => setSelectedCategory(cat)} variant={selectedCategory === cat ? "default" : "secondary"} className={cn("px-4 py-2 cursor-pointer text-xs font-bold border", selectedCategory === cat ? "bg-primary border-primary" : "bg-card border-border text-muted-foreground")}>
-                {cat}
-              </Badge>
-            ))}
+      {/* Featured catalog */}
+      <section className="max-w-7xl mx-auto px-4 md:px-8 pb-16 md:pb-24">
+        <div className="flex items-end justify-between mb-8">
+          <div>
+            <h2 className="font-headline text-3xl md:text-4xl font-black">Derniers livres ajoutés</h2>
+            <p className="text-muted-foreground mt-2">Les nouveautés de la communauté</p>
           </div>
-          <ScrollBar orientation="horizontal" className="hidden" />
-        </ScrollArea>
-      </header>
-
-      <div className="px-4 py-6">
-        <div className="bg-primary rounded-2xl p-6 text-primary-foreground relative overflow-hidden shadow-lg">
-          <div className="relative z-10 space-y-2 max-w-[85%]">
-            <h2 className="font-headline text-xl font-black leading-tight">Partagez le savoir</h2>
-            <p className="text-sm opacity-90">Donnez une seconde vie à vos livres de science islamique.</p>
-          </div>
+          <Button asChild variant="ghost" className="hidden sm:inline-flex gap-2">
+            <Link to="/catalog">Voir tout <ArrowRight size={16} /></Link>
+          </Button>
         </div>
-      </div>
-
-      <div className="px-4 grid grid-cols-2 gap-4 pb-8">
-        {loading ? (
-          Array.from({ length: 4 }).map((_, i) => (
-            <div key={i} className="aspect-[3/4] bg-muted rounded-2xl animate-pulse" />
-          ))
-        ) : filteredBooks.length === 0 ? (
-          <div className="col-span-2 text-center py-20 text-muted-foreground">
-            Aucun livre trouvé.
+        {featured.length === 0 ? (
+          <div className="text-center py-16 text-muted-foreground bg-muted/30 rounded-3xl">
+            Aucun livre publié pour l'instant. <Link to="/publish" className="text-primary font-bold underline">Publiez le premier !</Link>
           </div>
         ) : (
-          filteredBooks.map(book => <BookCard key={book.id} book={book} />)
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6">
+            {featured.map((b) => <BookCard key={b.id} book={b} />)}
+          </div>
         )}
-      </div>
+      </section>
+
+      {/* CTA */}
+      <section className="max-w-7xl mx-auto px-4 md:px-8 pb-16 md:pb-24">
+        <div className="bg-primary rounded-3xl p-8 md:p-16 text-primary-foreground text-center md:text-left md:flex md:items-center md:justify-between gap-8 shadow-xl">
+          <div className="space-y-3 max-w-xl">
+            <h2 className="font-headline text-3xl md:text-4xl font-black">Prêt à partager le savoir ?</h2>
+            <p className="opacity-90 text-lg">Rejoignez la communauté MYKUTUB en quelques secondes.</p>
+          </div>
+          <Button asChild size="lg" variant="secondary" className="mt-6 md:mt-0 h-14 rounded-2xl font-bold px-8 text-base">
+            <Link to="/signup">Créer mon compte</Link>
+          </Button>
+        </div>
+      </section>
     </div>
   );
 }
