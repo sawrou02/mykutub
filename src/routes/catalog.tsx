@@ -15,6 +15,7 @@ import {
 } from "@/components/ui/sheet";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from "@/components/ui/command";
+import { useTranslation } from "react-i18next";
 
 export const Route = createFileRoute("/catalog")({
   head: () => ({
@@ -27,6 +28,7 @@ export const Route = createFileRoute("/catalog")({
 });
 
 function Catalog() {
+  const { t } = useTranslation();
   const { user } = useAuth();
   const [books, setBooks] = useState<Book[]>([]);
   const [loading, setLoading] = useState(true);
@@ -95,8 +97,8 @@ function Catalog() {
   return (
     <div className="max-w-7xl mx-auto w-full px-4 md:px-8 py-6 md:py-10">
       <div className="mb-6 md:mb-10">
-        <h1 className="font-headline text-3xl md:text-5xl font-black">Catalogue</h1>
-        <p className="text-muted-foreground mt-2">Tous les livres disponibles dans la communauté.</p>
+        <h1 className="font-headline text-3xl md:text-5xl font-black">{t("catalog.title")}</h1>
+        <p className="text-muted-foreground mt-2">{t("catalog.subtitle")}</p>
       </div>
 
       <div className="sticky top-16 z-30 bg-background/95 backdrop-blur-md py-4 -mx-4 px-4 md:-mx-8 md:px-8 space-y-4 border-b mb-6">
@@ -104,7 +106,7 @@ function Catalog() {
           <div className="relative flex-1 min-w-[200px]">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" size={18} />
             <Input
-              placeholder="Livre, auteur..."
+              placeholder={t("catalog.placeholder")}
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               onFocus={() => setSearchFocused(true)}
@@ -120,10 +122,10 @@ function Catalog() {
               <div className="absolute left-0 right-0 top-full mt-2 bg-card border rounded-xl shadow-lg z-50 overflow-hidden">
                 <div className="flex items-center justify-between px-3 py-2 border-b bg-muted/30">
                   <div className="flex items-center gap-1.5 text-xs font-bold text-muted-foreground uppercase tracking-wider">
-                    <History size={12} /> Recherches récentes
+                    <History size={12} /> {t("common.recentSearches")}
                   </div>
                   <button onMouseDown={(e) => { e.preventDefault(); clearHistory(); }} className="text-xs text-destructive hover:underline flex items-center gap-1">
-                    <Trash2 size={12} /> Effacer
+                    <Trash2 size={12} /> {t("common.clearHistory")}
                   </button>
                 </div>
                 <ul className="max-h-64 overflow-y-auto">
@@ -147,18 +149,18 @@ function Catalog() {
             <PopoverTrigger asChild>
               <Button variant="outline" className={cn("rounded-xl h-12 gap-2 px-4", selectedCity && "bg-primary/5 border-primary text-primary")}>
                 <MapPin size={16} />
-                <span className="text-xs font-bold">{selectedCity || "Toute la France"}</span>
+                <span className="text-xs font-bold">{selectedCity || t("common.allFrance")}</span>
               </Button>
             </PopoverTrigger>
             <PopoverContent className="w-[240px] p-0" align="end">
               <Command>
-                <CommandInput placeholder="Rechercher une ville..." />
+                <CommandInput placeholder={t("catalog.cityPlaceholder")} />
                 <CommandList>
-                  <CommandEmpty>Aucune ville trouvée.</CommandEmpty>
+                  <CommandEmpty>{t("catalog.cityEmpty")}</CommandEmpty>
                   <CommandGroup>
                     <CommandItem onSelect={() => setSelectedCity(null)} className="cursor-pointer font-bold">
                       <Check className={cn("mr-2 h-4 w-4", !selectedCity ? "opacity-100" : "opacity-0")} />
-                      Toute la France
+                      {t("common.allFrance")}
                     </CommandItem>
                     {ALL_CITIES.map(city => (
                       <CommandItem key={city} onSelect={() => setSelectedCity(city)} className="cursor-pointer">
@@ -180,11 +182,11 @@ function Catalog() {
             </SheetTrigger>
             <SheetContent side="right" className="w-[300px] flex flex-col">
               <SheetHeader className="text-left border-b pb-4">
-                <SheetTitle className="text-2xl font-black text-primary">Filtres</SheetTitle>
+                <SheetTitle className="text-2xl font-black text-primary">{t("common.filters")}</SheetTitle>
               </SheetHeader>
               <div className="flex-1 overflow-y-auto py-6 space-y-8">
                 <div className="space-y-4">
-                  <h3 className="font-bold text-xs uppercase tracking-widest text-muted-foreground">État du livre</h3>
+                  <h3 className="font-bold text-xs uppercase tracking-widest text-muted-foreground">{t("catalog.condition")}</h3>
                   <div className="flex flex-wrap gap-2">
                     {CONDITIONS.map(c => (
                       <Badge key={c} variant={selectedConditions.includes(c) ? "default" : "outline"} onClick={() => toggleCondition(c)} className="cursor-pointer px-4 py-2 text-xs font-bold">
@@ -194,9 +196,9 @@ function Catalog() {
                   </div>
                 </div>
                 <div className="space-y-4">
-                  <h3 className="font-bold text-xs uppercase tracking-widest text-muted-foreground">Trier par</h3>
+                  <h3 className="font-bold text-xs uppercase tracking-widest text-muted-foreground">{t("catalog.sortBy")}</h3>
                   <div className="grid grid-cols-1 gap-2">
-                    {[{ id: "recent", label: "Plus récents" }, { id: "price-asc", label: "Prix croissant" }, { id: "price-desc", label: "Prix décroissant" }].map(o => (
+                    {[{ id: "recent", label: t("catalog.sortRecent") }, { id: "price-asc", label: t("catalog.sortPriceAsc") }, { id: "price-desc", label: t("catalog.sortPriceDesc") }].map(o => (
                       <Button key={o.id} variant={sortBy === o.id ? "default" : "outline"} onClick={() => setSortBy(o.id as typeof sortBy)} className="justify-start font-bold h-12 rounded-xl">
                         {o.label}
                       </Button>
@@ -205,9 +207,9 @@ function Catalog() {
                 </div>
               </div>
               <SheetFooter className="border-t pt-6 flex flex-col gap-3 mt-auto">
-                <Button onClick={() => { setSelectedConditions([]); setSortBy("recent"); }} variant="ghost" className="w-full font-bold">Réinitialiser</Button>
+                <Button onClick={() => { setSelectedConditions([]); setSortBy("recent"); }} variant="ghost" className="w-full font-bold">{t("common.reset")}</Button>
                 <SheetClose asChild>
-                  <Button className="w-full h-14 rounded-2xl font-bold bg-primary text-lg">Appliquer</Button>
+                  <Button className="w-full h-14 rounded-2xl font-bold bg-primary text-lg">{t("common.apply")}</Button>
                 </SheetClose>
               </SheetFooter>
             </SheetContent>
@@ -233,7 +235,7 @@ function Catalog() {
           ))
         ) : filteredBooks.length === 0 ? (
           <div className="col-span-full text-center py-20 text-muted-foreground">
-            Aucun livre trouvé.
+            {t("common.noResults")}
           </div>
         ) : (
           filteredBooks.map(book => <BookCard key={book.id} book={book} />)

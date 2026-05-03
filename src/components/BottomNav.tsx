@@ -1,17 +1,19 @@
 import { Link, useLocation } from "@tanstack/react-router";
 import { Home, PlusCircle, MessageCircle, User, BookOpen } from "lucide-react";
 import { cn } from "@/lib/utils";
-
-const navItems = [
-  { label: "Accueil", to: "/", icon: Home },
-  { label: "Catalogue", to: "/catalog", icon: BookOpen },
-  { label: "Publier", to: "/publish", icon: PlusCircle },
-  { label: "Messages", to: "/messages", icon: MessageCircle },
-  { label: "Compte", to: "/profile", icon: User },
-] as const;
+import { useTranslation } from "react-i18next";
 
 export function BottomNav() {
   const { pathname } = useLocation();
+  const { t } = useTranslation();
+  const navItems = [
+    { label: t("nav.home"), to: "/", icon: Home },
+    { label: t("nav.catalog"), to: "/catalog", icon: BookOpen },
+    { label: t("nav.publish"), to: "/publish", icon: PlusCircle },
+    { label: t("nav.messages"), to: "/messages", icon: MessageCircle },
+    { label: t("nav.account"), to: "/profile", icon: User },
+  ] as const;
+
   return (
     <nav className="md:hidden fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-xl h-16 bg-card border-t flex items-center justify-around z-50 px-2">
       {navItems.map((item) => {

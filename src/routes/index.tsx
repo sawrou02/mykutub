@@ -1,5 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
 import { ArrowRight, BookOpen, Heart, ShieldCheck, Sparkles } from "lucide-react";
 import { BookCard } from "@/components/BookCard";
@@ -20,6 +21,7 @@ export const Route = createFileRoute("/")({
 });
 
 function Landing() {
+  const { t } = useTranslation();
   const [featured, setFeatured] = useState<Book[]>([]);
 
   useEffect(() => {
@@ -35,20 +37,20 @@ function Landing() {
         <div className="max-w-7xl mx-auto px-4 md:px-8 py-12 md:py-24 grid md:grid-cols-2 gap-8 md:gap-12 items-center">
           <div className="space-y-6 md:space-y-8 z-10">
             <div className="inline-flex items-center gap-2 bg-primary/5 text-primary px-3 py-1.5 rounded-full text-xs font-bold uppercase tracking-wider">
-              <Sparkles size={14} /> Sadaqa Jariya
+              <Sparkles size={14} /> {t("home.badge")}
             </div>
             <h1 className="font-headline text-4xl md:text-6xl lg:text-7xl font-black leading-[1.05] tracking-tight">
-              Le savoir<br /><span className="text-primary">se partage.</span>
+              {t("home.h1a")}<br /><span className="text-primary">{t("home.h1b")}</span>
             </h1>
             <p className="text-lg md:text-xl text-muted-foreground max-w-lg">
-              Achetez, vendez et donnez vos livres de science islamique. Une plateforme dédiée, sécurisée, et au service de la communauté.
+              {t("home.intro")}
             </p>
             <div className="flex flex-wrap gap-3">
               <Button asChild size="lg" className="gap-2 h-14 rounded-2xl text-base font-bold px-8">
-                <Link to="/catalog">Explorer le catalogue <ArrowRight size={18} /></Link>
+                <Link to="/catalog">{t("common.explore")} <ArrowRight size={18} /></Link>
               </Button>
               <Button asChild size="lg" variant="outline" className="gap-2 h-14 rounded-2xl text-base font-bold px-8">
-                <Link to="/publish">Publier un livre</Link>
+                <Link to="/publish">{t("home.publishBtn")}</Link>
               </Button>
             </div>
           </div>
@@ -68,9 +70,9 @@ function Landing() {
       <section className="max-w-7xl mx-auto px-4 md:px-8 py-16 md:py-24">
         <div className="grid md:grid-cols-3 gap-6 md:gap-8">
           {[
-            { icon: BookOpen, title: "Une seconde vie", text: "Vos livres trouvent de nouveaux lecteurs. Le savoir continue de circuler." },
-            { icon: Heart, title: "Esprit de Sadaqa", text: "Donnez gratuitement ou vendez à prix juste. La plateforme est gratuite." },
-            { icon: ShieldCheck, title: "Communauté de confiance", text: "Échanges directs entre membres vérifiés, messagerie intégrée." },
+            { icon: BookOpen, title: t("home.valueA_title"), text: t("home.valueA_text") },
+            { icon: Heart, title: t("home.valueB_title"), text: t("home.valueB_text") },
+            { icon: ShieldCheck, title: t("home.valueC_title"), text: t("home.valueC_text") },
           ].map((v) => (
             <div key={v.title} className="bg-card border rounded-3xl p-8 hover:shadow-lg transition-shadow">
               <div className="w-12 h-12 rounded-2xl bg-primary/10 text-primary flex items-center justify-center mb-4">
@@ -87,16 +89,16 @@ function Landing() {
       <section className="max-w-7xl mx-auto px-4 md:px-8 pb-16 md:pb-24">
         <div className="flex items-end justify-between mb-8">
           <div>
-            <h2 className="font-headline text-3xl md:text-4xl font-black">Derniers livres ajoutés</h2>
-            <p className="text-muted-foreground mt-2">Les nouveautés de la communauté</p>
+            <h2 className="font-headline text-3xl md:text-4xl font-black">{t("home.latest")}</h2>
+            <p className="text-muted-foreground mt-2">{t("home.latestSub")}</p>
           </div>
           <Button asChild variant="ghost" className="hidden sm:inline-flex gap-2">
-            <Link to="/catalog">Voir tout <ArrowRight size={16} /></Link>
+            <Link to="/catalog">{t("common.seeAll")} <ArrowRight size={16} /></Link>
           </Button>
         </div>
         {featured.length === 0 ? (
           <div className="text-center py-16 text-muted-foreground bg-muted/30 rounded-3xl">
-            Aucun livre publié pour l'instant. <Link to="/publish" className="text-primary font-bold underline">Publiez le premier !</Link>
+            {t("home.empty")} <Link to="/publish" className="text-primary font-bold underline">{t("home.emptyCta")}</Link>
           </div>
         ) : (
           <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6">
@@ -109,11 +111,11 @@ function Landing() {
       <section className="max-w-7xl mx-auto px-4 md:px-8 pb-16 md:pb-24">
         <div className="bg-primary rounded-3xl p-8 md:p-16 text-primary-foreground text-center md:text-left md:flex md:items-center md:justify-between gap-8 shadow-xl">
           <div className="space-y-3 max-w-xl">
-            <h2 className="font-headline text-3xl md:text-4xl font-black">Prêt à partager le savoir ?</h2>
-            <p className="opacity-90 text-lg">Rejoignez la communauté MYKUTUB en quelques secondes.</p>
+            <h2 className="font-headline text-3xl md:text-4xl font-black">{t("home.ctaTitle")}</h2>
+            <p className="opacity-90 text-lg">{t("home.ctaText")}</p>
           </div>
           <Button asChild size="lg" variant="secondary" className="mt-6 md:mt-0 h-14 rounded-2xl font-bold px-8 text-base">
-            <Link to="/signup">Créer mon compte</Link>
+            <Link to="/signup">{t("home.ctaBtn")}</Link>
           </Button>
         </div>
       </section>
