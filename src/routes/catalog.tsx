@@ -16,10 +16,16 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from "@/components/ui/command";
 
 export const Route = createFileRoute("/catalog")({
-  component: Home,
+  head: () => ({
+    meta: [
+      { title: "Catalogue — MYKUTUB" },
+      { name: "description", content: "Parcourez tous les livres de science islamique disponibles à l'achat ou au don." },
+    ],
+  }),
+  component: Catalog,
 });
 
-function Home() {
+function Catalog() {
   const [books, setBooks] = useState<Book[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedCategory, setSelectedCategory] = useState("Tout");
