@@ -148,6 +148,14 @@ function PublishPage() {
           <Label htmlFor="donation" className="font-bold text-sm cursor-pointer">Je donne ce livre (Sadaqa)</Label>
         </div>
 
+        <div className="flex items-start gap-3 p-4 bg-primary/5 rounded-2xl">
+          <Checkbox id="delivery" checked={canDeliver} onCheckedChange={(v) => setCanDeliver(!!v)} className="mt-0.5" />
+          <div className="flex-1">
+            <Label htmlFor="delivery" className="font-bold text-sm cursor-pointer">Livraison possible</Label>
+            <p className="text-xs text-muted-foreground mt-0.5">Cochez si vous proposez la livraison à l'acheteur.</p>
+          </div>
+        </div>
+
         {!isDonation && (
           <div className="space-y-1.5">
             <Label htmlFor="price" className="text-xs font-bold uppercase tracking-widest">Prix (€) *</Label>
