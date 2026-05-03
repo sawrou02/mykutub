@@ -10,6 +10,16 @@ import { LanguageSwitcher } from "./LanguageSwitcher";
 export function SiteHeader() {
   const { pathname } = useLocation();
   const { user } = useAuth();
+  const { t } = useTranslation();
+
+  const links = [
+    { to: "/", label: t("nav.home") },
+    { to: "/catalog", label: t("nav.catalog") },
+    { to: "/how-it-works", label: t("nav.howItWorks") },
+    { to: "/about", label: t("nav.about") },
+    { to: "/faq", label: t("nav.faq") },
+    { to: "/contact", label: t("nav.contact") },
+  ] as const;
 
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-card/90 backdrop-blur-md">
@@ -38,8 +48,9 @@ export function SiteHeader() {
         </nav>
 
         <div className="hidden md:flex items-center gap-2">
+          <LanguageSwitcher />
           <Button asChild variant="ghost" size="sm" className="gap-2">
-            <Link to="/publish"><PlusCircle size={16} /> Publier</Link>
+            <Link to="/publish"><PlusCircle size={16} /> {t("nav.publish")}</Link>
           </Button>
           {user ? (
             <>
@@ -47,24 +58,26 @@ export function SiteHeader() {
                 <Link to="/messages"><MessageCircle size={18} /></Link>
               </Button>
               <Button asChild variant="outline" size="sm" className="gap-2">
-                <Link to="/profile"><User size={16} /> Mon compte</Link>
+                <Link to="/profile"><User size={16} /> {t("nav.account")}</Link>
               </Button>
             </>
           ) : (
             <>
               <Button asChild variant="ghost" size="sm">
-                <Link to="/login">Connexion</Link>
+                <Link to="/login">{t("nav.login")}</Link>
               </Button>
               <Button asChild size="sm">
-                <Link to="/signup">S'inscrire</Link>
+                <Link to="/signup">{t("nav.signup")}</Link>
               </Button>
             </>
           )}
         </div>
 
-        <Sheet>
+        <div className="flex items-center gap-1 lg:hidden">
+          <LanguageSwitcher />
+          <Sheet>
           <SheetTrigger asChild>
-            <Button variant="ghost" size="icon" className="lg:hidden">
+            <Button variant="ghost" size="icon">
               <Menu size={22} />
             </Button>
           </SheetTrigger>
