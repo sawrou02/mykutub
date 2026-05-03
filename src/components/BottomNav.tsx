@@ -2,6 +2,7 @@ import { Link, useLocation } from "@tanstack/react-router";
 import { Home, PlusCircle, MessageCircle, User, BookOpen } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useTranslation } from "react-i18next";
+import { useUnreadChats } from "@/hooks/useUnreadChats";
 
 export function BottomNav() {
   const { pathname } = useLocation();
