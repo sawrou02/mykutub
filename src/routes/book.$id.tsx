@@ -1,12 +1,13 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
-import { ChevronLeft, MapPin, Share2, ShieldCheck, BookOpen, MessageCircle } from "lucide-react";
+import { ChevronLeft, MapPin, Share2, ShieldCheck, BookOpen, MessageCircle, Truck, Package } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import type { Book } from "@/lib/mykutub";
+import { SellerReviews } from "@/components/SellerReviews";
 
 export const Route = createFileRoute("/book/$id")({
   component: BookDetailPage,
