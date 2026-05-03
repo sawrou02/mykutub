@@ -103,11 +103,43 @@ function Catalog() {
         <div className="flex flex-wrap gap-2 items-center">
           <div className="relative flex-1 min-w-[200px]">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" size={18} />
-            <Input placeholder="Livre, auteur..." value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} className="pl-10 h-12 bg-muted/50 border-none rounded-xl" />
+            <Input
+              placeholder="Livre, auteur..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              onFocus={() => setSearchFocused(true)}
+              onBlur={() => setTimeout(() => setSearchFocused(false), 150)}
+              className="pl-10 h-12 bg-muted/50 border-none rounded-xl"
+            />
             {searchQuery && (
               <button onClick={() => setSearchQuery("")} className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground">
                 <X size={16} />
               </button>
+            )}
+            {searchFocused && !searchQuery && history.length > 0 && (
+              <div className="absolute left-0 right-0 top-full mt-2 bg-card border rounded-xl shadow-lg z-50 overflow-hidden">
+                <div className="flex items-center justify-between px-3 py-2 border-b bg-muted/30">
+                  <div className="flex items-center gap-1.5 text-xs font-bold text-muted-foreground uppercase tracking-wider">
+                    <History size={12} /> Recherches récentes
+                  </div>
+                  <button onMouseDown={(e) => { e.preventDefault(); clearHistory(); }} className="text-xs text-destructive hover:underline flex items-center gap-1">
+                    <Trash2 size={12} /> Effacer
+                  </button>
+                </div>
+                <ul className="max-h-64 overflow-y-auto">
+                  {history.map(h => (
+                    <li key={h.id}>
+                      <button
+                        onMouseDown={(e) => { e.preventDefault(); setSearchQuery(h.query); setSearchFocused(false); }}
+                        className="w-full text-left px-3 py-2 text-sm hover:bg-muted flex items-center gap-2"
+                      >
+                        <Search size={14} className="text-muted-foreground" />
+                        {h.query}
+                      </button>
+                    </li>
+                  ))}
+                </ul>
+              </div>
             )}
           </div>
 
