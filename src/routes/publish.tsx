@@ -21,6 +21,7 @@ function PublishPage() {
   const { user } = useAuth();
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [isDonation, setIsDonation] = useState(false);
+  const [canDeliver, setCanDeliver] = useState(false);
   const [loading, setLoading] = useState(false);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
 
@@ -57,6 +58,7 @@ function PublishPage() {
       description: fd.get("description") as string,
       price: isDonation ? 0 : Number(fd.get("price")),
       is_donation: isDonation,
+      can_deliver: canDeliver,
       seller_id: user.id,
       seller_name: user.user_metadata?.display_name || user.email?.split("@")[0] || "Utilisateur",
       image_url: imagePreview,
