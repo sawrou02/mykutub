@@ -95,14 +95,14 @@ export function SiteHeader() {
               <div className="border-t my-4" />
               {user ? (
                 <>
-                  <Link to="/publish" className="px-4 py-3 rounded-lg font-medium hover:bg-muted">Publier un livre</Link>
-                  <Link to="/messages" className="px-4 py-3 rounded-lg font-medium hover:bg-muted">Messages</Link>
-                  <Link to="/profile" className="px-4 py-3 rounded-lg font-medium hover:bg-muted">Mon compte</Link>
+                  <Link to="/publish" className="px-4 py-3 rounded-lg font-medium hover:bg-muted">{t("nav.publishBook")}</Link>
+                  <Link to="/messages" className="px-4 py-3 rounded-lg font-medium hover:bg-muted">{t("nav.messages")}</Link>
+                  <Link to="/profile" className="px-4 py-3 rounded-lg font-medium hover:bg-muted">{t("nav.account")}</Link>
                 </>
               ) : (
                 <>
-                  <Link to="/login" className="px-4 py-3 rounded-lg font-medium hover:bg-muted">Connexion</Link>
-                  <Link to="/signup" className="px-4 py-3 rounded-lg bg-primary text-primary-foreground font-medium text-center">S'inscrire</Link>
+                  <Link to="/login" className="px-4 py-3 rounded-lg font-medium hover:bg-muted">{t("nav.login")}</Link>
+                  <Link to="/signup" className="px-4 py-3 rounded-lg bg-primary text-primary-foreground font-medium text-center">{t("nav.signup")}</Link>
                 </>
               )}
             </div>
