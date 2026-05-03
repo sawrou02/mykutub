@@ -26,11 +26,18 @@ export function BottomNav() {
             key={item.to}
             to={item.to}
             className={cn(
-              "flex flex-col items-center justify-center space-y-1 w-full h-full transition-colors",
+              "flex flex-col items-center justify-center space-y-1 w-full h-full transition-colors relative",
               isActive ? "text-primary" : "text-muted-foreground hover:text-primary/70"
             )}
           >
-            <Icon size={22} strokeWidth={isActive ? 2.5 : 2} />
+            <div className="relative">
+              <Icon size={22} strokeWidth={isActive ? 2.5 : 2} />
+              {item.to === "/messages" && unreadCount > 0 && (
+                <span className="absolute -top-1.5 -right-2 min-w-[16px] h-[16px] px-1 rounded-full bg-red-500 text-white text-[9px] font-bold flex items-center justify-center">
+                  {unreadCount > 9 ? "9+" : unreadCount}
+                </span>
+              )}
+            </div>
             <span className="text-[10px] font-medium">{item.label}</span>
           </Link>
         );
