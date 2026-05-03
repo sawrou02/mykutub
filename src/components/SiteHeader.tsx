@@ -5,6 +5,7 @@ import { Menu, BookOpen, MessageCircle, User, PlusCircle } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useAuth } from "@/hooks/useAuth";
 import { useIsAdmin } from "@/hooks/useIsAdmin";
+import { useUnreadChats } from "@/hooks/useUnreadChats";
 import { useTranslation } from "react-i18next";
 import { LanguageSwitcher } from "./LanguageSwitcher";
 import { ShieldCheck } from "lucide-react";
