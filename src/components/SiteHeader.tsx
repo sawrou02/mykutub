@@ -64,8 +64,15 @@ export function SiteHeader() {
                   <Link to="/admin"><ShieldCheck size={18} className="text-primary" /></Link>
                 </Button>
               )}
-              <Button asChild variant="ghost" size="icon">
-                <Link to="/messages"><MessageCircle size={18} /></Link>
+              <Button asChild variant="ghost" size="icon" className="relative">
+                <Link to="/messages">
+                  <MessageCircle size={18} />
+                  {unreadCount > 0 && (
+                    <span className="absolute -top-1 -right-1 min-w-[18px] h-[18px] px-1 rounded-full bg-red-500 text-white text-[10px] font-bold flex items-center justify-center">
+                      {unreadCount > 9 ? "9+" : unreadCount}
+                    </span>
+                  )}
+                </Link>
               </Button>
               <Button asChild variant="outline" size="sm" className="gap-2">
                 <Link to="/profile"><User size={16} /> {t("nav.account")}</Link>
