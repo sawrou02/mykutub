@@ -10,10 +10,12 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as SignupRouteImport } from './routes/signup'
+import { Route as ResetPasswordRouteImport } from './routes/reset-password'
 import { Route as PublishRouteImport } from './routes/publish'
 import { Route as ProfileRouteImport } from './routes/profile'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as HowItWorksRouteImport } from './routes/how-it-works'
+import { Route as ForgotPasswordRouteImport } from './routes/forgot-password'
 import { Route as FaqRouteImport } from './routes/faq'
 import { Route as ContactRouteImport } from './routes/contact'
 import { Route as CatalogRouteImport } from './routes/catalog'
@@ -27,6 +29,11 @@ import { Route as BookIdRouteImport } from './routes/book.$id'
 const SignupRoute = SignupRouteImport.update({
   id: '/signup',
   path: '/signup',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ResetPasswordRoute = ResetPasswordRouteImport.update({
+  id: '/reset-password',
+  path: '/reset-password',
   getParentRoute: () => rootRouteImport,
 } as any)
 const PublishRoute = PublishRouteImport.update({
@@ -47,6 +54,11 @@ const LoginRoute = LoginRouteImport.update({
 const HowItWorksRoute = HowItWorksRouteImport.update({
   id: '/how-it-works',
   path: '/how-it-works',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ForgotPasswordRoute = ForgotPasswordRouteImport.update({
+  id: '/forgot-password',
+  path: '/forgot-password',
   getParentRoute: () => rootRouteImport,
 } as any)
 const FaqRoute = FaqRouteImport.update({
@@ -102,10 +114,12 @@ export interface FileRoutesByFullPath {
   '/catalog': typeof CatalogRoute
   '/contact': typeof ContactRoute
   '/faq': typeof FaqRoute
+  '/forgot-password': typeof ForgotPasswordRoute
   '/how-it-works': typeof HowItWorksRoute
   '/login': typeof LoginRoute
   '/profile': typeof ProfileRoute
   '/publish': typeof PublishRoute
+  '/reset-password': typeof ResetPasswordRoute
   '/signup': typeof SignupRoute
   '/book/$id': typeof BookIdRoute
   '/messages/$id': typeof MessagesIdRoute
@@ -118,10 +132,12 @@ export interface FileRoutesByTo {
   '/catalog': typeof CatalogRoute
   '/contact': typeof ContactRoute
   '/faq': typeof FaqRoute
+  '/forgot-password': typeof ForgotPasswordRoute
   '/how-it-works': typeof HowItWorksRoute
   '/login': typeof LoginRoute
   '/profile': typeof ProfileRoute
   '/publish': typeof PublishRoute
+  '/reset-password': typeof ResetPasswordRoute
   '/signup': typeof SignupRoute
   '/book/$id': typeof BookIdRoute
   '/messages/$id': typeof MessagesIdRoute
@@ -135,10 +151,12 @@ export interface FileRoutesById {
   '/catalog': typeof CatalogRoute
   '/contact': typeof ContactRoute
   '/faq': typeof FaqRoute
+  '/forgot-password': typeof ForgotPasswordRoute
   '/how-it-works': typeof HowItWorksRoute
   '/login': typeof LoginRoute
   '/profile': typeof ProfileRoute
   '/publish': typeof PublishRoute
+  '/reset-password': typeof ResetPasswordRoute
   '/signup': typeof SignupRoute
   '/book/$id': typeof BookIdRoute
   '/messages/$id': typeof MessagesIdRoute
@@ -153,10 +171,12 @@ export interface FileRouteTypes {
     | '/catalog'
     | '/contact'
     | '/faq'
+    | '/forgot-password'
     | '/how-it-works'
     | '/login'
     | '/profile'
     | '/publish'
+    | '/reset-password'
     | '/signup'
     | '/book/$id'
     | '/messages/$id'
@@ -169,10 +189,12 @@ export interface FileRouteTypes {
     | '/catalog'
     | '/contact'
     | '/faq'
+    | '/forgot-password'
     | '/how-it-works'
     | '/login'
     | '/profile'
     | '/publish'
+    | '/reset-password'
     | '/signup'
     | '/book/$id'
     | '/messages/$id'
@@ -185,10 +207,12 @@ export interface FileRouteTypes {
     | '/catalog'
     | '/contact'
     | '/faq'
+    | '/forgot-password'
     | '/how-it-works'
     | '/login'
     | '/profile'
     | '/publish'
+    | '/reset-password'
     | '/signup'
     | '/book/$id'
     | '/messages/$id'
@@ -202,10 +226,12 @@ export interface RootRouteChildren {
   CatalogRoute: typeof CatalogRoute
   ContactRoute: typeof ContactRoute
   FaqRoute: typeof FaqRoute
+  ForgotPasswordRoute: typeof ForgotPasswordRoute
   HowItWorksRoute: typeof HowItWorksRoute
   LoginRoute: typeof LoginRoute
   ProfileRoute: typeof ProfileRoute
   PublishRoute: typeof PublishRoute
+  ResetPasswordRoute: typeof ResetPasswordRoute
   SignupRoute: typeof SignupRoute
   BookIdRoute: typeof BookIdRoute
   MessagesIdRoute: typeof MessagesIdRoute
@@ -219,6 +245,13 @@ declare module '@tanstack/react-router' {
       path: '/signup'
       fullPath: '/signup'
       preLoaderRoute: typeof SignupRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/reset-password': {
+      id: '/reset-password'
+      path: '/reset-password'
+      fullPath: '/reset-password'
+      preLoaderRoute: typeof ResetPasswordRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/publish': {
@@ -247,6 +280,13 @@ declare module '@tanstack/react-router' {
       path: '/how-it-works'
       fullPath: '/how-it-works'
       preLoaderRoute: typeof HowItWorksRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/forgot-password': {
+      id: '/forgot-password'
+      path: '/forgot-password'
+      fullPath: '/forgot-password'
+      preLoaderRoute: typeof ForgotPasswordRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/faq': {
@@ -322,10 +362,12 @@ const rootRouteChildren: RootRouteChildren = {
   CatalogRoute: CatalogRoute,
   ContactRoute: ContactRoute,
   FaqRoute: FaqRoute,
+  ForgotPasswordRoute: ForgotPasswordRoute,
   HowItWorksRoute: HowItWorksRoute,
   LoginRoute: LoginRoute,
   ProfileRoute: ProfileRoute,
   PublishRoute: PublishRoute,
+  ResetPasswordRoute: ResetPasswordRoute,
   SignupRoute: SignupRoute,
   BookIdRoute: BookIdRoute,
   MessagesIdRoute: MessagesIdRoute,
