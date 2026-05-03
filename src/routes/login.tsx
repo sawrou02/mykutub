@@ -9,7 +9,10 @@ import { toast } from "sonner";
 import { Separator } from "@/components/ui/separator";
 
 export const Route = createFileRoute("/login")({
-  validateSearch: (s: Record<string, unknown>) => ({ verified: s.verified === "1" || s.verified === 1 ? "1" : undefined }),
+  validateSearch: (s: Record<string, unknown>): { verified?: "1" } => {
+    const v = s.verified === "1" || s.verified === 1;
+    return v ? { verified: "1" } : {};
+  },
   component: LoginPage,
 });
 
