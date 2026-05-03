@@ -14,6 +14,7 @@ export function SiteHeader() {
   const { pathname } = useLocation();
   const { user } = useAuth();
   const { isAdmin } = useIsAdmin();
+  const unreadCount = useUnreadChats();
   const { t } = useTranslation();
 
   const links = [
