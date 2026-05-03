@@ -74,23 +74,32 @@ function ChatDetailPage() {
 
   if (!chat) return <div className="p-10 text-center">Chargement...</div>;
 
+  const otherName = messages.find(m => m.sender_id !== user?.id)?.sender_name || "Utilisateur";
+  const initials = otherName.split(" ").map(s => s[0]).join("").slice(0, 2).toUpperCase();
+
   return (
     <div className="flex flex-col h-screen bg-muted/20">
+      {/* Top bar */}
       <header className="sticky top-0 z-50 bg-card border-b px-4 py-3 flex items-center justify-between">
         <div className="flex items-center gap-3">
-          <button onClick={() => navigate({ to: "/messages" })} className="p-1"><ChevronLeft size={24} className="text-primary" /></button>
-          <div className="flex items-center gap-2">
-            <div className="w-9 h-9 rounded-full bg-primary/10 flex items-center justify-center text-primary font-bold">?</div>
-            <div>
-              <p className="font-bold text-sm leading-none">{chat.book_title || "Conversation"}</p>
-              <p className="text-[10px] text-muted-foreground mt-1">En ligne</p>
-            </div>
+          <button onClick={() => navigate({ to: "/messages" })} className="p-1">
+            <ChevronLeft size={24} className="text-primary" />
+          </button>
+          <div className="w-11 h-11 rounded-full bg-muted flex items-center justify-center text-muted-foreground font-bold border">
+            {initials || <UserIcon size={20} />}
+          </div>
+          <div>
+            <p className="font-bold text-base leading-tight">{otherName}</p>
+            <p className="text-xs text-emerald-600 flex items-center gap-1.5 mt-0.5">
+              <span className="w-2 h-2 rounded-full bg-emerald-500" />
+              En ligne
+            </p>
           </div>
         </div>
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <button className="p-2 hover:bg-muted rounded-full transition-colors">
-              <MoreVertical size={20} className="text-muted-foreground" />
+            <button className="p-2 hover:bg-muted rounded-full transition-colors border">
+              <MoreVertical size={18} className="text-muted-foreground" />
             </button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end" className="w-56 rounded-xl">
@@ -108,13 +117,51 @@ function ChatDetailPage() {
         </DropdownMenu>
       </header>
 
+      {/* Book strip */}
+      {chat.book_id && (
+        <div className="bg-card border-b px-4 py-3 flex items-center justify-between gap-3">
+          <div className="flex items-center gap-3 min-w-0">
+            <div className="w-12 h-12 rounded-lg overflow-hidden bg-muted flex-shrink-0">
+              {chat.book_image_url && (
+                <img src={chat.book_image_url} alt={chat.book_title ?? ""} className="w-full h-full object-cover" />
+              )}
+            </div>
+            <div className="min-w-0">
+              <p className="font-black text-primary text-sm uppercase tracking-tight truncate">
+                {chat.book_title}
+              </p>
+              <p className="text-xs text-muted-foreground">Discussion en cours</p>
+            </div>
+          </div>
+          <Link
+            to="/book/$id"
+            params={{ id: chat.book_id }}
+            className="flex items-center gap-2 px-4 py-2 rounded-full border border-primary/30 text-primary text-sm font-semibold hover:bg-primary/5 transition-colors flex-shrink-0"
+          >
+            <BookOpen size={16} />
+            Voir
+          </Link>
+        </div>
+      )}
+
+      {/* Messages */}
       <div ref={scrollRef} className="flex-1 overflow-y-auto p-4 space-y-3">
         {messages.map(m => {
           const mine = m.sender_id === user?.id;
+          const time = new Date(m.created_at).toLocaleTimeString("fr-FR", { hour: "2-digit", minute: "2-digit" });
           return (
             <div key={m.id} className={`flex ${mine ? "justify-end" : "justify-start"}`}>
-              <div className={`max-w-[75%] px-4 py-2 rounded-2xl text-sm ${mine ? "bg-primary text-primary-foreground rounded-br-sm" : "bg-card rounded-bl-sm"}`}>
-                {m.text}
+              <div
+                className={`max-w-[75%] px-4 py-2.5 rounded-2xl text-sm shadow-sm ${
+                  mine
+                    ? "bg-primary text-primary-foreground rounded-br-md"
+                    : "bg-card border rounded-bl-md"
+                }`}
+              >
+                <p className="whitespace-pre-wrap break-words">{m.text}</p>
+                <p className={`text-[10px] mt-1 text-right ${mine ? "text-primary-foreground/70" : "text-muted-foreground"}`}>
+                  {time}
+                </p>
               </div>
             </div>
           );
