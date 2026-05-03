@@ -1,5 +1,5 @@
 import { Link } from "@tanstack/react-router";
-import { MapPin, Heart } from "lucide-react";
+import { MapPin, Heart, Truck } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";
 import { useState } from "react";
@@ -28,10 +28,15 @@ export function BookCard({ book }: { book: Book }) {
               Sadaqa
             </Badge>
           )}
-          <div className="absolute bottom-2 left-2">
+          <div className="absolute bottom-2 left-2 flex items-center gap-1">
             <span className="text-[9px] font-black text-white bg-black/40 backdrop-blur-sm px-2 py-0.5 rounded uppercase tracking-tighter">
               {book.condition}
             </span>
+            {book.can_deliver && (
+              <span className="text-[9px] font-black text-white bg-green-600/80 backdrop-blur-sm px-2 py-0.5 rounded uppercase tracking-tighter flex items-center gap-1">
+                <Truck size={9} /> Livraison
+              </span>
+            )}
           </div>
         </div>
         <div className="p-4 space-y-2 flex-1 flex flex-col justify-between">
