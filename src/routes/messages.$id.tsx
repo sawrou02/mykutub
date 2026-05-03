@@ -74,6 +74,7 @@ function ChatDetailPage() {
 
   if (!chat) return <div className="p-10 text-center">Chargement...</div>;
 
+  const otherId = chat.participants.find(p => p !== user?.id);
   const otherName = messages.find(m => m.sender_id !== user?.id)?.sender_name || "Utilisateur";
   const initials = otherName.split(" ").map(s => s[0]).join("").slice(0, 2).toUpperCase();
 
@@ -103,7 +104,11 @@ function ChatDetailPage() {
             </button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end" className="w-56 rounded-xl">
-            <DropdownMenuItem onClick={() => navigate({ to: "/profile" })} className="py-3 cursor-pointer">
+            <DropdownMenuItem
+              onClick={() => otherId && navigate({ to: "/user/$id", params: { id: otherId }, search: { chatId } })}
+              disabled={!otherId}
+              className="py-3 cursor-pointer"
+            >
               <User size={16} className="mr-2" /> Voir le profil
             </DropdownMenuItem>
             <DropdownMenuSeparator />
