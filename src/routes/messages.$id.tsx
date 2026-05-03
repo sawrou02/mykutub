@@ -1,6 +1,6 @@
-import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import { createFileRoute, useNavigate, Link } from "@tanstack/react-router";
 import { useEffect, useRef, useState } from "react";
-import { ChevronLeft, Send, MoreVertical, User, Flag, Trash2 } from "lucide-react";
+import { ChevronLeft, Send, MoreVertical, User, Flag, Trash2, BookOpen, User as UserIcon } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
