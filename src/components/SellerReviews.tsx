@@ -43,37 +43,37 @@ export function SellerReviews({ sellerId, chatId }: { sellerId: string; chatId?:
   };
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-3">
       <div className="flex items-center justify-between">
-        <h3 className="font-headline font-bold text-lg">{t("common.reviews")}</h3>
+        <h3 className="font-bold text-base">{t("common.reviews")}</h3>
         {reviews.length > 0 && (
-          <div className="flex items-center gap-2">
-            <StarRating value={Math.round(avg)} readOnly size={14} />
-            <span className="text-sm font-bold">{avg.toFixed(1)} ({reviews.length})</span>
+          <div className="flex items-center gap-1.5">
+            <StarRating value={Math.round(avg)} readOnly size={12} />
+            <span className="text-xs font-semibold">{avg.toFixed(1)} ({reviews.length})</span>
           </div>
         )}
       </div>
 
       {canReview && !alreadyReviewed && (
-        <div className="border rounded-2xl p-4 space-y-3 bg-muted/30">
-          <p className="text-sm font-bold">{t("common.leaveReview")}</p>
-          <StarRating value={rating} onChange={setRating} />
-          <Textarea placeholder={t("common.comment")} value={comment} onChange={e => setComment(e.target.value)} maxLength={500} rows={3} />
-          <Button onClick={submit} disabled={submitting || rating === 0} size="sm">{t("common.submit")}</Button>
+        <div className="border rounded-lg p-3 space-y-2 bg-muted/30">
+          <p className="text-xs font-semibold">{t("common.leaveReview")}</p>
+          <StarRating value={rating} onChange={setRating} size={16} />
+          <Textarea placeholder={t("common.comment")} value={comment} onChange={e => setComment(e.target.value)} maxLength={500} rows={2} className="text-xs" />
+          <Button onClick={submit} disabled={submitting || rating === 0} size="sm" className="h-8 text-xs">{t("common.submit")}</Button>
         </div>
       )}
 
       {reviews.length === 0 ? (
-        <p className="text-sm text-muted-foreground">{t("common.noReviews")}</p>
+        <p className="text-xs text-muted-foreground">{t("common.noReviews")}</p>
       ) : (
-        <div className="space-y-3">
+        <div className="space-y-2.5">
           {reviews.map(r => (
-            <div key={r.id} className="border-b pb-3 last:border-0">
-              <div className="flex items-center justify-between mb-1">
-                <span className="font-bold text-sm">{r.reviewer_name}</span>
-                <StarRating value={r.rating} readOnly size={12} />
+            <div key={r.id} className="border-b pb-2.5 last:border-0">
+              <div className="flex items-center justify-between mb-0.5">
+                <span className="font-semibold text-xs">{r.reviewer_name}</span>
+                <StarRating value={r.rating} readOnly size={10} />
               </div>
-              {r.comment && <p className="text-sm text-muted-foreground">{r.comment}</p>}
+              {r.comment && <p className="text-xs text-muted-foreground">{r.comment}</p>}
             </div>
           ))}
         </div>
