@@ -1,13 +1,54 @@
 import { Link } from "@tanstack/react-router";
-import { Heart, Truck } from "lucide-react";
-import { useState } from "react";
+import { Heart, Star, Truck } from "lucide-react";
+import { useEffect, useState } from "react";
 import { cn } from "@/lib/utils";
+import { supabase } from "@/integrations/supabase/client";
 import type { Book } from "@/lib/mykutub";
+
+const COLORS = ["bg-red-500", "bg-orange-500", "bg-amber-500", "bg-emerald-500", "bg-sky-500", "bg-indigo-500", "bg-fuchsia-500", "bg-rose-500"];
+function colorFor(id: string) {
+  let h = 0;
+  for (let i = 0; i < id.length; i++) h = (h * 31 + id.charCodeAt(i)) >>> 0;
+  return COLORS[h % COLORS.length];
+}
 
 export function BookCard({ book }: { book: Book }) {
   const [isLiked, setIsLiked] = useState(false);
+  const [rating, setRating] = useState<{ avg: number; count: number } | null>(null);
+
+  useEffect(() => {
+    let cancelled = false;
+    supabase
+      .from("reviews")
+      .select("rating")
+      .eq("seller_id", book.seller_id)
+      .then(({ data }) => {
+        if (cancelled || !data || data.length === 0) return;
+        const avg = data.reduce((s, r) => s + (r.rating ?? 0), 0) / data.length;
+        setRating({ avg, count: data.length });
+      });
+    return () => { cancelled = true; };
+  }, [book.seller_id]);
+
+  const initial = (book.seller_name || "?").trim().charAt(0).toUpperCase();
+
   return (
     <Link to="/book/$id" params={{ id: book.id }} className="block group">
+      {/* Seller header */}
+      <div className="flex items-center gap-1.5 mb-1.5 min-w-0">
+        <div className={cn("w-5 h-5 rounded-full flex items-center justify-center text-white text-[10px] font-bold flex-shrink-0", colorFor(book.seller_id))}>
+          {initial}
+        </div>
+        <span className="text-[11px] font-medium text-foreground truncate">{book.seller_name}</span>
+        {rating && (
+          <span className="flex items-center gap-0.5 text-[10px] text-muted-foreground flex-shrink-0">
+            <Star size={10} className="fill-amber-500 text-amber-500" />
+            <span className="font-semibold text-foreground">{rating.avg.toFixed(1)}</span>
+            <span>({rating.count})</span>
+          </span>
+        )}
+      </div>
+
       <div className="relative aspect-square overflow-hidden bg-muted rounded-lg">
         <img
           src={book.image_url}
