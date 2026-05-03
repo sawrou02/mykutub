@@ -108,6 +108,7 @@ export function SiteHeader() {
             </div>
           </SheetContent>
         </Sheet>
+        </div>
       </div>
     </header>
   );
