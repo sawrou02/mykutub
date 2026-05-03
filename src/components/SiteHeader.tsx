@@ -4,15 +4,8 @@ import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { Menu, BookOpen, MessageCircle, User, PlusCircle } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useAuth } from "@/hooks/useAuth";
-
-const links = [
-  { to: "/", label: "Accueil" },
-  { to: "/catalog", label: "Catalogue" },
-  { to: "/how-it-works", label: "Comment ça marche" },
-  { to: "/about", label: "À propos" },
-  { to: "/faq", label: "FAQ" },
-  { to: "/contact", label: "Contact" },
-] as const;
+import { useTranslation } from "react-i18next";
+import { LanguageSwitcher } from "./LanguageSwitcher";
 
 export function SiteHeader() {
   const { pathname } = useLocation();
