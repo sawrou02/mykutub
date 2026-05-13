@@ -1,7 +1,10 @@
 import { createFileRoute, useNavigate, Link } from "@tanstack/react-router";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Settings, LogOut, Package, Heart, UserCircle, Trash2 } from "lucide-react";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Switch } from "@/components/ui/switch";
+import { Settings, LogOut, Package, Heart, UserCircle, Trash2, Camera, Loader2, Mail, Phone, MapPin, Save } from "lucide-react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { BookCard } from "@/components/BookCard";
 import { useAuth } from "@/hooks/useAuth";
@@ -13,15 +16,40 @@ export const Route = createFileRoute("/profile")({
   component: ProfilePage,
 });
 
+type Profile = {
+  id: string;
+  display_name: string | null;
+  avatar_url: string | null;
+  phone: string | null;
+  phone_visible: boolean;
+  city: string | null;
+};
+
 function ProfilePage() {
   const navigate = useNavigate();
   const { user, loading: authLoading, signOut } = useAuth();
   const [myBooks, setMyBooks] = useState<Book[]>([]);
+  const [favorites, setFavorites] = useState<Book[]>([]);
+  const [profile, setProfile] = useState<Profile | null>(null);
+  const [saving, setSaving] = useState(false);
+  const [uploading, setUploading] = useState(false);
+  const fileRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     if (!user) return;
     supabase.from("books").select("*").eq("seller_id", user.id).order("created_at", { ascending: false })
       .then(({ data }) => setMyBooks((data as Book[]) ?? []));
+
+    supabase.from("profiles").select("*").eq("id", user.id).maybeSingle()
+      .then(({ data }) => setProfile((data as Profile) ?? { id: user.id, display_name: null, avatar_url: null, phone: null, phone_visible: false, city: null }));
+
+    supabase.from("favorites").select("book_id").eq("user_id", user.id)
+      .then(async ({ data }) => {
+        const ids = (data ?? []).map((r: any) => r.book_id);
+        if (!ids.length) { setFavorites([]); return; }
+        const { data: bks } = await supabase.from("books").select("*").in("id", ids);
+        setFavorites((bks as Book[]) ?? []);
+      });
   }, [user]);
 
   const handleLogout = async () => {
@@ -39,6 +67,37 @@ function ProfilePage() {
     }
   };
 
+  const handleAvatarUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file || !user) return;
+    if (file.size > 2 * 1024 * 1024) { toast.error("Image > 2 Mo"); return; }
+    setUploading(true);
+    const ext = file.name.split(".").pop();
+    const path = `${user.id}/avatar-${Date.now()}.${ext}`;
+    const { error } = await supabase.storage.from("avatars").upload(path, file, { upsert: true });
+    if (error) { toast.error(error.message); setUploading(false); return; }
+    const { data: pub } = supabase.storage.from("avatars").getPublicUrl(path);
+    const url = pub.publicUrl;
+    await supabase.from("profiles").update({ avatar_url: url }).eq("id", user.id);
+    setProfile(p => p ? { ...p, avatar_url: url } : p);
+    toast.success("Photo mise à jour");
+    setUploading(false);
+  };
+
+  const handleSaveProfile = async () => {
+    if (!user || !profile) return;
+    setSaving(true);
+    const { error } = await supabase.from("profiles").update({
+      display_name: profile.display_name,
+      phone: profile.phone,
+      phone_visible: profile.phone_visible,
+      city: profile.city,
+    }).eq("id", user.id);
+    setSaving(false);
+    if (error) toast.error(error.message);
+    else toast.success("Profil enregistré");
+  };
+
   if (authLoading) return <div className="p-10 text-center">Chargement...</div>;
 
   if (!user) {
@@ -46,45 +105,96 @@ function ProfilePage() {
       <div className="flex flex-col items-center justify-center min-h-screen p-6 text-center space-y-6">
         <UserCircle size={80} className="text-muted-foreground" />
         <h1 className="text-2xl font-bold">Connectez-vous pour voir votre profil</h1>
-        <Button onClick={() => navigate({ to: "/login" })} className="w-full h-14 text-lg font-bold rounded-xl">
+        <Button onClick={() => navigate({ to: "/login" })} className="w-full max-w-sm h-14 text-lg font-bold rounded-xl">
           Se connecter
         </Button>
       </div>
     );
   }
 
-  const displayName = user.user_metadata?.display_name || user.email?.split("@")[0] || "Utilisateur";
+  const displayName = profile?.display_name || user.user_metadata?.display_name || user.email?.split("@")[0] || "Utilisateur";
 
   return (
     <div className="bg-background min-h-screen pb-24">
       <header className="bg-card border-b px-6 py-8">
-        <div className="flex items-start justify-between mb-6">
+        <div className="max-w-4xl mx-auto flex items-start justify-between">
           <div className="flex items-center gap-4">
-            <div className="w-20 h-20 rounded-full bg-primary/10 flex items-center justify-center border-2 border-card shadow-md">
-              <UserCircle className="text-primary" size={48} />
+            <div className="relative">
+              <div className="w-20 h-20 rounded-full bg-primary/10 flex items-center justify-center border-2 border-card shadow-md overflow-hidden">
+                {profile?.avatar_url ? (
+                  <img src={profile.avatar_url} alt="avatar" className="w-full h-full object-cover" />
+                ) : (
+                  <UserCircle className="text-primary" size={48} />
+                )}
+              </div>
+              <button onClick={() => fileRef.current?.click()} disabled={uploading}
+                className="absolute -bottom-1 -right-1 p-1.5 rounded-full bg-primary text-primary-foreground shadow-md hover:scale-105 transition">
+                {uploading ? <Loader2 className="animate-spin" size={14} /> : <Camera size={14} />}
+              </button>
+              <input ref={fileRef} type="file" accept="image/*" className="hidden" onChange={handleAvatarUpload} />
             </div>
             <div>
               <h1 className="font-headline font-bold text-2xl tracking-tight">{displayName}</h1>
-              <p className="text-sm text-muted-foreground mb-2">Membre MYKUTUB</p>
+              <p className="text-sm text-muted-foreground">{user.email}</p>
             </div>
           </div>
-          <Button variant="ghost" size="icon" className="rounded-full"><Settings size={20} /></Button>
+          <Button asChild variant="ghost" size="icon" className="rounded-full">
+            <Link to="/settings"><Settings size={20} /></Link>
+          </Button>
         </div>
       </header>
 
-      <div className="p-4">
-        <Tabs defaultValue="ads">
+      <div className="max-w-4xl mx-auto p-4">
+        <Tabs defaultValue="info">
           <TabsList className="w-full bg-transparent border-b rounded-none h-12 mb-6">
+            <TabsTrigger value="info" className="flex-1 rounded-none border-b-2 border-transparent data-[state=active]:border-primary font-bold">
+              Mes infos
+            </TabsTrigger>
             <TabsTrigger value="ads" className="flex-1 rounded-none border-b-2 border-transparent data-[state=active]:border-primary font-bold">
-              Mes Annonces
+              Annonces
             </TabsTrigger>
             <TabsTrigger value="likes" className="flex-1 rounded-none border-b-2 border-transparent data-[state=active]:border-primary font-bold">
               Favoris
             </TabsTrigger>
           </TabsList>
 
+          <TabsContent value="info">
+            <div className="bg-card rounded-2xl border p-6 space-y-5">
+              <h2 className="font-headline font-bold text-lg">Informations personnelles</h2>
+
+              <div className="space-y-1.5">
+                <Label className="text-xs font-bold uppercase tracking-widest">Nom / Pseudo</Label>
+                <Input value={profile?.display_name ?? ""} onChange={(e) => setProfile(p => p ? { ...p, display_name: e.target.value } : p)} className="h-11" />
+              </div>
+
+              <div className="space-y-1.5">
+                <Label className="text-xs font-bold uppercase tracking-widest flex items-center gap-1.5"><Mail size={12} /> Email</Label>
+                <Input value={user.email ?? ""} disabled className="h-11 bg-muted" />
+              </div>
+
+              <div className="space-y-1.5">
+                <Label className="text-xs font-bold uppercase tracking-widest flex items-center gap-1.5"><Phone size={12} /> Téléphone</Label>
+                <Input value={profile?.phone ?? ""} placeholder="06 12 34 56 78" onChange={(e) => setProfile(p => p ? { ...p, phone: e.target.value } : p)} className="h-11" />
+                <div className="flex items-center justify-between p-3 rounded-lg bg-muted/50 mt-2">
+                  <Label className="text-sm">Téléphone visible par les autres utilisateurs</Label>
+                  <Switch checked={profile?.phone_visible ?? false} onCheckedChange={(v) => setProfile(p => p ? { ...p, phone_visible: v } : p)} />
+                </div>
+              </div>
+
+              <div className="space-y-1.5">
+                <Label className="text-xs font-bold uppercase tracking-widest flex items-center gap-1.5"><MapPin size={12} /> Localisation / Ville</Label>
+                <Input value={profile?.city ?? ""} placeholder="Paris" onChange={(e) => setProfile(p => p ? { ...p, city: e.target.value } : p)} className="h-11" />
+              </div>
+
+              <Button onClick={handleSaveProfile} disabled={saving} className="w-full h-12 rounded-xl font-bold gap-2">
+                {saving ? <Loader2 className="animate-spin" size={16} /> : <Save size={16} />}
+                Enregistrer
+              </Button>
+            </div>
+          </TabsContent>
+
           <TabsContent value="ads">
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
               {myBooks.map(book => (
                 <div key={book.id} className="relative group">
                   <BookCard book={book} />
@@ -96,22 +206,36 @@ function ProfilePage() {
               ))}
               <Link to="/publish" className="aspect-[3/4] border-2 border-dashed border-primary/20 rounded-2xl flex flex-col items-center justify-center text-primary/60 hover:bg-primary/5 transition-colors gap-2">
                 <Package size={32} />
-                <span className="font-bold text-xs uppercase tracking-wider">Nouvelle annonce</span>
+                <span className="font-bold text-xs uppercase tracking-wider text-center px-2">Nouvelle annonce</span>
               </Link>
             </div>
           </TabsContent>
 
           <TabsContent value="likes">
-            <div className="flex flex-col items-center justify-center py-20 text-center">
-              <Heart size={40} className="text-muted-foreground mb-4" />
-              <p className="font-bold text-lg">Aucun favori</p>
-            </div>
+            {favorites.length === 0 ? (
+              <div className="flex flex-col items-center justify-center py-20 text-center">
+                <Heart size={40} className="text-muted-foreground mb-4" />
+                <p className="font-bold text-lg">Aucun favori</p>
+                <p className="text-sm text-muted-foreground mt-1">Cliquez sur le cœur d'une annonce pour la sauvegarder.</p>
+              </div>
+            ) : (
+              <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+                {favorites.map(b => (
+                  <BookCard key={b.id} book={b} onUnfavorite={(id) => setFavorites(prev => prev.filter(x => x.id !== id))} />
+                ))}
+              </div>
+            )}
           </TabsContent>
         </Tabs>
 
         <div className="mt-8 space-y-3">
-          <h2 className="font-headline font-bold text-lg px-2">Paramètres</h2>
-          <div className="bg-card rounded-2xl overflow-hidden shadow-sm border">
+          <div className="bg-card rounded-2xl overflow-hidden shadow-sm border divide-y">
+            <Link to="/settings" className="w-full flex items-center justify-between p-4 hover:bg-muted/50 transition-colors">
+              <div className="flex items-center gap-3">
+                <div className="p-2 bg-muted rounded-lg"><Settings size={18} /></div>
+                <span className="font-bold text-sm">Paramètres du compte</span>
+              </div>
+            </Link>
             <button onClick={handleLogout} className="w-full flex items-center justify-between p-4 hover:bg-destructive/10 text-destructive transition-colors">
               <div className="flex items-center gap-3">
                 <div className="p-2 bg-destructive/10 rounded-lg"><LogOut size={18} /></div>
