@@ -10,6 +10,7 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as SignupRouteImport } from './routes/signup'
+import { Route as SettingsRouteImport } from './routes/settings'
 import { Route as ResetPasswordRouteImport } from './routes/reset-password'
 import { Route as PublishRouteImport } from './routes/publish'
 import { Route as ProfileRouteImport } from './routes/profile'
@@ -30,6 +31,11 @@ import { Route as BookIdRouteImport } from './routes/book.$id'
 const SignupRoute = SignupRouteImport.update({
   id: '/signup',
   path: '/signup',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SettingsRoute = SettingsRouteImport.update({
+  id: '/settings',
+  path: '/settings',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ResetPasswordRoute = ResetPasswordRouteImport.update({
@@ -126,6 +132,7 @@ export interface FileRoutesByFullPath {
   '/profile': typeof ProfileRoute
   '/publish': typeof PublishRoute
   '/reset-password': typeof ResetPasswordRoute
+  '/settings': typeof SettingsRoute
   '/signup': typeof SignupRoute
   '/book/$id': typeof BookIdRoute
   '/messages/$id': typeof MessagesIdRoute
@@ -145,6 +152,7 @@ export interface FileRoutesByTo {
   '/profile': typeof ProfileRoute
   '/publish': typeof PublishRoute
   '/reset-password': typeof ResetPasswordRoute
+  '/settings': typeof SettingsRoute
   '/signup': typeof SignupRoute
   '/book/$id': typeof BookIdRoute
   '/messages/$id': typeof MessagesIdRoute
@@ -165,6 +173,7 @@ export interface FileRoutesById {
   '/profile': typeof ProfileRoute
   '/publish': typeof PublishRoute
   '/reset-password': typeof ResetPasswordRoute
+  '/settings': typeof SettingsRoute
   '/signup': typeof SignupRoute
   '/book/$id': typeof BookIdRoute
   '/messages/$id': typeof MessagesIdRoute
@@ -186,6 +195,7 @@ export interface FileRouteTypes {
     | '/profile'
     | '/publish'
     | '/reset-password'
+    | '/settings'
     | '/signup'
     | '/book/$id'
     | '/messages/$id'
@@ -205,6 +215,7 @@ export interface FileRouteTypes {
     | '/profile'
     | '/publish'
     | '/reset-password'
+    | '/settings'
     | '/signup'
     | '/book/$id'
     | '/messages/$id'
@@ -224,6 +235,7 @@ export interface FileRouteTypes {
     | '/profile'
     | '/publish'
     | '/reset-password'
+    | '/settings'
     | '/signup'
     | '/book/$id'
     | '/messages/$id'
@@ -244,6 +256,7 @@ export interface RootRouteChildren {
   ProfileRoute: typeof ProfileRoute
   PublishRoute: typeof PublishRoute
   ResetPasswordRoute: typeof ResetPasswordRoute
+  SettingsRoute: typeof SettingsRoute
   SignupRoute: typeof SignupRoute
   BookIdRoute: typeof BookIdRoute
   MessagesIdRoute: typeof MessagesIdRoute
@@ -258,6 +271,13 @@ declare module '@tanstack/react-router' {
       path: '/signup'
       fullPath: '/signup'
       preLoaderRoute: typeof SignupRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/settings': {
+      id: '/settings'
+      path: '/settings'
+      fullPath: '/settings'
+      preLoaderRoute: typeof SettingsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/reset-password': {
@@ -388,6 +408,7 @@ const rootRouteChildren: RootRouteChildren = {
   ProfileRoute: ProfileRoute,
   PublishRoute: PublishRoute,
   ResetPasswordRoute: ResetPasswordRoute,
+  SettingsRoute: SettingsRoute,
   SignupRoute: SignupRoute,
   BookIdRoute: BookIdRoute,
   MessagesIdRoute: MessagesIdRoute,
