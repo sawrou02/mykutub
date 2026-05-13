@@ -12,7 +12,7 @@ const fr = {
   common: {
     loading: "Chargement...", search: "Rechercher", cancel: "Annuler",
     save: "Enregistrer", delete: "Supprimer", share: "Partager",
-    free: "GRATUIT", reviews: "Avis", rating: "Note", noReviews: "Aucun avis",
+    free: "DON", reviews: "Avis", rating: "Note", noReviews: "Aucun avis",
     leaveReview: "Laisser un avis", yourRating: "Votre note", comment: "Commentaire",
     submit: "Envoyer", linkCopied: "Lien copié !",
     delivery: "Livraison possible", noDelivery: "Retrait uniquement",
@@ -107,7 +107,7 @@ const en = {
   common: {
     loading: "Loading...", search: "Search", cancel: "Cancel",
     save: "Save", delete: "Delete", share: "Share",
-    free: "FREE", reviews: "Reviews", rating: "Rating", noReviews: "No reviews yet",
+    free: "DONATION", reviews: "Reviews", rating: "Rating", noReviews: "No reviews yet",
     leaveReview: "Leave a review", yourRating: "Your rating", comment: "Comment",
     submit: "Submit", linkCopied: "Link copied!",
     delivery: "Delivery available", noDelivery: "Pickup only",
@@ -202,7 +202,7 @@ const ar = {
   common: {
     loading: "جار التحميل...", search: "بحث", cancel: "إلغاء",
     save: "حفظ", delete: "حذف", share: "مشاركة",
-    free: "مجاني", reviews: "التقييمات", rating: "التقييم", noReviews: "لا توجد تقييمات",
+    free: "صدقة", reviews: "التقييمات", rating: "التقييم", noReviews: "لا توجد تقييمات",
     leaveReview: "اترك تقييمًا", yourRating: "تقييمك", comment: "تعليق",
     submit: "إرسال", linkCopied: "تم نسخ الرابط!",
     delivery: "التوصيل متاح", noDelivery: "الاستلام فقط",
@@ -286,16 +286,88 @@ const ar = {
   },
 };
 
+const es = {
+  nav: {
+    home: "Inicio", catalog: "Catálogo", howItWorks: "Cómo funciona",
+    about: "Acerca de", faq: "FAQ", contact: "Contacto",
+    publish: "Publicar", login: "Iniciar sesión", signup: "Registrarse",
+    account: "Mi cuenta", messages: "Mensajes", profile: "Perfil",
+    publishBook: "Publicar un libro", createAccount: "Crear cuenta", platform: "Plataforma", company: "Empresa", accountSection: "Cuenta",
+  },
+  common: {
+    loading: "Cargando...", search: "Buscar", cancel: "Cancelar",
+    save: "Guardar", delete: "Eliminar", share: "Compartir",
+    free: "DONACIÓN", reviews: "Opiniones", rating: "Calificación", noReviews: "Sin opiniones",
+    leaveReview: "Dejar una opinión", yourRating: "Tu calificación", comment: "Comentario",
+    submit: "Enviar", linkCopied: "¡Enlace copiado!",
+    delivery: "Entrega disponible", noDelivery: "Solo recogida",
+    history: "Historial", clearHistory: "Borrar", recentSearches: "Búsquedas recientes",
+    seeAll: "Ver todo", apply: "Aplicar", reset: "Reiniciar", filters: "Filtros",
+    allFrance: "Toda Francia", noResults: "No se encontraron libros.", explore: "Explorar el catálogo",
+    sending: "Enviando…", send: "Enviar mensaje",
+  },
+  home: {
+    badge: "Sadaqa Yariya",
+    h1a: "El saber", h1b: "se comparte.",
+    intro: "Compra, vende y dona tus libros de ciencia islámica. Una plataforma dedicada y segura al servicio de la comunidad.",
+    publishBtn: "Publicar un libro",
+    valueA_title: "Una segunda vida", valueA_text: "Tus libros encuentran nuevos lectores. El saber sigue circulando.",
+    valueB_title: "Espíritu de Sadaqa", valueB_text: "Dona gratis o vende a un precio justo. La plataforma es gratuita.",
+    valueC_title: "Comunidad de confianza", valueC_text: "Intercambios directos entre miembros verificados, mensajería integrada.",
+    latest: "Últimos libros añadidos", latestSub: "Las novedades de la comunidad",
+    empty: "Aún no hay libros publicados.", emptyCta: "¡Publica el primero!",
+    ctaTitle: "¿Listo para compartir el saber?", ctaText: "Únete a la comunidad MYKUTUB en segundos.",
+    ctaBtn: "Crear mi cuenta",
+  },
+};
+
+const it = {
+  nav: {
+    home: "Home", catalog: "Catalogo", howItWorks: "Come funziona",
+    about: "Chi siamo", faq: "FAQ", contact: "Contatto",
+    publish: "Pubblica", login: "Accedi", signup: "Registrati",
+    account: "Il mio account", messages: "Messaggi", profile: "Profilo",
+    publishBook: "Pubblica un libro", createAccount: "Crea account", platform: "Piattaforma", company: "Azienda", accountSection: "Account",
+  },
+  common: {
+    loading: "Caricamento...", search: "Cerca", cancel: "Annulla",
+    save: "Salva", delete: "Elimina", share: "Condividi",
+    free: "DONO", reviews: "Recensioni", rating: "Valutazione", noReviews: "Nessuna recensione",
+    leaveReview: "Lascia una recensione", yourRating: "La tua valutazione", comment: "Commento",
+    submit: "Invia", linkCopied: "Link copiato!",
+    delivery: "Consegna disponibile", noDelivery: "Solo ritiro",
+    history: "Cronologia", clearHistory: "Cancella", recentSearches: "Ricerche recenti",
+    seeAll: "Vedi tutto", apply: "Applica", reset: "Reimposta", filters: "Filtri",
+    allFrance: "Tutta la Francia", noResults: "Nessun libro trovato.", explore: "Esplora il catalogo",
+    sending: "Invio…", send: "Invia messaggio",
+  },
+  home: {
+    badge: "Sadaqa Jariya",
+    h1a: "Il sapere", h1b: "si condivide.",
+    intro: "Compra, vendi e dona i tuoi libri di scienza islamica. Una piattaforma dedicata e sicura al servizio della comunità.",
+    publishBtn: "Pubblica un libro",
+    valueA_title: "Una seconda vita", valueA_text: "I tuoi libri trovano nuovi lettori. Il sapere continua a circolare.",
+    valueB_title: "Spirito di Sadaqa", valueB_text: "Dona gratuitamente o vendi a un prezzo equo. La piattaforma è gratuita.",
+    valueC_title: "Comunità di fiducia", valueC_text: "Scambi diretti tra membri verificati, messaggistica integrata.",
+    latest: "Ultimi libri aggiunti", latestSub: "Le novità della comunità",
+    empty: "Nessun libro pubblicato finora.", emptyCta: "Pubblica il primo!",
+    ctaTitle: "Pronto a condividere il sapere?", ctaText: "Unisciti alla comunità MYKUTUB in pochi secondi.",
+    ctaBtn: "Crea il mio account",
+  },
+};
+
 if (!i18n.isInitialized) {
   i18n.use(initReactI18next).init({
     resources: {
       fr: { translation: fr },
       en: { translation: en },
       ar: { translation: ar },
+      es: { translation: es },
+      it: { translation: it },
     },
     lng: "fr",
     fallbackLng: "fr",
-    supportedLngs: ["fr", "en", "ar"],
+    supportedLngs: ["fr", "en", "ar", "es", "it"],
     interpolation: { escapeValue: false },
     react: { useSuspense: false },
   });

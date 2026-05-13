@@ -151,7 +151,7 @@ function BookDetailPage() {
             <div className="bg-card lg:rounded-xl border px-4 lg:px-6 py-4 space-y-2">
               <h1 className="font-bold text-xl lg:text-2xl leading-tight">{book.title}</h1>
               <p className="font-bold text-2xl lg:text-3xl text-emerald-700">
-                {book.is_donation ? "Gratuit" : `${book.price} €`}
+                {book.is_donation ? "Don" : `${book.price} €`}
               </p>
               <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-muted-foreground">
                 <span className="flex items-center gap-1"><Clock size={12} /> {createdLabel}</span>

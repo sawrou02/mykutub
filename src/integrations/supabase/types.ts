@@ -106,6 +106,27 @@ export type Database = {
           },
         ]
       }
+      favorites: {
+        Row: {
+          book_id: string
+          created_at: string
+          id: string
+          user_id: string
+        }
+        Insert: {
+          book_id: string
+          created_at?: string
+          id?: string
+          user_id: string
+        }
+        Update: {
+          book_id?: string
+          created_at?: string
+          id?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       messages: {
         Row: {
           chat_id: string
@@ -143,26 +164,47 @@ export type Database = {
       }
       profiles: {
         Row: {
+          avatar_url: string | null
           birthdate: string | null
+          city: string | null
           created_at: string
           display_name: string | null
           id: string
+          notify_email: boolean
+          notify_push: boolean
+          notify_sms: boolean
+          phone: string | null
+          phone_visible: boolean
           title: string | null
           updated_at: string
         }
         Insert: {
+          avatar_url?: string | null
           birthdate?: string | null
+          city?: string | null
           created_at?: string
           display_name?: string | null
           id: string
+          notify_email?: boolean
+          notify_push?: boolean
+          notify_sms?: boolean
+          phone?: string | null
+          phone_visible?: boolean
           title?: string | null
           updated_at?: string
         }
         Update: {
+          avatar_url?: string | null
           birthdate?: string | null
+          city?: string | null
           created_at?: string
           display_name?: string | null
           id?: string
+          notify_email?: boolean
+          notify_push?: boolean
+          notify_sms?: boolean
+          phone?: string | null
+          phone_visible?: boolean
           title?: string | null
           updated_at?: string
         }

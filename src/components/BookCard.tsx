@@ -3,6 +3,8 @@ import { Heart, Star, Truck } from "lucide-react";
 import { useEffect, useState } from "react";
 import { cn } from "@/lib/utils";
 import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/hooks/useAuth";
+import { toast } from "sonner";
 import type { Book } from "@/lib/mykutub";
 
 const COLORS = ["bg-red-500", "bg-orange-500", "bg-amber-500", "bg-emerald-500", "bg-sky-500", "bg-indigo-500", "bg-fuchsia-500", "bg-rose-500"];
@@ -12,8 +14,10 @@ function colorFor(id: string) {
   return COLORS[h % COLORS.length];
 }
 
-export function BookCard({ book }: { book: Book }) {
+export function BookCard({ book, onUnfavorite }: { book: Book; onUnfavorite?: (id: string) => void }) {
+  const { user } = useAuth();
   const [isLiked, setIsLiked] = useState(false);
+  const [busy, setBusy] = useState(false);
   const [rating, setRating] = useState<{ avg: number; count: number } | null>(null);
 
   useEffect(() => {
@@ -30,11 +34,41 @@ export function BookCard({ book }: { book: Book }) {
     return () => { cancelled = true; };
   }, [book.seller_id]);
 
+  useEffect(() => {
+    if (!user) { setIsLiked(false); return; }
+    let cancelled = false;
+    supabase
+      .from("favorites")
+      .select("id")
+      .eq("user_id", user.id)
+      .eq("book_id", book.id)
+      .maybeSingle()
+      .then(({ data }) => { if (!cancelled) setIsLiked(!!data); });
+    return () => { cancelled = true; };
+  }, [user, book.id]);
+
+  const toggleFav = async (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (!user) { toast.error("Connectez-vous pour ajouter aux favoris."); return; }
+    if (busy) return;
+    setBusy(true);
+    if (isLiked) {
+      const { error } = await supabase.from("favorites").delete().eq("user_id", user.id).eq("book_id", book.id);
+      if (!error) { setIsLiked(false); onUnfavorite?.(book.id); }
+      else toast.error("Erreur");
+    } else {
+      const { error } = await supabase.from("favorites").insert({ user_id: user.id, book_id: book.id });
+      if (!error) setIsLiked(true);
+      else toast.error("Erreur");
+    }
+    setBusy(false);
+  };
+
   const initial = (book.seller_name || "?").trim().charAt(0).toUpperCase();
 
   return (
     <Link to="/book/$id" params={{ id: book.id }} className="block group">
-      {/* Seller header */}
       <div className="flex items-center gap-1.5 mb-1.5 min-w-0">
         <div className={cn("w-5 h-5 rounded-full flex items-center justify-center text-white text-[10px] font-bold flex-shrink-0", colorFor(book.seller_id))}>
           {initial}
@@ -57,8 +91,9 @@ export function BookCard({ book }: { book: Book }) {
           loading="lazy"
         />
         <button
-          onClick={(e) => { e.preventDefault(); setIsLiked(!isLiked); }}
-          className="absolute top-1.5 right-1.5 p-1.5 rounded-full bg-white/90 text-foreground hover:text-destructive shadow-sm"
+          onClick={toggleFav}
+          disabled={busy}
+          className="absolute top-1.5 right-1.5 p-1.5 rounded-full bg-white/90 text-foreground hover:text-destructive shadow-sm disabled:opacity-50"
           aria-label="Favori"
         >
           <Heart size={12} fill={isLiked ? "currentColor" : "transparent"} className={cn(isLiked && "text-destructive")} />
@@ -74,7 +109,7 @@ export function BookCard({ book }: { book: Book }) {
           {book.title}
         </h3>
         <p className="font-bold text-sm text-foreground">
-          {book.is_donation ? "Gratuit" : `${book.price} €`}
+          {book.is_donation ? "Don" : `${book.price} €`}
         </p>
         {book.can_deliver && (
           <p className="flex items-center gap-1 text-[10px] text-muted-foreground">
