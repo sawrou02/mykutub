@@ -12,7 +12,7 @@ const fr = {
   common: {
     loading: "Chargement...", search: "Rechercher", cancel: "Annuler",
     save: "Enregistrer", delete: "Supprimer", share: "Partager",
-    free: "GRATUIT", reviews: "Avis", rating: "Note", noReviews: "Aucun avis",
+    free: "DON", reviews: "Avis", rating: "Note", noReviews: "Aucun avis",
     leaveReview: "Laisser un avis", yourRating: "Votre note", comment: "Commentaire",
     submit: "Envoyer", linkCopied: "Lien copié !",
     delivery: "Livraison possible", noDelivery: "Retrait uniquement",
@@ -107,7 +107,7 @@ const en = {
   common: {
     loading: "Loading...", search: "Search", cancel: "Cancel",
     save: "Save", delete: "Delete", share: "Share",
-    free: "FREE", reviews: "Reviews", rating: "Rating", noReviews: "No reviews yet",
+    free: "DONATION", reviews: "Reviews", rating: "Rating", noReviews: "No reviews yet",
     leaveReview: "Leave a review", yourRating: "Your rating", comment: "Comment",
     submit: "Submit", linkCopied: "Link copied!",
     delivery: "Delivery available", noDelivery: "Pickup only",
@@ -202,7 +202,7 @@ const ar = {
   common: {
     loading: "جار التحميل...", search: "بحث", cancel: "إلغاء",
     save: "حفظ", delete: "حذف", share: "مشاركة",
-    free: "مجاني", reviews: "التقييمات", rating: "التقييم", noReviews: "لا توجد تقييمات",
+    free: "صدقة", reviews: "التقييمات", rating: "التقييم", noReviews: "لا توجد تقييمات",
     leaveReview: "اترك تقييمًا", yourRating: "تقييمك", comment: "تعليق",
     submit: "إرسال", linkCopied: "تم نسخ الرابط!",
     delivery: "التوصيل متاح", noDelivery: "الاستلام فقط",
