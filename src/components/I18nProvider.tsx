@@ -8,7 +8,7 @@ export function I18nProvider({ children }: { children: React.ReactNode }) {
 
   useEffect(() => {
     const saved = typeof localStorage !== "undefined" ? localStorage.getItem(STORAGE_KEY) : null;
-    const lng = saved && ["fr", "en", "ar"].includes(saved) ? saved : "fr";
+    const lng = saved && ["fr", "en", "ar", "es", "it"].includes(saved) ? saved : "fr";
     if (i18n.language !== lng) {
       i18n.changeLanguage(lng).finally(() => {
         applyDirection(lng);
