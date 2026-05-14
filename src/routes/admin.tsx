@@ -20,6 +20,8 @@ function AdminPage() {
   const [profiles, setProfiles] = useState<any[]>([]);
   const [contactMsgs, setContactMsgs] = useState<any[]>([]);
   const [openMsgId, setOpenMsgId] = useState<string | null>(null);
+  const [reports, setReports] = useState<any[]>([]);
+  const [reportBooks, setReportBooks] = useState<Record<string, any>>({});
 
   useEffect(() => {
     if (!isAdmin) return;
@@ -29,11 +31,20 @@ function AdminPage() {
       supabase.from("messages").select("id", { count: "exact", head: true }),
       supabase.from("reviews").select("*").order("created_at", { ascending: false }),
       supabase.from("contact_messages").select("*").order("created_at", { ascending: false }),
-    ]).then(([p, b, m, r, c]) => {
+      supabase.from("reports").select("*").order("created_at", { ascending: false }),
+    ]).then(async ([p, b, m, r, c, rep]) => {
       setProfiles(p.data ?? []);
       setBooks(b.data ?? []);
       setReviews(r.data ?? []);
       setContactMsgs(c.data ?? []);
+      setReports(rep.data ?? []);
+      const ids = Array.from(new Set((rep.data ?? []).map((x: any) => x.book_id)));
+      if (ids.length) {
+        const { data: bs } = await supabase.from("books").select("id, title, image_url").in("id", ids);
+        const map: Record<string, any> = {};
+        (bs ?? []).forEach((bk: any) => { map[bk.id] = bk; });
+        setReportBooks(map);
+      }
       setStats({
         users: p.count ?? 0,
         books: b.data?.length ?? 0,
