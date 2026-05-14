@@ -1,11 +1,14 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useState } from "react";
+import { useServerFn } from "@tanstack/react-start";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Mail, Clock, Globe, Instagram, Send, ArrowRight, CheckCircle2 } from "lucide-react";
 import { z } from "zod";
+import { submitContactMessage } from "@/lib/contact.functions";
+import { toast } from "sonner";
 
 export const Route = createFileRoute("/contact")({
   head: () => ({
@@ -43,7 +46,9 @@ function Contact() {
   const [submitting, setSubmitting] = useState(false);
   const [errors, setErrors] = useState<Errors>({});
 
-  const onSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  const submit = useServerFn(submitContactMessage);
+
+  const onSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const fd = new FormData(e.currentTarget);
     const data = {
@@ -64,10 +69,14 @@ function Contact() {
     }
     setErrors({});
     setSubmitting(true);
-    setTimeout(() => {
-      setSubmitting(false);
+    try {
+      await submit({ data: parsed.data });
       setSubmitted(true);
-    }, 700);
+    } catch (err: any) {
+      toast.error(err?.message ?? "Erreur lors de l'envoi");
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   return (
