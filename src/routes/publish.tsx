@@ -311,13 +311,13 @@ function PublishPage() {
           <div className="sticky top-20 pt-4">
             <div className="bg-card border rounded-3xl p-5">
               <div className="flex items-center gap-2 mb-4 text-xs font-bold uppercase tracking-widest text-muted-foreground">
-                <Eye size={14} /> Aperçu en direct
+                <Eye size={14} /> {t("publish.livePreview")}
               </div>
               <div className="max-w-[240px] mx-auto">
                 <PreviewCard {...previewProps} />
               </div>
               <p className="text-[11px] text-muted-foreground text-center mt-4">
-                Voici comment votre annonce apparaîtra dans le catalogue.
+                {t("publish.previewHint")}
               </p>
             </div>
           </div>
