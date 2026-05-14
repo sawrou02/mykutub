@@ -215,7 +215,7 @@ function AdminPage() {
                     )}
                   </button>
                   <a href={`mailto:${m.email}?subject=Re: ${encodeURIComponent(m.subject)}`}
-                    className="p-2 text-primary hover:bg-primary/10 rounded-lg" title="Répondre par email">
+                    className="p-2 text-primary hover:bg-primary/10 rounded-lg" title={t("admin.replyEmail")}>
                     <Mail size={16} />
                   </a>
                   <Button size="icon" variant="ghost" onClick={() => deleteContactMsg(m.id)} className="text-destructive">
