@@ -191,7 +191,7 @@ function PublishPage() {
       <div className="max-w-6xl mx-auto lg:grid lg:grid-cols-[1fr_320px] lg:gap-8 lg:px-6">
         <form onSubmit={handleSubmit} className="p-4 space-y-6">
           <div>
-            <Label className="text-xs font-bold uppercase tracking-widest mb-2 block">Photo *</Label>
+            <Label className="text-xs font-bold uppercase tracking-widest mb-2 block">{t("publish.photo")} *</Label>
             <input ref={fileInputRef} type="file" accept="image/*" onChange={handleFileChange} className="hidden" />
             {imagePreview ? (
               <div className="relative aspect-[3/4] w-full max-w-xs mx-auto rounded-2xl overflow-hidden bg-muted">
@@ -205,7 +205,7 @@ function PublishPage() {
               <button type="button" onClick={() => fileInputRef.current?.click()}
                 className="aspect-[3/4] w-full max-w-xs mx-auto border-2 border-dashed border-primary/30 rounded-2xl flex flex-col items-center justify-center gap-3 text-primary/60 hover:bg-primary/5">
                 <Camera size={40} />
-                <span className="font-bold text-xs uppercase tracking-wider">Ajouter une photo</span>
+                <span className="font-bold text-xs uppercase tracking-wider">{t("publish.addPhoto")}</span>
               </button>
             )}
           </div>
