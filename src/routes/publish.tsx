@@ -222,18 +222,18 @@ function PublishPage() {
 
           <div className="grid grid-cols-2 gap-3">
             <div className="space-y-1.5">
-              <Label className="text-xs font-bold uppercase tracking-widest">Catégorie *</Label>
+              <Label className="text-xs font-bold uppercase tracking-widest">{t("publish.category")} *</Label>
               <Select value={category} onValueChange={setCategory} required>
-                <SelectTrigger className="h-11"><SelectValue placeholder="Choisir" /></SelectTrigger>
+                <SelectTrigger className="h-11"><SelectValue placeholder={t("publish.choose")} /></SelectTrigger>
                 <SelectContent>
                   {categoriesNoTout.map(c => <SelectItem key={c} value={c}>{c}</SelectItem>)}
                 </SelectContent>
               </Select>
             </div>
             <div className="space-y-1.5">
-              <Label className="text-xs font-bold uppercase tracking-widest">État *</Label>
+              <Label className="text-xs font-bold uppercase tracking-widest">{t("publish.condition")} *</Label>
               <Select value={condition} onValueChange={setCondition} required>
-                <SelectTrigger className="h-11"><SelectValue placeholder="Choisir" /></SelectTrigger>
+                <SelectTrigger className="h-11"><SelectValue placeholder={t("publish.choose")} /></SelectTrigger>
                 <SelectContent>
                   {CONDITIONS.map(c => <SelectItem key={c} value={c}>{c}</SelectItem>)}
                 </SelectContent>
@@ -243,18 +243,18 @@ function PublishPage() {
 
           <div className="grid grid-cols-2 gap-3">
             <div className="space-y-1.5">
-              <Label className="text-xs font-bold uppercase tracking-widest">Ville *</Label>
+              <Label className="text-xs font-bold uppercase tracking-widest">{t("publish.city")} *</Label>
               <Select value={city} onValueChange={setCity} required>
-                <SelectTrigger className="h-11"><SelectValue placeholder="Choisir" /></SelectTrigger>
+                <SelectTrigger className="h-11"><SelectValue placeholder={t("publish.choose")} /></SelectTrigger>
                 <SelectContent>
                   {ALL_CITIES.map(c => <SelectItem key={c} value={c}>{c}</SelectItem>)}
                 </SelectContent>
               </Select>
             </div>
             <div className="space-y-1.5">
-              <Label className="text-xs font-bold uppercase tracking-widest">Langue *</Label>
+              <Label className="text-xs font-bold uppercase tracking-widest">{t("publish.language")} *</Label>
               <Select value={language} onValueChange={setLanguage} required>
-                <SelectTrigger className="h-11"><SelectValue placeholder="Choisir" /></SelectTrigger>
+                <SelectTrigger className="h-11"><SelectValue placeholder={t("publish.choose")} /></SelectTrigger>
                 <SelectContent>
                   {LANG_OPTIONS.map(l => <SelectItem key={l} value={l}>{l}</SelectItem>)}
                 </SelectContent>
