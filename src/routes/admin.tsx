@@ -100,6 +100,21 @@ function AdminPage() {
   };
 
   const unreadCount = contactMsgs.filter(m => !m.is_read).length;
+  const pendingReports = reports.filter(r => r.statut === "en_attente").length;
+
+  const updateReportStatus = async (id: string, statut: string) => {
+    const { error } = await supabase.from("reports").update({ statut }).eq("id", id);
+    if (error) return toast.error(error.message);
+    setReports(prev => prev.map(r => r.id === id ? { ...r, statut } : r));
+    toast.success("Statut mis à jour");
+  };
+
+  const deleteReport = async (id: string) => {
+    if (!confirm("Supprimer ce signalement ?")) return;
+    const { error } = await supabase.from("reports").delete().eq("id", id);
+    if (error) return toast.error(error.message);
+    setReports(prev => prev.filter(r => r.id !== id));
+  };
 
   return (
     <div className="max-w-7xl mx-auto p-4 md:p-8 pb-24 space-y-6">
