@@ -82,7 +82,7 @@ export function ContactsSidebar({ activeChatId }: { activeChatId?: string }) {
   if (!user) return null;
 
   const myName = me?.display_name || user.user_metadata?.display_name || user.email?.split("@")[0] || "Moi";
-  const myInitials = myName.split(" ").map((s) => s[0]).join("").slice(0, 2).toUpperCase();
+  const myInitials = myName.split(" ").map((s: string) => s[0]).join("").slice(0, 2).toUpperCase();
 
   return (
     <div className="flex flex-col h-full" style={{ background: "#f0f2f5" }}>
