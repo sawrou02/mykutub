@@ -244,7 +244,7 @@ function AdminPage() {
                     {bk ? (
                       <Link to="/book/$id" params={{ id: r.book_id }} className="font-semibold hover:underline truncate block">{bk.title}</Link>
                     ) : (
-                      <p className="font-semibold text-muted-foreground italic">Annonce supprimée</p>
+                      <p className="font-semibold text-muted-foreground italic">{t("admin.deletedListing")}</p>
                     )}
                     {r.description && <p className="text-xs text-muted-foreground mt-1">{r.description}</p>}
                     <p className="text-[10px] text-muted-foreground mt-1">{new Date(r.created_at).toLocaleString("fr-FR")}</p>
