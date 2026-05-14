@@ -2,11 +2,14 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useMemo, useState } from "react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Search, SlidersHorizontal, MapPin, X, Check, History, Trash2 } from "lucide-react";
+import {
+  Search, SlidersHorizontal, MapPin, X, Check, History, Trash2,
+  LayoutGrid, List as ListIcon, Truck, Heart, Star,
+} from "lucide-react";
 import { BookCard } from "@/components/BookCard";
 import { Badge } from "@/components/ui/badge";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
-import { CATEGORIES, CONDITIONS, ALL_CITIES, type Book } from "@/lib/mykutub";
+import { CATEGORIES, CONDITIONS, ALL_CITIES, LANGUAGES, type Book } from "@/lib/mykutub";
 import { cn } from "@/lib/utils";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
@@ -15,6 +18,7 @@ import {
 } from "@/components/ui/sheet";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from "@/components/ui/command";
+import { Link } from "@tanstack/react-router";
 import { useTranslation } from "react-i18next";
 
 export const Route = createFileRoute("/catalog")({
@@ -31,6 +35,18 @@ export const Route = createFileRoute("/catalog")({
   component: Catalog,
 });
 
+const PAGE_SIZE = 20;
+
+type PriceFilter = "all" | "free" | "paid";
+type DistanceFilter = "all" | "city" | "deliver";
+type ViewMode = "grid" | "list";
+
+function statusBadge(status?: Book["status"]) {
+  if (status === "reserved") return { label: "Réservé", cls: "bg-amber-500 text-white" };
+  if (status === "given") return { label: "Donné", cls: "bg-red-600 text-white" };
+  return { label: "Disponible", cls: "bg-emerald-500 text-white" };
+}
+
 function Catalog() {
   const { t } = useTranslation();
   const { user } = useAuth();
@@ -40,7 +56,12 @@ function Catalog() {
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCity, setSelectedCity] = useState<string | null>(null);
   const [selectedConditions, setSelectedConditions] = useState<string[]>([]);
+  const [selectedLanguages, setSelectedLanguages] = useState<string[]>([]);
+  const [priceFilter, setPriceFilter] = useState<PriceFilter>("all");
+  const [distanceFilter, setDistanceFilter] = useState<DistanceFilter>("all");
   const [sortBy, setSortBy] = useState<"recent" | "price-asc" | "price-desc">("recent");
+  const [viewMode, setViewMode] = useState<ViewMode>("grid");
+  const [visibleCount, setVisibleCount] = useState(PAGE_SIZE);
   const [history, setHistory] = useState<{ id: string; query: string }[]>([]);
   const [searchFocused, setSearchFocused] = useState(false);
 
@@ -63,7 +84,6 @@ function Catalog() {
 
   useEffect(() => { loadHistory(); }, [user]);
 
-  // Debounced save
   useEffect(() => {
     if (!user || !searchQuery.trim() || searchQuery.trim().length < 2) return;
     const q = searchQuery.trim();
@@ -87,16 +107,55 @@ function Catalog() {
       const okSearch = b.title.toLowerCase().includes(q) || (b.description?.toLowerCase() || "").includes(q);
       const okCity = !selectedCity || b.city === selectedCity;
       const okCond = selectedConditions.length === 0 || selectedConditions.includes(b.condition);
-      return okCat && okSearch && okCity && okCond;
+      const okLang = selectedLanguages.length === 0 || selectedLanguages.includes(b.language ?? "Français");
+      const okPrice = priceFilter === "all" || (priceFilter === "free" ? b.is_donation : !b.is_donation);
+      const okDist =
+        distanceFilter === "all" ||
+        (distanceFilter === "city" ? !!selectedCity && b.city === selectedCity : !!b.can_deliver);
+      return okCat && okSearch && okCity && okCond && okLang && okPrice && okDist;
     }).sort((a, b) => {
       if (sortBy === "price-asc") return a.price - b.price;
       if (sortBy === "price-desc") return b.price - a.price;
       return 0;
     });
-  }, [books, selectedCategory, searchQuery, selectedCity, selectedConditions, sortBy]);
+  }, [books, selectedCategory, searchQuery, selectedCity, selectedConditions, selectedLanguages, priceFilter, distanceFilter, sortBy]);
+
+  // Reset pagination on filter change
+  useEffect(() => { setVisibleCount(PAGE_SIZE); }, [selectedCategory, searchQuery, selectedCity, selectedConditions, selectedLanguages, priceFilter, distanceFilter, sortBy]);
+
+  const visibleBooks = filteredBooks.slice(0, visibleCount);
+
+  // Infinite scroll
+  useEffect(() => {
+    const onScroll = () => {
+      if (visibleCount >= filteredBooks.length) return;
+      const scrollBottom = window.innerHeight + window.scrollY;
+      if (scrollBottom >= document.body.offsetHeight - 600) {
+        setVisibleCount(c => Math.min(c + PAGE_SIZE, filteredBooks.length));
+      }
+    };
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, [filteredBooks.length, visibleCount]);
 
   const toggleCondition = (c: string) =>
     setSelectedConditions(p => p.includes(c) ? p.filter(x => x !== c) : [...p, c]);
+  const toggleLanguage = (l: string) =>
+    setSelectedLanguages(p => p.includes(l) ? p.filter(x => x !== l) : [...p, l]);
+
+  const activeFiltersCount =
+    selectedConditions.length + selectedLanguages.length +
+    (priceFilter !== "all" ? 1 : 0) +
+    (distanceFilter !== "all" ? 1 : 0) +
+    (sortBy !== "recent" ? 1 : 0);
+
+  const resetAll = () => {
+    setSelectedConditions([]);
+    setSelectedLanguages([]);
+    setPriceFilter("all");
+    setDistanceFilter("all");
+    setSortBy("recent");
+  };
 
   return (
     <div className="max-w-7xl mx-auto w-full px-4 md:px-8 py-6 md:py-10">
@@ -180,15 +239,67 @@ function Catalog() {
 
           <Sheet>
             <SheetTrigger asChild>
-              <Button variant="secondary" size="icon" className={cn("h-12 w-12 rounded-xl", (selectedConditions.length > 0 || sortBy !== "recent") && "bg-primary text-primary-foreground")}>
+              <Button variant="secondary" size="icon" className={cn("h-12 w-12 rounded-xl relative", activeFiltersCount > 0 && "bg-primary text-primary-foreground")}>
                 <SlidersHorizontal size={20} />
+                {activeFiltersCount > 0 && (
+                  <span className="absolute -top-1 -right-1 bg-amber-500 text-white text-[10px] font-bold rounded-full w-5 h-5 flex items-center justify-center">
+                    {activeFiltersCount}
+                  </span>
+                )}
               </Button>
             </SheetTrigger>
-            <SheetContent side="right" className="w-[300px] flex flex-col">
+            <SheetContent side="right" className="w-[320px] flex flex-col">
               <SheetHeader className="text-left border-b pb-4">
                 <SheetTitle className="text-2xl font-black text-primary">{t("common.filters")}</SheetTitle>
               </SheetHeader>
               <div className="flex-1 overflow-y-auto py-6 space-y-8">
+                <div className="space-y-4">
+                  <h3 className="font-bold text-xs uppercase tracking-widest text-muted-foreground">Prix</h3>
+                  <div className="grid grid-cols-3 gap-2">
+                    {([
+                      { id: "all", label: "Tout" },
+                      { id: "free", label: "Gratuit" },
+                      { id: "paid", label: "Payant" },
+                    ] as const).map(o => (
+                      <Button key={o.id} variant={priceFilter === o.id ? "default" : "outline"} onClick={() => setPriceFilter(o.id)} className="h-10 rounded-xl font-bold text-xs">
+                        {o.label}
+                      </Button>
+                    ))}
+                  </div>
+                </div>
+
+                <div className="space-y-4">
+                  <h3 className="font-bold text-xs uppercase tracking-widest text-muted-foreground">Distance</h3>
+                  <div className="grid grid-cols-1 gap-2">
+                    {([
+                      { id: "all", label: "Toutes les villes" },
+                      { id: "city", label: selectedCity ? `Uniquement ${selectedCity}` : "Ma ville (sélectionner)" },
+                      { id: "deliver", label: "Avec livraison possible" },
+                    ] as const).map(o => (
+                      <Button
+                        key={o.id}
+                        variant={distanceFilter === o.id ? "default" : "outline"}
+                        onClick={() => setDistanceFilter(o.id)}
+                        disabled={o.id === "city" && !selectedCity}
+                        className="h-10 justify-start rounded-xl font-semibold text-xs"
+                      >
+                        {o.label}
+                      </Button>
+                    ))}
+                  </div>
+                </div>
+
+                <div className="space-y-4">
+                  <h3 className="font-bold text-xs uppercase tracking-widest text-muted-foreground">Langue</h3>
+                  <div className="flex flex-wrap gap-2">
+                    {LANGUAGES.map(l => (
+                      <Badge key={l} variant={selectedLanguages.includes(l) ? "default" : "outline"} onClick={() => toggleLanguage(l)} className="cursor-pointer px-4 py-2 text-xs font-bold">
+                        {l}
+                      </Badge>
+                    ))}
+                  </div>
+                </div>
+
                 <div className="space-y-4">
                   <h3 className="font-bold text-xs uppercase tracking-widest text-muted-foreground">{t("catalog.condition")}</h3>
                   <div className="flex flex-wrap gap-2">
@@ -199,6 +310,7 @@ function Catalog() {
                     ))}
                   </div>
                 </div>
+
                 <div className="space-y-4">
                   <h3 className="font-bold text-xs uppercase tracking-widest text-muted-foreground">{t("catalog.sortBy")}</h3>
                   <div className="grid grid-cols-1 gap-2">
@@ -211,7 +323,7 @@ function Catalog() {
                 </div>
               </div>
               <SheetFooter className="border-t pt-6 flex flex-col gap-3 mt-auto">
-                <Button onClick={() => { setSelectedConditions([]); setSortBy("recent"); }} variant="ghost" className="w-full font-bold">{t("common.reset")}</Button>
+                <Button onClick={resetAll} variant="ghost" className="w-full font-bold">{t("common.reset")}</Button>
                 <SheetClose asChild>
                   <Button className="w-full h-14 rounded-2xl font-bold bg-primary text-lg">{t("common.apply")}</Button>
                 </SheetClose>
@@ -232,19 +344,94 @@ function Catalog() {
         </ScrollArea>
       </div>
 
-      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 md:gap-6 pb-8">
-        {loading ? (
-          Array.from({ length: 8 }).map((_, i) => (
-            <div key={i} className="aspect-[3/4] bg-muted rounded-2xl animate-pulse" />
-          ))
-        ) : filteredBooks.length === 0 ? (
-          <div className="col-span-full text-center py-20 text-muted-foreground">
-            {t("common.noResults")}
-          </div>
-        ) : (
-          filteredBooks.map(book => <BookCard key={book.id} book={book} />)
-        )}
+      {/* Results bar with view toggle */}
+      <div className="flex items-center justify-between mb-4">
+        <p className="text-sm text-muted-foreground">
+          {loading ? "Chargement…" : (
+            <>
+              <span className="font-bold text-foreground">{filteredBooks.length}</span>{" "}
+              {filteredBooks.length > 1 ? "livres trouvés" : "livre trouvé"}
+            </>
+          )}
+        </p>
+        <div className="inline-flex rounded-xl border bg-muted/40 p-1">
+          <button
+            onClick={() => setViewMode("grid")}
+            aria-label="Vue grille"
+            className={cn("p-2 rounded-lg transition", viewMode === "grid" ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:text-foreground")}
+          >
+            <LayoutGrid size={16} />
+          </button>
+          <button
+            onClick={() => setViewMode("list")}
+            aria-label="Vue liste"
+            className={cn("p-2 rounded-lg transition", viewMode === "list" ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:text-foreground")}
+          >
+            <ListIcon size={16} />
+          </button>
+        </div>
       </div>
+
+      {loading ? (
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 md:gap-6 pb-8">
+          {Array.from({ length: 8 }).map((_, i) => (
+            <div key={i} className="aspect-[3/4] bg-muted rounded-2xl animate-pulse" />
+          ))}
+        </div>
+      ) : filteredBooks.length === 0 ? (
+        <div className="text-center py-20 text-muted-foreground">{t("common.noResults")}</div>
+      ) : viewMode === "grid" ? (
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 md:gap-6 pb-8">
+          {visibleBooks.map(book => <BookCard key={book.id} book={book} />)}
+        </div>
+      ) : (
+        <ul className="flex flex-col gap-3 pb-8">
+          {visibleBooks.map(book => <BookListRow key={book.id} book={book} />)}
+        </ul>
+      )}
+
+      {!loading && visibleCount < filteredBooks.length && (
+        <div className="flex justify-center pb-8">
+          <Button variant="outline" onClick={() => setVisibleCount(c => Math.min(c + PAGE_SIZE, filteredBooks.length))} className="rounded-xl font-bold">
+            Charger plus ({filteredBooks.length - visibleCount} restants)
+          </Button>
+        </div>
+      )}
     </div>
+  );
+}
+
+function BookListRow({ book }: { book: Book }) {
+  const sb = statusBadge(book.status);
+  return (
+    <li>
+      <Link to="/book/$id" params={{ id: book.id }} className="flex gap-4 p-3 rounded-xl border bg-card hover:border-primary/50 hover:shadow-sm transition group">
+        <div className="relative w-24 h-24 sm:w-28 sm:h-28 flex-shrink-0 rounded-lg overflow-hidden bg-muted">
+          <img src={book.image_url} alt={book.title} loading="lazy" className="w-full h-full object-cover" />
+          <span className={cn("absolute bottom-1 left-1 text-[9px] font-bold uppercase px-1.5 py-0.5 rounded", sb.cls)}>
+            {sb.label}
+          </span>
+        </div>
+        <div className="flex-1 min-w-0 flex flex-col">
+          <div className="flex items-start justify-between gap-2">
+            <h3 className="font-semibold text-sm sm:text-base leading-tight line-clamp-2 group-hover:text-primary">
+              {book.title}
+            </h3>
+            <p className="font-black text-base sm:text-lg text-primary whitespace-nowrap">
+              {book.is_donation ? "Don" : `${book.price} €`}
+            </p>
+          </div>
+          <p className="text-xs text-muted-foreground line-clamp-2 mt-0.5">
+            {book.description || "—"}
+          </p>
+          <div className="mt-auto flex flex-wrap items-center gap-x-3 gap-y-1 text-[11px] text-muted-foreground pt-2">
+            <span className="flex items-center gap-1"><MapPin size={11} />{book.city}</span>
+            <span>· {book.seller_name}</span>
+            {book.can_deliver && <span className="flex items-center gap-1 text-emerald-600"><Truck size={11} />Livraison</span>}
+            {book.language && <Badge variant="outline" className="text-[9px] px-1.5 py-0">{book.language}</Badge>}
+          </div>
+        </div>
+      </Link>
+    </li>
   );
 }
