@@ -2291,7 +2291,10 @@ export type Book = {
   status?: "available" | "reserved" | "given";
   reserved_by?: string | null;
   reserved_at?: string | null;
+  language?: string;
 };
+
+export const LANGUAGES = ["Français", "Arabe", "Bilingue", "Anglais"];
 
 export type BookRequest = {
   id: string;
