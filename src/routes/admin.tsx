@@ -196,7 +196,7 @@ function AdminPage() {
         </TabsContent>
 
         <TabsContent value="contact" className="space-y-2">
-          {contactMsgs.length === 0 && <p className="text-muted-foreground text-center py-8">Aucun message</p>}
+          {contactMsgs.length === 0 && <p className="text-muted-foreground text-center py-8">{t("admin.noMessages")}</p>}
           {contactMsgs.map(m => {
             const isOpen = openMsgId === m.id;
             return (
