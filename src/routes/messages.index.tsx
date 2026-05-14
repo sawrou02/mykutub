@@ -12,7 +12,7 @@ function MessagesIndex() {
 
   if (!user) {
     return (
-      <div className="flex flex-col items-center justify-center min-h-screen p-6 text-center">
+      <div className="flex flex-col items-center justify-center min-h-[calc(100vh-4rem)] p-6 text-center">
         <MessageSquare size={60} className="text-muted-foreground/30 mb-4" />
         <h1 className="text-xl font-bold">Connectez-vous pour voir vos messages</h1>
       </div>
@@ -20,21 +20,26 @@ function MessagesIndex() {
   }
 
   return (
-    <div className="bg-background min-h-[calc(100vh-4rem)] pb-20 md:pb-0">
-      <div className="max-w-6xl mx-auto md:flex md:gap-0 md:border md:rounded-lg md:overflow-hidden md:my-4 md:h-[calc(100vh-6rem)]">
-        <aside className="md:w-[280px] md:border-r flex-shrink-0 md:h-full">
-          <ContactsSidebar />
-        </aside>
-        <section className="hidden md:flex flex-1 items-center justify-center text-center p-8 bg-muted/20">
-          <div>
-            <MessageSquare size={48} className="text-muted-foreground/30 mx-auto mb-3" />
-            <p className="font-semibold">Sélectionnez une conversation</p>
-            <p className="text-sm text-muted-foreground mt-1">
-              Choisissez un contact dans la liste pour démarrer.
-            </p>
+    <div className="h-[calc(100vh-4rem)] flex overflow-hidden">
+      {/* Sidebar — full width on mobile, 280px on desktop */}
+      <aside className="w-full md:w-[280px] md:border-r flex-shrink-0 h-full">
+        <ContactsSidebar />
+      </aside>
+      {/* Empty chat placeholder — desktop only */}
+      <section
+        className="hidden md:flex flex-1 items-center justify-center text-center p-8"
+        style={{ background: "#f0f2f5" }}
+      >
+        <div>
+          <div className="w-20 h-20 rounded-full bg-card mx-auto mb-4 flex items-center justify-center shadow-sm">
+            <MessageSquare size={36} className="text-muted-foreground/40" />
           </div>
-        </section>
-      </div>
+          <p className="font-semibold">Sélectionnez une conversation</p>
+          <p className="text-sm text-muted-foreground mt-1">
+            Choisissez un contact dans la liste pour démarrer.
+          </p>
+        </div>
+      </section>
     </div>
   );
 }
