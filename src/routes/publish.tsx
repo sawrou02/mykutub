@@ -104,6 +104,7 @@ function PublishPage() {
   const [isDonation, setIsDonation] = useState(false);
   const [canDeliver, setCanDeliver] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [imageFile, setImageFile] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
@@ -115,10 +116,11 @@ function PublishPage() {
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
-    if (file.size > 1024 * 1024) {
-      toast.error("Image trop volumineuse (max 1 Mo).");
+    if (file.size > 5 * 1024 * 1024) {
+      toast.error("Image trop volumineuse (max 5 Mo).");
       return;
     }
+    setImageFile(file);
     const reader = new FileReader();
     reader.onloadend = () => setImagePreview(reader.result as string);
     reader.readAsDataURL(file);
