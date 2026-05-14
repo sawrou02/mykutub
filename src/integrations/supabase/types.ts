@@ -60,6 +60,7 @@ export type Database = {
           seller_name: string
           status: string
           title: string
+          updated_at: string
         }
         Insert: {
           can_deliver?: boolean
@@ -79,6 +80,7 @@ export type Database = {
           seller_name: string
           status?: string
           title: string
+          updated_at?: string
         }
         Update: {
           can_deliver?: boolean
@@ -98,6 +100,7 @@ export type Database = {
           seller_name?: string
           status?: string
           title?: string
+          updated_at?: string
         }
         Relationships: []
       }

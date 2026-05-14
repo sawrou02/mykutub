@@ -26,6 +26,7 @@ import { Route as AboutRouteImport } from './routes/about'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as MessagesIndexRouteImport } from './routes/messages.index'
 import { Route as UserIdRouteImport } from './routes/user.$id'
+import { Route as ModifierIdRouteImport } from './routes/modifier.$id'
 import { Route as MessagesIdRouteImport } from './routes/messages.$id'
 import { Route as BookIdRouteImport } from './routes/book.$id'
 
@@ -114,6 +115,11 @@ const UserIdRoute = UserIdRouteImport.update({
   path: '/user/$id',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ModifierIdRoute = ModifierIdRouteImport.update({
+  id: '/modifier/$id',
+  path: '/modifier/$id',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const MessagesIdRoute = MessagesIdRouteImport.update({
   id: '/messages/$id',
   path: '/messages/$id',
@@ -143,6 +149,7 @@ export interface FileRoutesByFullPath {
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/book/$id': typeof BookIdRoute
   '/messages/$id': typeof MessagesIdRoute
+  '/modifier/$id': typeof ModifierIdRoute
   '/user/$id': typeof UserIdRoute
   '/messages/': typeof MessagesIndexRoute
 }
@@ -164,6 +171,7 @@ export interface FileRoutesByTo {
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/book/$id': typeof BookIdRoute
   '/messages/$id': typeof MessagesIdRoute
+  '/modifier/$id': typeof ModifierIdRoute
   '/user/$id': typeof UserIdRoute
   '/messages': typeof MessagesIndexRoute
 }
@@ -186,6 +194,7 @@ export interface FileRoutesById {
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/book/$id': typeof BookIdRoute
   '/messages/$id': typeof MessagesIdRoute
+  '/modifier/$id': typeof ModifierIdRoute
   '/user/$id': typeof UserIdRoute
   '/messages/': typeof MessagesIndexRoute
 }
@@ -209,6 +218,7 @@ export interface FileRouteTypes {
     | '/sitemap.xml'
     | '/book/$id'
     | '/messages/$id'
+    | '/modifier/$id'
     | '/user/$id'
     | '/messages/'
   fileRoutesByTo: FileRoutesByTo
@@ -230,6 +240,7 @@ export interface FileRouteTypes {
     | '/sitemap.xml'
     | '/book/$id'
     | '/messages/$id'
+    | '/modifier/$id'
     | '/user/$id'
     | '/messages'
   id:
@@ -251,6 +262,7 @@ export interface FileRouteTypes {
     | '/sitemap.xml'
     | '/book/$id'
     | '/messages/$id'
+    | '/modifier/$id'
     | '/user/$id'
     | '/messages/'
   fileRoutesById: FileRoutesById
@@ -273,6 +285,7 @@ export interface RootRouteChildren {
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
   BookIdRoute: typeof BookIdRoute
   MessagesIdRoute: typeof MessagesIdRoute
+  ModifierIdRoute: typeof ModifierIdRoute
   UserIdRoute: typeof UserIdRoute
   MessagesIndexRoute: typeof MessagesIndexRoute
 }
@@ -398,6 +411,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof UserIdRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/modifier/$id': {
+      id: '/modifier/$id'
+      path: '/modifier/$id'
+      fullPath: '/modifier/$id'
+      preLoaderRoute: typeof ModifierIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/messages/$id': {
       id: '/messages/$id'
       path: '/messages/$id'
@@ -433,6 +453,7 @@ const rootRouteChildren: RootRouteChildren = {
   SitemapDotxmlRoute: SitemapDotxmlRoute,
   BookIdRoute: BookIdRoute,
   MessagesIdRoute: MessagesIdRoute,
+  ModifierIdRoute: ModifierIdRoute,
   UserIdRoute: UserIdRoute,
   MessagesIndexRoute: MessagesIndexRoute,
 }
