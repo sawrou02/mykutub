@@ -249,14 +249,15 @@ function BookDetailPage() {
                 </div>
                 <div className="flex-1 min-w-0">
                   <p className="font-semibold text-base truncate">{book.seller_name}</p>
+                  <OnlineStatusLabel userId={book.seller_id} />
                   {rating ? (
-                    <div className="flex items-center gap-1 text-xs">
+                    <div className="flex items-center gap-1 text-xs mt-0.5">
                       <Star size={12} className="fill-amber-500 text-amber-500" />
                       <span className="font-semibold">{rating.avg.toFixed(1)}</span>
                       <span className="text-muted-foreground">({rating.count})</span>
                     </div>
                   ) : (
-                    <p className="text-xs text-muted-foreground">Aucun avis</p>
+                    <p className="text-xs text-muted-foreground mt-0.5">Aucun avis</p>
                   )}
                 </div>
               </div>
