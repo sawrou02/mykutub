@@ -3,10 +3,9 @@ import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { ChevronLeft, Loader2, CheckCircle2 } from "lucide-react";
+import { BookOpen, ChevronLeft, Loader2, CheckCircle2, Eye, EyeOff } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
-import { Separator } from "@/components/ui/separator";
 
 export const Route = createFileRoute("/login")({
   validateSearch: (s: Record<string, unknown>): { verified?: "1" } => {
@@ -52,63 +51,91 @@ function LoginPage() {
   };
 
   return (
-    <div className="bg-card min-h-screen p-6 flex flex-col items-center">
-      <header className="w-full mb-12 flex flex-col items-center">
-        <div className="w-full flex items-start">
-          <button onClick={() => history.back()} className="p-2 -ml-2"><ChevronLeft size={24} /></button>
-        </div>
-        <h1 className="font-headline text-2xl font-black text-center mt-4 tracking-tighter uppercase">
-          CONNECTEZ-VOUS À VOTRE COMPTE
-        </h1>
-      </header>
-
-      {search.verified === "1" && (
-        <div className="w-full max-w-sm mb-6 p-3 bg-primary/10 border border-primary/20 flex items-center gap-2 rounded-md">
-          <CheckCircle2 className="text-primary shrink-0" size={18} />
-          <p className="text-xs font-medium">Compte activé. Connectez-vous !</p>
-        </div>
-      )}
-
-      <form onSubmit={handleLogin} className="w-full space-y-8 flex-1 max-w-sm flex flex-col">
-        <div className="space-y-6">
-          <div className="space-y-2">
-            <Label htmlFor="email" className="text-xs font-bold uppercase tracking-widest">E-mail *</Label>
-            <Input id="email" type="email" required value={email} onChange={(e) => setEmail(e.target.value)}
-              className="h-12 bg-card border-muted rounded-none focus-visible:ring-foreground" />
-          </div>
-          <div className="space-y-2">
-            <Label htmlFor="password" className="text-xs font-bold uppercase tracking-widest">Mot de passe *</Label>
-            <div className="relative flex">
-              <Input id="password" name="password" type={showPassword ? "text" : "password"} required
-                className="h-12 bg-card border-muted rounded-none flex-1 pr-24 focus-visible:ring-foreground" />
-              <button type="button" onClick={() => setShowPassword(!showPassword)}
-                className="absolute right-0 h-12 px-4 bg-foreground text-background text-[10px] font-black uppercase tracking-widest">
-                {showPassword ? "MASQUER" : "AFFICHER"}
-              </button>
-            </div>
-          </div>
-        </div>
-
-        <div className="flex flex-col items-center space-y-6 pt-4">
-          <Link to="/forgot-password"
-            className="text-[10px] font-bold text-muted-foreground hover:text-foreground uppercase tracking-wider">
-            MOT DE PASSE OUBLIÉ ?
+    <div className="bg-background min-h-screen px-4 py-8 flex flex-col items-center">
+      <div className="w-full max-w-md">
+        <div className="flex items-center justify-between mb-8">
+          <button onClick={() => history.back()} className="p-2 -ml-2 text-muted-foreground hover:text-foreground">
+            <ChevronLeft size={22} />
+          </button>
+          <Link to="/" className="flex items-center gap-2">
+            <BookOpen className="text-primary" size={22} />
+            <span className="font-headline text-xl font-bold text-primary tracking-tight">MYKUTUB</span>
           </Link>
-          <Button type="submit" disabled={loading}
-            className="w-48 h-12 text-xs font-black rounded-none bg-foreground text-background uppercase tracking-widest hover:bg-foreground/90">
-            {loading ? <Loader2 className="animate-spin" /> : "CONNEXION"}
-          </Button>
+          <span className="w-8" />
         </div>
 
-        <div className="w-full pt-20 mt-auto pb-12">
-          <Separator />
-          <div className="text-center pt-8">
-            <Link to="/signup" className="text-sm text-muted-foreground hover:text-foreground font-medium">
-              Pas de compte ? Créez-en un
-            </Link>
+        <div className="bg-card border rounded-3xl p-8 shadow-sm">
+          <div className="text-center mb-8">
+            <h1 className="font-headline text-3xl font-bold text-primary">Bon retour</h1>
+            <p className="text-sm text-muted-foreground mt-2">
+              Connectez-vous pour retrouver vos livres et favoris.
+            </p>
           </div>
+
+          {search.verified === "1" && (
+            <div className="mb-6 p-3 bg-primary/5 border border-primary/20 flex items-center gap-2 rounded-xl">
+              <CheckCircle2 className="text-primary shrink-0" size={18} />
+              <p className="text-xs font-medium">Compte activé. Connectez-vous !</p>
+            </div>
+          )}
+
+          <form onSubmit={handleLogin} className="space-y-5">
+            <div className="space-y-1.5">
+              <Label htmlFor="email" className="text-sm font-medium">Adresse email</Label>
+              <Input
+                id="email"
+                type="email"
+                required
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                placeholder="vous@exemple.com"
+                className="h-12 rounded-xl"
+              />
+            </div>
+            <div className="space-y-1.5">
+              <Label htmlFor="password" className="text-sm font-medium">Mot de passe</Label>
+              <div className="relative">
+                <Input
+                  id="password"
+                  name="password"
+                  type={showPassword ? "text" : "password"}
+                  required
+                  className="h-12 rounded-xl pr-12"
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+                  aria-label={showPassword ? "Masquer" : "Afficher"}
+                >
+                  {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                </button>
+              </div>
+            </div>
+
+            <div className="text-right">
+              <Link to="/forgot-password" className="text-xs font-medium text-primary hover:underline">
+                Mot de passe oublié ?
+              </Link>
+            </div>
+
+            <Button
+              type="submit"
+              disabled={loading}
+              className="w-full h-12 rounded-xl text-base font-bold bg-primary text-primary-foreground hover:bg-primary/90"
+            >
+              {loading ? <Loader2 className="animate-spin" /> : "Se connecter"}
+            </Button>
+          </form>
+
+          <p className="text-center text-sm text-muted-foreground mt-6">
+            Pas encore de compte ?{" "}
+            <Link to="/signup" className="text-primary font-bold hover:underline">
+              Inscrivez-vous
+            </Link>
+          </p>
         </div>
-      </form>
+      </div>
     </div>
   );
 }
