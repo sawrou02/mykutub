@@ -102,6 +102,7 @@ function PreviewCard({
 
 function PublishPage() {
   const navigate = useNavigate();
+  const { t } = useTranslation();
   const { user } = useAuth();
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [isDonation, setIsDonation] = useState(false);
