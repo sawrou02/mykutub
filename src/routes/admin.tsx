@@ -252,10 +252,10 @@ function AdminPage() {
                   <div className="flex flex-col gap-1">
                     {isPending && (
                       <>
-                        <Button size="icon" variant="ghost" onClick={() => updateReportStatus(r.id, "traite")} className="text-emerald-600" title="Marquer traité">
+                        <Button size="icon" variant="ghost" onClick={() => updateReportStatus(r.id, "traite")} className="text-emerald-600" title={t("admin.markTreated")}>
                           <Check size={16} />
                         </Button>
-                        <Button size="icon" variant="ghost" onClick={() => updateReportStatus(r.id, "rejete")} className="text-muted-foreground" title="Rejeter">
+                        <Button size="icon" variant="ghost" onClick={() => updateReportStatus(r.id, "rejete")} className="text-muted-foreground" title={t("admin.reject")}>
                           <Flag size={16} />
                         </Button>
                       </>
