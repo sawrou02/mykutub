@@ -180,7 +180,7 @@ function AdminPage() {
               </Button>
             </Card>
           ))}
-          {reviews.length === 0 && <p className="text-muted-foreground text-center py-8">Aucun avis</p>}
+          {reviews.length === 0 && <p className="text-muted-foreground text-center py-8">{t("admin.noReviews")}</p>}
         </TabsContent>
 
         <TabsContent value="users" className="space-y-2">
