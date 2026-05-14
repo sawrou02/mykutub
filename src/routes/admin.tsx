@@ -122,29 +122,29 @@ function AdminPage() {
     <div className="max-w-7xl mx-auto p-4 md:p-8 pb-24 space-y-6">
       <div className="flex items-center gap-3">
         <ShieldCheck className="text-primary" size={28} />
-        <h1 className="font-headline text-3xl font-bold">Administration</h1>
+        <h1 className="font-headline text-3xl font-bold">{t("admin.title")}</h1>
       </div>
 
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-        <StatCard icon={<Users size={20} />} label="Utilisateurs" value={stats.users} />
-        <StatCard icon={<BookOpen size={20} />} label="Annonces" value={stats.books} />
-        <StatCard icon={<MessageSquare size={20} />} label="Messages" value={stats.messages} />
-        <StatCard icon={<Star size={20} />} label="Avis" value={stats.reviews} />
+        <StatCard icon={<Users size={20} />} label={t("admin.statUsers")} value={stats.users} />
+        <StatCard icon={<BookOpen size={20} />} label={t("admin.statBooks")} value={stats.books} />
+        <StatCard icon={<MessageSquare size={20} />} label={t("admin.statMessages")} value={stats.messages} />
+        <StatCard icon={<Star size={20} />} label={t("admin.statReviews")} value={stats.reviews} />
       </div>
 
       <Tabs defaultValue="books">
         <TabsList>
-          <TabsTrigger value="books">Annonces</TabsTrigger>
-          <TabsTrigger value="reviews">Avis</TabsTrigger>
-          <TabsTrigger value="users">Utilisateurs</TabsTrigger>
+          <TabsTrigger value="books">{t("admin.tabBooks")}</TabsTrigger>
+          <TabsTrigger value="reviews">{t("admin.tabReviews")}</TabsTrigger>
+          <TabsTrigger value="users">{t("admin.tabUsers")}</TabsTrigger>
           <TabsTrigger value="contact" className="relative">
-            <Inbox size={14} className="mr-1.5" /> Contact
+            <Inbox size={14} className="mr-1.5" /> {t("admin.tabContact")}
             {unreadCount > 0 && (
               <Badge className="ml-2 h-5 min-w-5 px-1.5 bg-destructive text-destructive-foreground">{unreadCount}</Badge>
             )}
           </TabsTrigger>
           <TabsTrigger value="reports" className="relative">
-            <Flag size={14} className="mr-1.5" /> Signalements
+            <Flag size={14} className="mr-1.5" /> {t("admin.tabReports")}
             {pendingReports > 0 && (
               <Badge className="ml-2 h-5 min-w-5 px-1.5 bg-destructive text-destructive-foreground">{pendingReports}</Badge>
             )}
