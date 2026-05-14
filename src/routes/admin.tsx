@@ -160,6 +160,38 @@ function AdminPage() {
             </Card>
           ))}
         </TabsContent>
+
+        <TabsContent value="contact" className="space-y-2">
+          {contactMsgs.length === 0 && <p className="text-muted-foreground text-center py-8">Aucun message</p>}
+          {contactMsgs.map(m => {
+            const isOpen = openMsgId === m.id;
+            return (
+              <Card key={m.id} className={`p-3 ${!m.is_read ? "border-destructive/40 bg-destructive/5" : ""}`}>
+                <div className="flex items-start gap-3">
+                  <button onClick={() => openMessage(m.id, m.is_read)} className="flex-1 text-left min-w-0">
+                    <div className="flex items-center gap-2 mb-1">
+                      {!m.is_read && <Badge className="bg-destructive text-destructive-foreground h-5 text-[10px]">Nouveau</Badge>}
+                      <p className="font-semibold truncate">{m.subject}</p>
+                    </div>
+                    <p className="text-xs text-muted-foreground truncate">
+                      {m.name} &lt;{m.email}&gt; · {new Date(m.created_at).toLocaleString("fr-FR")}
+                    </p>
+                    {isOpen && (
+                      <div className="mt-3 p-3 bg-muted/50 rounded-lg whitespace-pre-wrap text-sm">{m.message}</div>
+                    )}
+                  </button>
+                  <a href={`mailto:${m.email}?subject=Re: ${encodeURIComponent(m.subject)}`}
+                    className="p-2 text-primary hover:bg-primary/10 rounded-lg" title="Répondre par email">
+                    <Mail size={16} />
+                  </a>
+                  <Button size="icon" variant="ghost" onClick={() => deleteContactMsg(m.id)} className="text-destructive">
+                    <Trash2 size={16} />
+                  </Button>
+                </div>
+              </Card>
+            );
+          })}
+        </TabsContent>
       </Tabs>
     </div>
   );
