@@ -9,6 +9,7 @@ import type { Book } from "@/lib/mykutub";
 import { SellerReviews } from "@/components/SellerReviews";
 import { BookReservation } from "@/components/BookReservation";
 import { OnlineStatusLabel } from "@/components/OnlineDot";
+import { ReportDialog } from "@/components/ReportDialog";
 import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/book/$id")({
@@ -79,6 +80,7 @@ function BookDetailPage() {
   const [creating, setCreating] = useState(false);
   const [rating, setRating] = useState<{ avg: number; count: number } | null>(null);
   const [sellerJoined, setSellerJoined] = useState<string | null>(null);
+  const [reportOpen, setReportOpen] = useState(false);
 
   useEffect(() => {
     supabase.from("books").select("*").eq("id", bookId).single()
@@ -272,9 +274,10 @@ function BookDetailPage() {
               </div>
 
               <div className="mt-4 pt-4 border-t flex items-center gap-4 text-xs text-muted-foreground">
-                <button className="flex items-center gap-1.5 hover:text-foreground"><Flag size={13} /> Signaler l'annonce</button>
+                <button onClick={() => setReportOpen(true)} className="flex items-center gap-1.5 hover:text-foreground"><Flag size={13} /> Signaler l'annonce</button>
                 <button className="flex items-center gap-1.5 hover:text-foreground"><Info size={13} /> Vos droits</button>
               </div>
+              <ReportDialog bookId={bookId} open={reportOpen} onOpenChange={setReportOpen} />
             </div>
           </div>
 

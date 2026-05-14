@@ -321,6 +321,39 @@ export type Database = {
         }
         Relationships: []
       }
+      reports: {
+        Row: {
+          book_id: string
+          created_at: string
+          description: string | null
+          id: string
+          raison: string
+          reporter_id: string
+          statut: string
+          updated_at: string
+        }
+        Insert: {
+          book_id: string
+          created_at?: string
+          description?: string | null
+          id?: string
+          raison: string
+          reporter_id: string
+          statut?: string
+          updated_at?: string
+        }
+        Update: {
+          book_id?: string
+          created_at?: string
+          description?: string | null
+          id?: string
+          raison?: string
+          reporter_id?: string
+          statut?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       reviews: {
         Row: {
           chat_id: string | null
