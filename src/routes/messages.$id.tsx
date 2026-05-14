@@ -206,10 +206,9 @@ function ChatDetailPage() {
 
       {/* Messages */}
       <div ref={scrollRef} className="flex-1 overflow-y-auto p-4 space-y-2">
-        {messages.map((m, i) => {
+        {messages.map((m) => {
           const mine = m.sender_id === user?.id;
           const time = new Date(m.created_at).toLocaleTimeString("fr-FR", { hour: "2-digit", minute: "2-digit" });
-          const isLastMine = mine && messages.slice(i + 1).every((x) => x.sender_id !== user?.id ? false : true) && i === messages.length - 1;
           return (
             <div key={m.id} className={cn("flex", mine ? "justify-end" : "justify-start")}>
               <div
