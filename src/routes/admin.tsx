@@ -94,11 +94,11 @@ function AdminPage() {
   };
 
   const deleteContactMsg = async (id: string) => {
-    if (!confirm("Supprimer ce message ?")) return;
+    if (!confirm(t("admin.confirmDeleteMsg"))) return;
     const { error } = await supabase.from("contact_messages").delete().eq("id", id);
     if (error) return toast.error(error.message);
     setContactMsgs(prev => prev.filter(m => m.id !== id));
-    toast.success("Message supprimé");
+    toast.success(t("admin.deletedMsg"));
   };
 
   const unreadCount = contactMsgs.filter(m => !m.is_read).length;
@@ -108,11 +108,11 @@ function AdminPage() {
     const { error } = await supabase.from("reports").update({ statut }).eq("id", id);
     if (error) return toast.error(error.message);
     setReports(prev => prev.map(r => r.id === id ? { ...r, statut } : r));
-    toast.success("Statut mis à jour");
+    toast.success(t("admin.statusUpdated"));
   };
 
   const deleteReport = async (id: string) => {
-    if (!confirm("Supprimer ce signalement ?")) return;
+    if (!confirm(t("admin.confirmDeleteReport"))) return;
     const { error } = await supabase.from("reports").delete().eq("id", id);
     if (error) return toast.error(error.message);
     setReports(prev => prev.filter(r => r.id !== id));
