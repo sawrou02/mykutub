@@ -224,6 +224,49 @@ function AdminPage() {
             );
           })}
         </TabsContent>
+
+        <TabsContent value="reports" className="space-y-2">
+          {reports.length === 0 && <p className="text-muted-foreground text-center py-8">Aucun signalement</p>}
+          {reports.map(r => {
+            const bk = reportBooks[r.book_id];
+            const isPending = r.statut === "en_attente";
+            return (
+              <Card key={r.id} className={`p-3 ${isPending ? "border-destructive/40 bg-destructive/5" : ""}`}>
+                <div className="flex items-start gap-3">
+                  {bk?.image_url && <img src={bk.image_url} alt="" className="w-14 h-14 object-cover rounded shrink-0" />}
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center gap-2 mb-1 flex-wrap">
+                      <Badge variant={isPending ? "destructive" : "secondary"} className="h-5 text-[10px]">{r.statut}</Badge>
+                      <Badge variant="outline" className="h-5 text-[10px]">{r.raison}</Badge>
+                    </div>
+                    {bk ? (
+                      <Link to="/book/$id" params={{ id: r.book_id }} className="font-semibold hover:underline truncate block">{bk.title}</Link>
+                    ) : (
+                      <p className="font-semibold text-muted-foreground italic">Annonce supprimée</p>
+                    )}
+                    {r.description && <p className="text-xs text-muted-foreground mt-1">{r.description}</p>}
+                    <p className="text-[10px] text-muted-foreground mt-1">{new Date(r.created_at).toLocaleString("fr-FR")}</p>
+                  </div>
+                  <div className="flex flex-col gap-1">
+                    {isPending && (
+                      <>
+                        <Button size="icon" variant="ghost" onClick={() => updateReportStatus(r.id, "traite")} className="text-emerald-600" title="Marquer traité">
+                          <Check size={16} />
+                        </Button>
+                        <Button size="icon" variant="ghost" onClick={() => updateReportStatus(r.id, "rejete")} className="text-muted-foreground" title="Rejeter">
+                          <Flag size={16} />
+                        </Button>
+                      </>
+                    )}
+                    <Button size="icon" variant="ghost" onClick={() => deleteReport(r.id)} className="text-destructive">
+                      <Trash2 size={16} />
+                    </Button>
+                  </div>
+                </div>
+              </Card>
+            );
+          })}
+        </TabsContent>
       </Tabs>
     </div>
   );
