@@ -29,7 +29,7 @@ export function SiteHeader() {
       <div className="w-full bg-primary text-primary-foreground">
         <div className="max-w-7xl mx-auto flex items-center justify-between gap-3 px-4 md:px-8 py-2">
           <p className="text-xs md:text-sm font-medium truncate">
-            📚 Partagez vos livres avec la communauté MYKUTUB
+            Partagez vos livres avec la communauté MYKUTUB
           </p>
           <Button asChild size="sm" variant="secondary" className="h-8 gap-1.5 font-bold text-xs md:text-sm flex-shrink-0">
             <Link to="/publish"><PlusCircle size={14} /> Déposer une annonce</Link>
