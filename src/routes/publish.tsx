@@ -287,12 +287,12 @@ function PublishPage() {
             <Sheet>
               <SheetTrigger asChild>
                 <Button type="button" variant="outline" className="w-full h-12 rounded-2xl gap-2 font-bold">
-                  <Eye size={16} /> Voir l'aperçu
+                  <Eye size={16} /> {t("publish.seePreview")}
                 </Button>
               </SheetTrigger>
               <SheetContent side="bottom" className="rounded-t-3xl">
                 <SheetHeader className="text-left mb-4">
-                  <SheetTitle>Aperçu de l'annonce</SheetTitle>
+                  <SheetTitle>{t("publish.previewTitle")}</SheetTitle>
                 </SheetHeader>
                 <div className="max-w-[220px] mx-auto pb-6">
                   <PreviewCard {...previewProps} />
@@ -302,7 +302,7 @@ function PublishPage() {
           </div>
 
           <Button type="submit" disabled={loading} className="w-full h-14 rounded-2xl text-base font-bold">
-            {loading ? <Loader2 className="animate-spin" /> : "Publier l'annonce"}
+            {loading ? <Loader2 className="animate-spin" /> : t("publish.submit")}
           </Button>
         </form>
 
