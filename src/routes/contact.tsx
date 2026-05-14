@@ -10,11 +10,13 @@ import { z } from "zod";
 export const Route = createFileRoute("/contact")({
   head: () => ({
     meta: [
-      { title: "Contact — MYKUTUB" },
-      { name: "description", content: "Une question, une suggestion ou un problème ? Contactez l'équipe MYKUTUB, réponse sous 24h." },
+      { title: "Nous contacter — Support MYKUTUB" },
+      { name: "description", content: "Une question sur MYKUTUB ? Contactez notre équipe. Réponse garantie sous 24h inshaaAllah." },
       { property: "og:title", content: "Contact — MYKUTUB" },
-      { property: "og:description", content: "Écrivez-nous, nous répondons dans les 24 heures inshaaAllah." },
+      { property: "og:description", content: "Notre équipe vous répond sous 24h." },
+      { property: "og:url", content: "https://mykutub.lovable.app/contact" },
     ],
+    links: [{ rel: "canonical", href: "https://mykutub.lovable.app/contact" }],
   }),
   component: Contact,
 });
