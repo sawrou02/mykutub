@@ -84,8 +84,10 @@ function RootShell({ children }: { children: React.ReactNode }) {
 
 function RootComponent() {
   const { pathname } = useLocation();
-  const hideAll = pathname.startsWith("/login") || pathname.startsWith("/signup") || pathname.startsWith("/forgot-password") || pathname.startsWith("/reset-password") || pathname.startsWith("/messages/");
-  const hideBottomNav = hideAll || pathname.startsWith("/book/");
+  const hideAll = pathname.startsWith("/login") || pathname.startsWith("/signup") || pathname.startsWith("/forgot-password") || pathname.startsWith("/reset-password");
+  const isChat = pathname.startsWith("/messages/");
+  const hideHeader = hideAll;
+  const hideBottomNav = hideAll || isChat || pathname.startsWith("/book/");
   const hideFooter = hideAll || pathname.startsWith("/messages") || pathname.startsWith("/publish") || pathname.startsWith("/book/");
 
   return (
@@ -93,7 +95,7 @@ function RootComponent() {
       <I18nProvider>
         <PresenceTracker />
         <div className="min-h-screen bg-background flex flex-col">
-          {!hideAll && <SiteHeader />}
+          {!hideHeader && <SiteHeader />}
           <main className="flex-1 pb-20 md:pb-0">
             <Outlet />
           </main>
