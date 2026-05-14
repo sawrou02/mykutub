@@ -133,11 +133,21 @@ function PublishPage() {
       navigate({ to: "/login" });
       return;
     }
-    if (!imagePreview) {
+    if (!imageFile) {
       toast.error("Veuillez ajouter une photo.");
       return;
     }
     setLoading(true);
+    // Upload image to storage bucket
+    const ext = imageFile.name.split(".").pop()?.toLowerCase() || "jpg";
+    const path = `${user.id}/${Date.now()}.${ext}`;
+    const { error: upErr } = await supabase.storage.from("book-images").upload(path, imageFile, { upsert: false, contentType: imageFile.type });
+    if (upErr) {
+      setLoading(false);
+      toast.error(upErr.message);
+      return;
+    }
+    const { data: pub } = supabase.storage.from("book-images").getPublicUrl(path);
     const data = {
       title,
       category,
@@ -149,7 +159,7 @@ function PublishPage() {
       can_deliver: canDeliver,
       seller_id: user.id,
       seller_name: user.user_metadata?.display_name || user.email?.split("@")[0] || "Utilisateur",
-      image_url: imagePreview,
+      image_url: pub.publicUrl,
     };
     const { error } = await supabase.from("books").insert(data);
     setLoading(false);
