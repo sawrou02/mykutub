@@ -36,8 +36,8 @@ function Landing() {
       <section className="relative overflow-hidden bg-card">
         <div className="max-w-7xl mx-auto px-4 md:px-8 py-12 md:py-24 grid md:grid-cols-2 gap-8 md:gap-12 items-center">
           <div className="space-y-6 md:space-y-8 z-10">
-            <Button asChild size="lg" className="gap-2 h-14 rounded-2xl text-base font-bold px-8 w-fit">
-              <Link to="/publish">{t("home.publishBtn")}</Link>
+            <Button asChild size="lg" className="gap-2 h-16 rounded-2xl text-lg font-black px-10 w-fit uppercase tracking-wide shadow-xl shadow-primary/30 ring-2 ring-primary/20 hover:scale-105 transition-transform">
+              <Link to="/publish"><PlusCircle size={22} /> {t("home.publishBtn")}</Link>
             </Button>
             <h1 className="font-headline text-4xl md:text-6xl lg:text-7xl font-black leading-[1.05] tracking-tight">
               {t("home.h1a")}<br /><span className="text-primary">{t("home.h1b")}</span>
