@@ -243,13 +243,13 @@ function ProfilePage() {
             <Link to="/settings" className="w-full flex items-center justify-between p-4 hover:bg-muted/50 transition-colors">
               <div className="flex items-center gap-3">
                 <div className="p-2 bg-muted rounded-lg"><Settings size={18} /></div>
-                <span className="font-bold text-sm">Paramètres du compte</span>
+                <span className="font-bold text-sm">{t("profile.settings")}</span>
               </div>
             </Link>
             <button onClick={handleLogout} className="w-full flex items-center justify-between p-4 hover:bg-destructive/10 text-destructive transition-colors">
               <div className="flex items-center gap-3">
                 <div className="p-2 bg-destructive/10 rounded-lg"><LogOut size={18} /></div>
-                <span className="font-bold text-sm">Déconnexion</span>
+                <span className="font-bold text-sm">{t("profile.logout")}</span>
               </div>
             </button>
           </div>
