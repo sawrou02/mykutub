@@ -3,7 +3,7 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { ChevronLeft, Loader2, MailCheck } from "lucide-react";
+import { BookOpen, ChevronLeft, Loader2, MailCheck } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { z } from "zod";
@@ -65,77 +65,108 @@ function SignupPage() {
 
   if (sentTo) {
     return (
-      <div className="bg-card min-h-screen p-6 flex flex-col items-center justify-center">
-        <div className="max-w-sm w-full text-center space-y-6">
-          <div className="mx-auto w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center">
-            <MailCheck className="text-primary" size={32} />
+      <div className="bg-background min-h-screen px-4 py-8 flex flex-col items-center">
+        <div className="w-full max-w-md">
+          <div className="flex items-center justify-center mb-8">
+            <Link to="/" className="flex items-center gap-2">
+              <BookOpen className="text-primary" size={22} />
+              <span className="font-headline text-xl font-bold text-primary tracking-tight">MYKUTUB</span>
+            </Link>
           </div>
-          <h1 className="font-headline text-2xl font-black uppercase tracking-tighter">Vérifiez votre email</h1>
-          <p className="text-sm text-muted-foreground">
-            Un email a été envoyé à <strong className="text-foreground">{sentTo}</strong>.
-            Cliquez sur le lien de confirmation pour activer votre compte.
-          </p>
-          <p className="text-xs text-muted-foreground">
-            Pensez à vérifier vos spams. Vous pourrez vous connecter dès que votre email sera vérifié.
-          </p>
-          <Link to="/login" className="inline-block w-full h-12 leading-[3rem] text-xs font-black bg-foreground text-background uppercase tracking-widest">
-            Aller à la connexion
-          </Link>
+
+          <div className="bg-card border rounded-3xl p-8 shadow-sm text-center space-y-5">
+            <div className="mx-auto w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center">
+              <MailCheck className="text-primary" size={32} />
+            </div>
+            <h1 className="font-headline text-2xl font-bold text-primary">Vérifiez votre email</h1>
+            <p className="text-sm text-muted-foreground">
+              Un email a été envoyé à <strong className="text-foreground">{sentTo}</strong>.
+              Cliquez sur le lien de confirmation pour activer votre compte.
+            </p>
+            <p className="text-xs text-muted-foreground">
+              Pensez à vérifier vos spams.
+            </p>
+            <Button asChild className="w-full h-12 rounded-xl text-base font-bold">
+              <Link to="/login">Aller à la connexion</Link>
+            </Button>
+          </div>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="bg-card min-h-screen p-6 flex flex-col items-center">
-      <header className="w-full mb-8 flex flex-col items-center">
-        <div className="w-full flex items-start">
-          <button onClick={() => history.back()} className="p-2 -ml-2"><ChevronLeft size={24} /></button>
-        </div>
-        <h1 className="font-headline text-2xl font-black text-center mt-4 tracking-tighter uppercase">
-          CRÉEZ VOTRE COMPTE
-        </h1>
-        <Link to="/login" className="text-xs text-muted-foreground hover:text-foreground font-medium mt-2">
-          Vous avez déjà un compte ? Connectez-vous !
-        </Link>
-      </header>
-
-      <form onSubmit={handleSignup} className="w-full space-y-5 max-w-sm pb-24">
-        <div className="space-y-1.5">
-          <Label htmlFor="firstName" className="text-xs font-bold uppercase tracking-widest">Prénom *</Label>
-          <Input id="firstName" name="firstName" required className="h-11 rounded-none border-muted" />
-          {errors.firstName && <p className="text-xs text-destructive">{errors.firstName}</p>}
-        </div>
-        <div className="space-y-1.5">
-          <Label htmlFor="lastName" className="text-xs font-bold uppercase tracking-widest">Nom *</Label>
-          <Input id="lastName" name="lastName" required className="h-11 rounded-none border-muted" />
-          {errors.lastName && <p className="text-xs text-destructive">{errors.lastName}</p>}
-        </div>
-        <div className="space-y-1.5">
-          <Label htmlFor="email" className="text-xs font-bold uppercase tracking-widest">E-mail *</Label>
-          <Input id="email" name="email" type="email" required className="h-11 rounded-none border-muted" />
-          {errors.email && <p className="text-xs text-destructive">{errors.email}</p>}
-        </div>
-        <div className="space-y-1.5">
-          <Label htmlFor="password" className="text-xs font-bold uppercase tracking-widest">Mot de passe *</Label>
-          <Input id="password" name="password" type="password" required minLength={8} className="h-11 rounded-none border-muted" />
-          {errors.password && <p className="text-xs text-destructive">{errors.password}</p>}
-        </div>
-        <div className="space-y-1.5">
-          <Label htmlFor="confirm" className="text-xs font-bold uppercase tracking-widest">Confirmer le mot de passe *</Label>
-          <Input id="confirm" name="confirm" type="password" required minLength={8} className="h-11 rounded-none border-muted" />
-          {errors.confirm && <p className="text-xs text-destructive">{errors.confirm}</p>}
+    <div className="bg-background min-h-screen px-4 py-8 flex flex-col items-center">
+      <div className="w-full max-w-md">
+        <div className="flex items-center justify-between mb-8">
+          <button onClick={() => history.back()} className="p-2 -ml-2 text-muted-foreground hover:text-foreground">
+            <ChevronLeft size={22} />
+          </button>
+          <Link to="/" className="flex items-center gap-2">
+            <BookOpen className="text-primary" size={22} />
+            <span className="font-headline text-xl font-bold text-primary tracking-tight">MYKUTUB</span>
+          </Link>
+          <span className="w-8" />
         </div>
 
-        <Button type="submit" disabled={loading}
-          className="w-full h-12 text-xs font-black rounded-none bg-foreground text-background uppercase tracking-widest hover:bg-foreground/90">
-          {loading ? <Loader2 className="animate-spin" /> : "CRÉER MON COMPTE"}
-        </Button>
+        <div className="bg-card border rounded-3xl p-8 shadow-sm">
+          <div className="text-center mb-8">
+            <h1 className="font-headline text-3xl font-bold text-primary">Créer un compte</h1>
+            <p className="text-sm text-muted-foreground mt-2">
+              Rejoignez la communauté MYKUTUB et partagez vos livres.
+            </p>
+          </div>
 
-        <p className="text-[10px] text-muted-foreground text-center">
-          Un email de vérification vous sera envoyé. Vous devrez confirmer votre adresse avant de vous connecter.
-        </p>
-      </form>
+          <form onSubmit={handleSignup} className="space-y-4">
+            <div className="grid grid-cols-2 gap-3">
+              <div className="space-y-1.5">
+                <Label htmlFor="firstName" className="text-sm font-medium">Prénom</Label>
+                <Input id="firstName" name="firstName" required className="h-11 rounded-xl" />
+                {errors.firstName && <p className="text-xs text-destructive">{errors.firstName}</p>}
+              </div>
+              <div className="space-y-1.5">
+                <Label htmlFor="lastName" className="text-sm font-medium">Nom</Label>
+                <Input id="lastName" name="lastName" required className="h-11 rounded-xl" />
+                {errors.lastName && <p className="text-xs text-destructive">{errors.lastName}</p>}
+              </div>
+            </div>
+            <div className="space-y-1.5">
+              <Label htmlFor="email" className="text-sm font-medium">Adresse email</Label>
+              <Input id="email" name="email" type="email" required placeholder="vous@exemple.com" className="h-11 rounded-xl" />
+              {errors.email && <p className="text-xs text-destructive">{errors.email}</p>}
+            </div>
+            <div className="space-y-1.5">
+              <Label htmlFor="password" className="text-sm font-medium">Mot de passe</Label>
+              <Input id="password" name="password" type="password" required minLength={8} className="h-11 rounded-xl" />
+              {errors.password && <p className="text-xs text-destructive">{errors.password}</p>}
+            </div>
+            <div className="space-y-1.5">
+              <Label htmlFor="confirm" className="text-sm font-medium">Confirmer le mot de passe</Label>
+              <Input id="confirm" name="confirm" type="password" required minLength={8} className="h-11 rounded-xl" />
+              {errors.confirm && <p className="text-xs text-destructive">{errors.confirm}</p>}
+            </div>
+
+            <Button
+              type="submit"
+              disabled={loading}
+              className="w-full h-12 rounded-xl text-base font-bold bg-primary text-primary-foreground hover:bg-primary/90 mt-2"
+            >
+              {loading ? <Loader2 className="animate-spin" /> : "Créer mon compte"}
+            </Button>
+
+            <p className="text-[11px] text-muted-foreground text-center">
+              Un email de vérification vous sera envoyé pour activer votre compte.
+            </p>
+          </form>
+
+          <p className="text-center text-sm text-muted-foreground mt-6">
+            Déjà inscrit ?{" "}
+            <Link to="/login" className="text-primary font-bold hover:underline">
+              Connectez-vous
+            </Link>
+          </p>
+        </div>
+      </div>
     </div>
   );
 }
