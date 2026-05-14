@@ -6,11 +6,13 @@ import libraryImage from "@/assets/library.jpg";
 export const Route = createFileRoute("/about")({
   head: () => ({
     meta: [
-      { title: "À propos — MYKUTUB" },
-      { name: "description", content: "L'histoire et la mission de MYKUTUB, la marketplace dédiée aux livres de science islamique." },
+      { title: "À propos de MYKUTUB — Notre mission pour la communauté musulmane" },
+      { name: "description", content: "MYKUTUB est né d'une volonté de donner une seconde vie aux livres islamiques. Découvrez notre histoire, nos valeurs et notre engagement pour le partage du savoir." },
       { property: "og:title", content: "À propos — MYKUTUB" },
-      { property: "og:description", content: "Donner une seconde vie aux livres islamiques et perpétuer la tradition du partage du savoir." },
+      { property: "og:description", content: "Notre mission pour la communauté musulmane et le partage du savoir." },
+      { property: "og:url", content: "https://mykutub.lovable.app/about" },
     ],
+    links: [{ rel: "canonical", href: "https://mykutub.lovable.app/about" }],
   }),
   component: About,
 });

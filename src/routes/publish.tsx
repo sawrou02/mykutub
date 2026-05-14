@@ -15,6 +15,16 @@ import { cn } from "@/lib/utils";
 import { CATEGORIES, CONDITIONS, ALL_CITIES } from "@/lib/mykutub";
 
 export const Route = createFileRoute("/publish")({
+  head: () => ({
+    meta: [
+      { title: "Publier une annonce — Vendre ou donner un livre islamique | MYKUTUB" },
+      { name: "description", content: "Publiez votre annonce gratuitement en 2 minutes. Vendez ou donnez vos livres islamiques d'occasion à des milliers de membres de la communauté musulmane." },
+      { property: "og:title", content: "Publier une annonce | MYKUTUB" },
+      { property: "og:description", content: "Publiez gratuitement en 2 minutes." },
+      { property: "og:url", content: "https://mykutub.lovable.app/publish" },
+    ],
+    links: [{ rel: "canonical", href: "https://mykutub.lovable.app/publish" }],
+  }),
   component: PublishPage,
 });
 

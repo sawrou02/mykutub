@@ -10,6 +10,51 @@ import { SellerReviews } from "@/components/SellerReviews";
 import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/book/$id")({
+  loader: async ({ params }) => {
+    const { data } = await supabase.from("books").select("*").eq("id", params.id).single();
+    return { book: (data as Book | null) ?? null };
+  },
+  head: ({ params, loaderData }) => {
+    const book = loaderData?.book ?? null;
+    const title = book?.title ?? "Livre";
+    const desc = (book?.description ?? "Livre de science islamique d'occasion sur MYKUTUB.").slice(0, 160);
+    const image = book?.image_url ?? "https://mykutub.lovable.app/og-cover.jpg";
+    const url = `https://mykutub.lovable.app/book/${params.id}`;
+    return {
+      meta: [
+        { title: `${title} | MYKUTUB` },
+        { name: "description", content: desc },
+        { property: "og:type", content: "product" },
+        { property: "og:title", content: `${title} | MYKUTUB` },
+        { property: "og:description", content: desc },
+        { property: "og:image", content: image },
+        { property: "og:url", content: url },
+        { name: "twitter:image", content: image },
+      ],
+      links: [{ rel: "canonical", href: url }],
+      scripts: book
+        ? [
+            {
+              type: "application/ld+json",
+              children: JSON.stringify({
+                "@context": "https://schema.org",
+                "@type": "Product",
+                name: book.title,
+                description: book.description ?? undefined,
+                image: book.image_url ?? undefined,
+                offers: {
+                  "@type": "Offer",
+                  price: book.is_donation ? "0" : String(book.price ?? "0"),
+                  priceCurrency: "EUR",
+                  availability: "https://schema.org/InStock",
+                  url,
+                },
+              }),
+            },
+          ]
+        : [],
+    };
+  },
   component: BookDetailPage,
 });
 

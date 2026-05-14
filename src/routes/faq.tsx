@@ -5,10 +5,28 @@ import { HelpCircle, BookOpen, ShoppingBag, Shield, ArrowRight } from "lucide-re
 export const Route = createFileRoute("/faq")({
   head: () => ({
     meta: [
-      { title: "FAQ — MYKUTUB" },
-      { name: "description", content: "Toutes les réponses aux questions les plus fréquentes sur MYKUTUB." },
+      { title: "FAQ — Questions fréquentes | MYKUTUB" },
+      { name: "description", content: "Toutes les réponses à vos questions sur MYKUTUB : comment vendre un livre, comment acheter, comment fonctionne la Sadaqa Jariya, sécurité et confidentialité." },
       { property: "og:title", content: "FAQ — MYKUTUB" },
-      { property: "og:description", content: "Acheter, vendre, donner : nos réponses aux questions sur la marketplace de livres islamiques." },
+      { property: "og:description", content: "Réponses aux questions les plus fréquentes sur MYKUTUB." },
+      { property: "og:url", content: "https://mykutub.lovable.app/faq" },
+    ],
+    links: [{ rel: "canonical", href: "https://mykutub.lovable.app/faq" }],
+    scripts: [
+      {
+        type: "application/ld+json",
+        children: JSON.stringify({
+          "@context": "https://schema.org",
+          "@type": "FAQPage",
+          mainEntity: categories.flatMap((c) =>
+            c.items.map((it) => ({
+              "@type": "Question",
+              name: it.q,
+              acceptedAnswer: { "@type": "Answer", text: it.a },
+            })),
+          ),
+        }),
+      },
     ],
   }),
   component: Faq,
