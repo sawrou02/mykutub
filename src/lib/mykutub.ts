@@ -2342,4 +2342,5 @@ export type Message = {
   sender_name: string;
   text: string;
   created_at: string;
+  read_at?: string | null;
 };
