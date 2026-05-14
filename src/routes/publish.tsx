@@ -185,7 +185,7 @@ function PublishPage() {
     <div className="bg-background min-h-screen pb-24">
       <header className="sticky top-0 z-40 bg-card border-b px-4 py-3 flex items-center gap-3">
         <button onClick={() => history.back()} className="p-2"><ChevronLeft size={24} /></button>
-        <h1 className="font-headline text-xl font-bold">Publier une annonce</h1>
+        <h1 className="font-headline text-xl font-bold">{t("publish.title")}</h1>
       </header>
 
       <div className="max-w-6xl mx-auto lg:grid lg:grid-cols-[1fr_320px] lg:gap-8 lg:px-6">
