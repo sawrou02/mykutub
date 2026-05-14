@@ -131,7 +131,7 @@ function BookDetailPage() {
             <div className="relative aspect-[4/3] sm:aspect-[16/10] w-full bg-muted lg:rounded-xl overflow-hidden">
               <img src={book.image_url} alt={book.title} className="absolute inset-0 w-full h-full object-cover" />
               {book.is_donation && (
-                <span className="absolute bottom-3 left-3 bg-secondary text-secondary-foreground text-[11px] font-bold uppercase px-2.5 py-1 rounded">Sadaqa</span>
+                <span className="absolute bottom-3 left-3 bg-secondary text-secondary-foreground text-[11px] font-bold uppercase px-2.5 py-1 rounded">Don</span>
               )}
               <div className="absolute top-3 right-3 flex gap-2">
                 <button onClick={handleShare} className="p-2 rounded-full bg-card/95 shadow"><Share2 size={16} /></button>

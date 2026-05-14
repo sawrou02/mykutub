@@ -19,7 +19,7 @@ function About() {
   const mission = [
     { icon: BookOpen, emoji: "📚", title: "Donner une seconde vie aux livres islamiques", text: "Faire circuler le savoir au lieu de laisser les livres dormir sur des étagères." },
     { icon: Users, emoji: "🤝", title: "Créer des liens entre membres de la communauté", text: "Connecter ceux qui ont avec ceux qui cherchent, partout en France." },
-    { icon: Sprout, emoji: "🌱", title: "Perpétuer la tradition du partage du savoir", text: "Inscrire chaque échange dans l'esprit de la Sadaqa Jariya." },
+    { icon: Sprout, emoji: "🌱", title: "Perpétuer la tradition du partage du savoir", text: "Faire de chaque livre transmis une graine de connaissance pour la communauté." },
   ];
 
   const values = [
@@ -36,7 +36,7 @@ function About() {
         <div className="absolute inset-0 opacity-10 [background-image:radial-gradient(circle_at_1px_1px,white_1px,transparent_0)] [background-size:24px_24px]" />
         <div className="relative max-w-5xl mx-auto px-4 md:px-8 py-20 md:py-32 text-center space-y-6">
           <div className="inline-flex items-center gap-2 bg-white/10 border border-white/20 text-white px-4 py-2 rounded-full text-xs font-bold uppercase tracking-wider">
-            <Sparkles size={14} /> Sadaqa Jariya
+            <Sparkles size={14} /> À propos
           </div>
           <h1 className="font-headline text-4xl md:text-6xl lg:text-7xl font-black leading-tight">Notre histoire</h1>
           <p className="text-lg md:text-2xl text-white/85 max-w-3xl mx-auto leading-relaxed">

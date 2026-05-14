@@ -63,7 +63,7 @@ function PreviewCard({
         </button>
         {isDonation && (
           <span className="absolute top-1.5 left-1.5 bg-secondary text-secondary-foreground text-[8px] font-bold uppercase px-1.5 py-0.5 rounded">
-            Sadaqa
+            Don
           </span>
         )}
       </div>
@@ -225,7 +225,7 @@ function PublishPage() {
 
           <div className="flex items-center gap-3 p-4 bg-secondary/10 rounded-2xl">
             <Checkbox id="donation" checked={isDonation} onCheckedChange={(v) => setIsDonation(!!v)} />
-            <Label htmlFor="donation" className="font-bold text-sm cursor-pointer">Je donne ce livre (Sadaqa)</Label>
+            <Label htmlFor="donation" className="font-bold text-sm cursor-pointer">Je donne ce livre gratuitement</Label>
           </div>
 
           <div className="flex items-start gap-3 p-4 bg-primary/5 rounded-2xl">
