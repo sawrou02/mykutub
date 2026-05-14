@@ -190,7 +190,7 @@ function PublishPage() {
             {imagePreview ? (
               <div className="relative aspect-[3/4] w-full max-w-xs mx-auto rounded-2xl overflow-hidden bg-muted">
                 <img src={imagePreview} alt="aperçu" className="absolute inset-0 w-full h-full object-cover" />
-                <button type="button" onClick={() => { setImagePreview(null); if (fileInputRef.current) fileInputRef.current.value = ""; }}
+                <button type="button" onClick={() => { setImagePreview(null); setImageFile(null); if (fileInputRef.current) fileInputRef.current.value = ""; }}
                   className="absolute top-2 right-2 p-2 bg-destructive text-destructive-foreground rounded-full">
                   <X size={16} />
                 </button>
