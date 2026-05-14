@@ -171,7 +171,7 @@ function PublishPage() {
     setLoading(false);
     if (error) toast.error(error.message);
     else {
-      toast.success("Annonce publiée !");
+      toast.success(t("publish.success"));
       navigate({ to: "/" });
     }
   }
