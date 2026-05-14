@@ -62,27 +62,27 @@ function AdminPage() {
     return (
       <div className="max-w-md mx-auto p-10 text-center space-y-4">
         <ShieldCheck size={48} className="mx-auto text-muted-foreground" />
-        <h1 className="text-2xl font-bold">Accès refusé</h1>
-        <p className="text-muted-foreground">Cette page est réservée aux administrateurs.</p>
-        <Button onClick={() => navigate({ to: "/" })}>Retour à l'accueil</Button>
+        <h1 className="text-2xl font-bold">{t("admin.denied")}</h1>
+        <p className="text-muted-foreground">{t("admin.deniedText")}</p>
+        <Button onClick={() => navigate({ to: "/" })}>{t("admin.back")}</Button>
       </div>
     );
   }
 
   const deleteBook = async (id: string) => {
-    if (!confirm("Supprimer cette annonce ?")) return;
+    if (!confirm(t("admin.confirmDeleteBook"))) return;
     const { error } = await supabase.from("books").delete().eq("id", id);
     if (error) return toast.error(error.message);
     setBooks(b => b.filter(x => x.id !== id));
-    toast.success("Annonce supprimée");
+    toast.success(t("admin.deletedBook"));
   };
 
   const deleteReview = async (id: string) => {
-    if (!confirm("Supprimer cet avis ?")) return;
+    if (!confirm(t("admin.confirmDeleteReview"))) return;
     const { error } = await supabase.from("reviews").delete().eq("id", id);
     if (error) return toast.error(error.message);
     setReviews(r => r.filter(x => x.id !== id));
-    toast.success("Avis supprimé");
+    toast.success(t("admin.deletedReview"));
   };
 
   const openMessage = async (id: string, isRead: boolean) => {
