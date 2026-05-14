@@ -187,7 +187,7 @@ function AdminPage() {
           {profiles.map(p => (
             <Card key={p.id} className="p-3 flex items-center justify-between">
               <div>
-                <p className="font-semibold">{p.display_name ?? "Sans nom"}</p>
+                <p className="font-semibold">{p.display_name ?? t("admin.noName")}</p>
                 <p className="text-xs text-muted-foreground font-mono">{p.id.slice(0, 8)}…</p>
               </div>
               <p className="text-xs text-muted-foreground">{new Date(p.created_at).toLocaleDateString()}</p>
