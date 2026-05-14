@@ -151,47 +151,47 @@ function ProfilePage() {
         <Tabs defaultValue="info">
           <TabsList className="w-full bg-transparent border-b rounded-none h-12 mb-6">
             <TabsTrigger value="info" className="flex-1 rounded-none border-b-2 border-transparent data-[state=active]:border-primary font-bold">
-              Mes infos
+              {t("profile.tabInfo")}
             </TabsTrigger>
             <TabsTrigger value="ads" className="flex-1 rounded-none border-b-2 border-transparent data-[state=active]:border-primary font-bold">
-              Annonces
+              {t("profile.tabAds")}
             </TabsTrigger>
             <TabsTrigger value="likes" className="flex-1 rounded-none border-b-2 border-transparent data-[state=active]:border-primary font-bold">
-              Favoris
+              {t("profile.tabFavs")}
             </TabsTrigger>
           </TabsList>
 
           <TabsContent value="info">
             <div className="bg-card rounded-2xl border p-6 space-y-5">
-              <h2 className="font-headline font-bold text-lg">Informations personnelles</h2>
+              <h2 className="font-headline font-bold text-lg">{t("profile.info")}</h2>
 
               <div className="space-y-1.5">
-                <Label className="text-xs font-bold uppercase tracking-widest">Nom / Pseudo</Label>
+                <Label className="text-xs font-bold uppercase tracking-widest">{t("profile.name")}</Label>
                 <Input value={profile?.display_name ?? ""} onChange={(e) => setProfile(p => p ? { ...p, display_name: e.target.value } : p)} className="h-11" />
               </div>
 
               <div className="space-y-1.5">
-                <Label className="text-xs font-bold uppercase tracking-widest flex items-center gap-1.5"><Mail size={12} /> Email</Label>
+                <Label className="text-xs font-bold uppercase tracking-widest flex items-center gap-1.5"><Mail size={12} /> {t("profile.email")}</Label>
                 <Input value={user.email ?? ""} disabled className="h-11 bg-muted" />
               </div>
 
               <div className="space-y-1.5">
-                <Label className="text-xs font-bold uppercase tracking-widest flex items-center gap-1.5"><Phone size={12} /> Téléphone</Label>
+                <Label className="text-xs font-bold uppercase tracking-widest flex items-center gap-1.5"><Phone size={12} /> {t("profile.phone")}</Label>
                 <Input value={profile?.phone ?? ""} placeholder="06 12 34 56 78" onChange={(e) => setProfile(p => p ? { ...p, phone: e.target.value } : p)} className="h-11" />
                 <div className="flex items-center justify-between p-3 rounded-lg bg-muted/50 mt-2">
-                  <Label className="text-sm">Téléphone visible par les autres utilisateurs</Label>
+                  <Label className="text-sm">{t("profile.phoneVisible")}</Label>
                   <Switch checked={profile?.phone_visible ?? false} onCheckedChange={(v) => setProfile(p => p ? { ...p, phone_visible: v } : p)} />
                 </div>
               </div>
 
               <div className="space-y-1.5">
-                <Label className="text-xs font-bold uppercase tracking-widest flex items-center gap-1.5"><MapPin size={12} /> Localisation / Ville</Label>
+                <Label className="text-xs font-bold uppercase tracking-widest flex items-center gap-1.5"><MapPin size={12} /> {t("profile.city")}</Label>
                 <Input value={profile?.city ?? ""} placeholder="Paris" onChange={(e) => setProfile(p => p ? { ...p, city: e.target.value } : p)} className="h-11" />
               </div>
 
               <Button onClick={handleSaveProfile} disabled={saving} className="w-full h-12 rounded-xl font-bold gap-2">
                 {saving ? <Loader2 className="animate-spin" size={16} /> : <Save size={16} />}
-                Enregistrer
+                {t("profile.save")}
               </Button>
             </div>
           </TabsContent>
