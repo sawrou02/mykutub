@@ -225,8 +225,8 @@ function ProfilePage() {
             {favorites.length === 0 ? (
               <div className="flex flex-col items-center justify-center py-20 text-center">
                 <Heart size={40} className="text-muted-foreground mb-4" />
-                <p className="font-bold text-lg">Aucun favori</p>
-                <p className="text-sm text-muted-foreground mt-1">Cliquez sur le cœur d'une annonce pour la sauvegarder.</p>
+                <p className="font-bold text-lg">{t("profile.noFavorites")}</p>
+                <p className="text-sm text-muted-foreground mt-1">{t("profile.noFavoritesHint")}</p>
               </div>
             ) : (
               <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
