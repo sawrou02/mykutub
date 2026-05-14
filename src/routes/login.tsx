@@ -6,6 +6,7 @@ import { Label } from "@/components/ui/label";
 import { BookOpen, ChevronLeft, Loader2, CheckCircle2, Eye, EyeOff } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
+import { GoogleAuthButton } from "@/components/GoogleAuthButton";
 
 export const Route = createFileRoute("/login")({
   validateSearch: (s: Record<string, unknown>): { verified?: "1" } => {
@@ -127,6 +128,17 @@ function LoginPage() {
               {loading ? <Loader2 className="animate-spin" /> : "Se connecter"}
             </Button>
           </form>
+
+          <div className="relative my-5">
+            <div className="absolute inset-0 flex items-center">
+              <span className="w-full border-t" />
+            </div>
+            <div className="relative flex justify-center text-xs">
+              <span className="bg-card px-2 text-muted-foreground">ou</span>
+            </div>
+          </div>
+
+          <GoogleAuthButton />
 
           <p className="text-center text-sm text-muted-foreground mt-6">
             Pas encore de compte ?{" "}
