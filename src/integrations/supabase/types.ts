@@ -52,6 +52,7 @@ export type Database = {
           id: string
           image_url: string
           is_donation: boolean
+          language: string
           price: number
           reserved_at: string | null
           reserved_by: string | null
@@ -70,6 +71,7 @@ export type Database = {
           id?: string
           image_url: string
           is_donation?: boolean
+          language?: string
           price?: number
           reserved_at?: string | null
           reserved_by?: string | null
@@ -88,6 +90,7 @@ export type Database = {
           id?: string
           image_url?: string
           is_donation?: boolean
+          language?: string
           price?: number
           reserved_at?: string | null
           reserved_by?: string | null
