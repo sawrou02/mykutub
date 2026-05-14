@@ -2,7 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
-import { ArrowRight, BookOpen, Heart, ShieldCheck, Sparkles } from "lucide-react";
+import { ArrowRight, BookOpen, Heart, PlusCircle, ShieldCheck, Sparkles } from "lucide-react";
 import { BookCard } from "@/components/BookCard";
 import { supabase } from "@/integrations/supabase/client";
 import type { Book } from "@/lib/mykutub";
