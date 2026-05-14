@@ -216,7 +216,7 @@ function ProfilePage() {
               ))}
               <Link to="/publish" className="aspect-[3/4] border-2 border-dashed border-primary/20 rounded-2xl flex flex-col items-center justify-center text-primary/60 hover:bg-primary/5 transition-colors gap-2">
                 <Package size={32} />
-                <span className="font-bold text-xs uppercase tracking-wider text-center px-2">Nouvelle annonce</span>
+                <span className="font-bold text-xs uppercase tracking-wider text-center px-2">{t("profile.newAd")}</span>
               </Link>
             </div>
           </TabsContent>
