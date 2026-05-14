@@ -12,7 +12,9 @@ import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
-import { CATEGORIES, CONDITIONS, ALL_CITIES } from "@/lib/mykutub";
+import { CATEGORIES, CONDITIONS, ALL_CITIES, LANGUAGES } from "@/lib/mykutub";
+
+const LANG_OPTIONS = Array.from(new Set([...LANGUAGES, "Autre"]));
 
 export const Route = createFileRoute("/publish")({
   head: () => ({
@@ -111,6 +113,7 @@ function PublishPage() {
   const [category, setCategory] = useState("");
   const [condition, setCondition] = useState("");
   const [city, setCity] = useState("");
+  const [language, setLanguage] = useState("");
   const [price, setPrice] = useState("");
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -153,6 +156,7 @@ function PublishPage() {
       category,
       condition,
       city,
+      language,
       description,
       price: isDonation ? 0 : Number(price),
       is_donation: isDonation,
@@ -235,14 +239,25 @@ function PublishPage() {
             </div>
           </div>
 
-          <div className="space-y-1.5">
-            <Label className="text-xs font-bold uppercase tracking-widest">Ville *</Label>
-            <Select value={city} onValueChange={setCity} required>
-              <SelectTrigger className="h-11"><SelectValue placeholder="Choisir" /></SelectTrigger>
-              <SelectContent>
-                {ALL_CITIES.map(c => <SelectItem key={c} value={c}>{c}</SelectItem>)}
-              </SelectContent>
-            </Select>
+          <div className="grid grid-cols-2 gap-3">
+            <div className="space-y-1.5">
+              <Label className="text-xs font-bold uppercase tracking-widest">Ville *</Label>
+              <Select value={city} onValueChange={setCity} required>
+                <SelectTrigger className="h-11"><SelectValue placeholder="Choisir" /></SelectTrigger>
+                <SelectContent>
+                  {ALL_CITIES.map(c => <SelectItem key={c} value={c}>{c}</SelectItem>)}
+                </SelectContent>
+              </Select>
+            </div>
+            <div className="space-y-1.5">
+              <Label className="text-xs font-bold uppercase tracking-widest">Langue *</Label>
+              <Select value={language} onValueChange={setLanguage} required>
+                <SelectTrigger className="h-11"><SelectValue placeholder="Choisir" /></SelectTrigger>
+                <SelectContent>
+                  {LANG_OPTIONS.map(l => <SelectItem key={l} value={l}>{l}</SelectItem>)}
+                </SelectContent>
+              </Select>
+            </div>
           </div>
 
           <div className="flex items-center gap-3 p-4 bg-secondary/10 rounded-2xl">
