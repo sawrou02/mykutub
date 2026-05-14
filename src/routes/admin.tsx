@@ -141,6 +141,12 @@ function AdminPage() {
               <Badge className="ml-2 h-5 min-w-5 px-1.5 bg-destructive text-destructive-foreground">{unreadCount}</Badge>
             )}
           </TabsTrigger>
+          <TabsTrigger value="reports" className="relative">
+            <Flag size={14} className="mr-1.5" /> Signalements
+            {pendingReports > 0 && (
+              <Badge className="ml-2 h-5 min-w-5 px-1.5 bg-destructive text-destructive-foreground">{pendingReports}</Badge>
+            )}
+          </TabsTrigger>
         </TabsList>
 
         <TabsContent value="books" className="space-y-2">
