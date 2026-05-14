@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
-import { Settings, LogOut, Package, Heart, UserCircle, Trash2, Camera, Loader2, Mail, Phone, MapPin, Save } from "lucide-react";
+import { Settings, LogOut, Package, Heart, UserCircle, Trash2, Camera, Loader2, Mail, Phone, MapPin, Save, Pencil } from "lucide-react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { BookCard } from "@/components/BookCard";
 import { useAuth } from "@/hooks/useAuth";
@@ -200,10 +200,17 @@ function ProfilePage() {
               {myBooks.map(book => (
                 <div key={book.id} className="relative group">
                   <BookCard book={book} />
-                  <button onClick={(e) => { e.preventDefault(); handleDelete(book.id); }}
-                    className="absolute top-2 left-2 p-2 bg-destructive text-destructive-foreground rounded-full shadow-lg opacity-0 group-hover:opacity-100 transition-opacity">
-                    <Trash2 size={16} />
-                  </button>
+                  <div className="absolute top-2 left-2 flex gap-1.5 opacity-0 group-hover:opacity-100 transition-opacity">
+                    <Link to="/modifier/$id" params={{ id: book.id }}
+                      onClick={(e) => e.stopPropagation()}
+                      className="p-2 bg-primary text-primary-foreground rounded-full shadow-lg">
+                      <Pencil size={16} />
+                    </Link>
+                    <button onClick={(e) => { e.preventDefault(); handleDelete(book.id); }}
+                      className="p-2 bg-destructive text-destructive-foreground rounded-full shadow-lg">
+                      <Trash2 size={16} />
+                    </button>
+                  </div>
                 </div>
               ))}
               <Link to="/publish" className="aspect-[3/4] border-2 border-dashed border-primary/20 rounded-2xl flex flex-col items-center justify-center text-primary/60 hover:bg-primary/5 transition-colors gap-2">
