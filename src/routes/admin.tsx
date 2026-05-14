@@ -5,7 +5,8 @@ import { useIsAdmin } from "@/hooks/useIsAdmin";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Trash2, Users, BookOpen, MessageSquare, Star, ShieldCheck, Loader2 } from "lucide-react";
+import { Trash2, Users, BookOpen, MessageSquare, Star, ShieldCheck, Loader2, Mail, Inbox } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/admin")({ component: AdminPage });
@@ -17,6 +18,8 @@ function AdminPage() {
   const [books, setBooks] = useState<any[]>([]);
   const [reviews, setReviews] = useState<any[]>([]);
   const [profiles, setProfiles] = useState<any[]>([]);
+  const [contactMsgs, setContactMsgs] = useState<any[]>([]);
+  const [openMsgId, setOpenMsgId] = useState<string | null>(null);
 
   useEffect(() => {
     if (!isAdmin) return;
@@ -25,10 +28,12 @@ function AdminPage() {
       supabase.from("books").select("*").order("created_at", { ascending: false }),
       supabase.from("messages").select("id", { count: "exact", head: true }),
       supabase.from("reviews").select("*").order("created_at", { ascending: false }),
-    ]).then(([p, b, m, r]) => {
+      supabase.from("contact_messages").select("*").order("created_at", { ascending: false }),
+    ]).then(([p, b, m, r, c]) => {
       setProfiles(p.data ?? []);
       setBooks(b.data ?? []);
       setReviews(r.data ?? []);
+      setContactMsgs(c.data ?? []);
       setStats({
         users: p.count ?? 0,
         books: b.data?.length ?? 0,
@@ -67,6 +72,24 @@ function AdminPage() {
     toast.success("Avis supprimé");
   };
 
+  const openMessage = async (id: string, isRead: boolean) => {
+    setOpenMsgId(prev => prev === id ? null : id);
+    if (!isRead) {
+      const { error } = await supabase.from("contact_messages").update({ is_read: true }).eq("id", id);
+      if (!error) setContactMsgs(prev => prev.map(m => m.id === id ? { ...m, is_read: true } : m));
+    }
+  };
+
+  const deleteContactMsg = async (id: string) => {
+    if (!confirm("Supprimer ce message ?")) return;
+    const { error } = await supabase.from("contact_messages").delete().eq("id", id);
+    if (error) return toast.error(error.message);
+    setContactMsgs(prev => prev.filter(m => m.id !== id));
+    toast.success("Message supprimé");
+  };
+
+  const unreadCount = contactMsgs.filter(m => !m.is_read).length;
+
   return (
     <div className="max-w-7xl mx-auto p-4 md:p-8 pb-24 space-y-6">
       <div className="flex items-center gap-3">
@@ -86,6 +109,12 @@ function AdminPage() {
           <TabsTrigger value="books">Annonces</TabsTrigger>
           <TabsTrigger value="reviews">Avis</TabsTrigger>
           <TabsTrigger value="users">Utilisateurs</TabsTrigger>
+          <TabsTrigger value="contact" className="relative">
+            <Inbox size={14} className="mr-1.5" /> Contact
+            {unreadCount > 0 && (
+              <Badge className="ml-2 h-5 min-w-5 px-1.5 bg-destructive text-destructive-foreground">{unreadCount}</Badge>
+            )}
+          </TabsTrigger>
         </TabsList>
 
         <TabsContent value="books" className="space-y-2">
