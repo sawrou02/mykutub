@@ -9,6 +9,7 @@ import { useUnreadChats } from "@/hooks/useUnreadChats";
 import { useTranslation } from "react-i18next";
 import { LanguageSwitcher } from "./LanguageSwitcher";
 import { NotificationBell } from "./NotificationBell";
+import { InstallPWAButton } from "./InstallPWAButton";
 
 export function SiteHeader() {
   const { pathname } = useLocation();
