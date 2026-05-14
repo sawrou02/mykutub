@@ -9,6 +9,7 @@ import type { Book } from "@/lib/mykutub";
 import { SellerReviews } from "@/components/SellerReviews";
 import { BookReservation } from "@/components/BookReservation";
 import { OnlineStatusLabel } from "@/components/OnlineDot";
+import { ReportDialog } from "@/components/ReportDialog";
 import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/book/$id")({
