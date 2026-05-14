@@ -57,9 +57,11 @@ function Landing() {
           <div className="relative aspect-[4/3] md:aspect-square rounded-3xl overflow-hidden shadow-2xl">
             <img
               src={heroImage}
-              alt="Livres de science islamique empilés"
+              alt="Livres de science islamique empilés dont un Coran vert avec calligraphie arabe"
               width={1536}
               height={1024}
+              fetchPriority="high"
+              decoding="async"
               className="absolute inset-0 w-full h-full object-cover"
             />
           </div>
