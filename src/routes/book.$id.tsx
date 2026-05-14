@@ -109,25 +109,17 @@ function BookDetailPage() {
 
   return (
     <div className="bg-muted/30 min-h-screen pb-24 lg:pb-10">
-      {/* Top bar (mobile) */}
-      <div className="lg:hidden fixed top-0 left-0 right-0 z-50 flex items-center justify-between px-3 h-12 pointer-events-none">
-        <button onClick={() => history.back()} className="pointer-events-auto p-2 rounded-full bg-card/95 backdrop-blur-md shadow-sm">
-          <ChevronLeft size={18} />
-        </button>
-        <div className="pointer-events-auto flex gap-2">
-          <button onClick={handleShare} className="p-2 rounded-full bg-card/95 backdrop-blur-md shadow-sm"><Share2 size={16} /></button>
-          <button className="p-2 rounded-full bg-card/95 backdrop-blur-md shadow-sm"><Heart size={16} /></button>
-        </div>
-      </div>
-
-      {/* Breadcrumb (desktop) */}
-      <div className="hidden lg:block max-w-6xl mx-auto px-6 pt-6">
-        <nav className="text-xs text-muted-foreground flex items-center gap-1.5">
-          <Link to="/" className="hover:underline">Accueil</Link>
+      {/* Breadcrumb + back button */}
+      <div className="max-w-6xl mx-auto px-4 lg:px-6 pt-4 lg:pt-6 space-y-3">
+        <Button asChild variant="outline" size="sm" className="rounded-full gap-1.5 h-9 font-medium">
+          <Link to="/catalog"><ChevronLeft size={16} /> Retour au catalogue</Link>
+        </Button>
+        <nav aria-label="Fil d'Ariane" className="text-xs text-muted-foreground flex items-center gap-1.5 flex-wrap">
+          <Link to="/" className="hover:text-foreground hover:underline">Accueil</Link>
           <span>›</span>
-          <span className="hover:underline">{book.category}</span>
+          <Link to="/catalog" className="hover:text-foreground hover:underline">Catalogue</Link>
           <span>›</span>
-          <span className="text-foreground font-medium">{book.title}</span>
+          <span className="text-foreground font-medium truncate max-w-[200px] sm:max-w-none">{book.title}</span>
         </nav>
       </div>
 
@@ -141,7 +133,7 @@ function BookDetailPage() {
               {book.is_donation && (
                 <span className="absolute bottom-3 left-3 bg-secondary text-secondary-foreground text-[11px] font-bold uppercase px-2.5 py-1 rounded">Sadaqa</span>
               )}
-              <div className="hidden lg:flex absolute top-3 right-3 gap-2">
+              <div className="absolute top-3 right-3 flex gap-2">
                 <button onClick={handleShare} className="p-2 rounded-full bg-card/95 shadow"><Share2 size={16} /></button>
                 <button className="p-2 rounded-full bg-card/95 shadow"><Heart size={16} /></button>
               </div>
