@@ -84,6 +84,7 @@ export function SiteHeader() {
                 </Button>
               </>
             )}
+            <InstallPWAButton className="relative hidden sm:block" />
             <LanguageSwitcher />
             <Sheet>
               <SheetTrigger asChild>
