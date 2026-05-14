@@ -11,11 +11,14 @@ import heroImage from "@/assets/hero-books.jpg";
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "MYKUTUB — Marketplace de livres de science islamique" },
-      { name: "description", content: "Achetez, vendez et donnez vos livres de science islamique d'occasion en France. Une seconde vie pour le savoir." },
-      { property: "og:title", content: "MYKUTUB — Marketplace de livres de science islamique" },
-      { property: "og:description", content: "Donnez une seconde vie à vos livres de science islamique." },
+      { title: "MYKUTUB — Acheter et vendre des livres islamiques d'occasion en France" },
+      { name: "description", content: "Marketplace gratuite dédiée aux livres de science islamique d'occasion. Achetez, vendez ou donnez vos livres en Sadaqa Jariya. Communauté musulmane de confiance en France." },
+      { name: "keywords", content: "livres islamiques occasion, livres science islamique, marketplace musulmane, sadaqa jariya livres, vente livres coran france" },
+      { property: "og:title", content: "MYKUTUB — Marketplace de livres islamiques d'occasion" },
+      { property: "og:description", content: "Achetez, vendez et donnez vos livres de science islamique. Une plateforme gratuite, sécurisée, au service de la communauté." },
+      { property: "og:url", content: "https://mykutub.lovable.app/" },
     ],
+    links: [{ rel: "canonical", href: "https://mykutub.lovable.app/" }],
   }),
   component: Landing,
 });
