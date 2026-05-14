@@ -36,9 +36,9 @@ function Landing() {
       <section className="relative overflow-hidden bg-card">
         <div className="max-w-7xl mx-auto px-4 md:px-8 py-12 md:py-24 grid md:grid-cols-2 gap-8 md:gap-12 items-center">
           <div className="space-y-6 md:space-y-8 z-10">
-            <div className="inline-flex items-center gap-2 bg-primary/5 text-primary px-3 py-1.5 rounded-full text-xs font-bold uppercase tracking-wider">
-              <Sparkles size={14} /> {t("home.badge")}
-            </div>
+            <Button asChild size="lg" className="gap-2 h-14 rounded-2xl text-base font-bold px-8 w-fit">
+              <Link to="/publish">{t("home.publishBtn")}</Link>
+            </Button>
             <h1 className="font-headline text-4xl md:text-6xl lg:text-7xl font-black leading-[1.05] tracking-tight">
               {t("home.h1a")}<br /><span className="text-primary">{t("home.h1b")}</span>
             </h1>
@@ -46,11 +46,8 @@ function Landing() {
               {t("home.intro")}
             </p>
             <div className="flex flex-wrap gap-3">
-              <Button asChild size="lg" className="gap-2 h-14 rounded-2xl text-base font-bold px-8">
-                <Link to="/catalog">{t("common.explore")} <ArrowRight size={18} /></Link>
-              </Button>
               <Button asChild size="lg" variant="outline" className="gap-2 h-14 rounded-2xl text-base font-bold px-8">
-                <Link to="/publish">{t("home.publishBtn")}</Link>
+                <Link to="/catalog">{t("common.explore")} <ArrowRight size={18} /></Link>
               </Button>
             </div>
           </div>
