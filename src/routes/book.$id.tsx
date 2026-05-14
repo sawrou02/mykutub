@@ -337,7 +337,9 @@ function BookDetailPage() {
   );
 }
 
-function InfoRow({ icon, label, value }: { icon: React.ReactNode; label: string; value: string }) {
+type InfoRowProps = { icon: React.ReactNode; label: string; value: string };
+function InfoRow(props: InfoRowProps) {
+  const { icon, label, value } = props;
   return (
     <div className="flex items-start gap-3">
       <div className="w-8 h-8 rounded-full bg-muted flex items-center justify-center text-foreground/70 shrink-0">
