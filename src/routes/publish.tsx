@@ -104,6 +104,7 @@ function PublishPage() {
   const [isDonation, setIsDonation] = useState(false);
   const [canDeliver, setCanDeliver] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [imageFile, setImageFile] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
@@ -115,10 +116,11 @@ function PublishPage() {
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
-    if (file.size > 1024 * 1024) {
-      toast.error("Image trop volumineuse (max 1 Mo).");
+    if (file.size > 5 * 1024 * 1024) {
+      toast.error("Image trop volumineuse (max 5 Mo).");
       return;
     }
+    setImageFile(file);
     const reader = new FileReader();
     reader.onloadend = () => setImagePreview(reader.result as string);
     reader.readAsDataURL(file);
@@ -131,11 +133,21 @@ function PublishPage() {
       navigate({ to: "/login" });
       return;
     }
-    if (!imagePreview) {
+    if (!imageFile) {
       toast.error("Veuillez ajouter une photo.");
       return;
     }
     setLoading(true);
+    // Upload image to storage bucket
+    const ext = imageFile.name.split(".").pop()?.toLowerCase() || "jpg";
+    const path = `${user.id}/${Date.now()}.${ext}`;
+    const { error: upErr } = await supabase.storage.from("book-images").upload(path, imageFile, { upsert: false, contentType: imageFile.type });
+    if (upErr) {
+      setLoading(false);
+      toast.error(upErr.message);
+      return;
+    }
+    const { data: pub } = supabase.storage.from("book-images").getPublicUrl(path);
     const data = {
       title,
       category,
@@ -147,7 +159,7 @@ function PublishPage() {
       can_deliver: canDeliver,
       seller_id: user.id,
       seller_name: user.user_metadata?.display_name || user.email?.split("@")[0] || "Utilisateur",
-      image_url: imagePreview,
+      image_url: pub.publicUrl,
     };
     const { error } = await supabase.from("books").insert(data);
     setLoading(false);
@@ -178,7 +190,7 @@ function PublishPage() {
             {imagePreview ? (
               <div className="relative aspect-[3/4] w-full max-w-xs mx-auto rounded-2xl overflow-hidden bg-muted">
                 <img src={imagePreview} alt="aperçu" className="absolute inset-0 w-full h-full object-cover" />
-                <button type="button" onClick={() => { setImagePreview(null); if (fileInputRef.current) fileInputRef.current.value = ""; }}
+                <button type="button" onClick={() => { setImagePreview(null); setImageFile(null); if (fileInputRef.current) fileInputRef.current.value = ""; }}
                   className="absolute top-2 right-2 p-2 bg-destructive text-destructive-foreground rounded-full">
                   <X size={16} />
                 </button>
