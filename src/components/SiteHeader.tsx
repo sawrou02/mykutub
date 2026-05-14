@@ -9,6 +9,7 @@ import { useUnreadChats } from "@/hooks/useUnreadChats";
 import { useTranslation } from "react-i18next";
 import { LanguageSwitcher } from "./LanguageSwitcher";
 import { NotificationBell } from "./NotificationBell";
+import { InstallPWAButton } from "./InstallPWAButton";
 
 export function SiteHeader() {
   const { pathname } = useLocation();
@@ -83,6 +84,7 @@ export function SiteHeader() {
                 </Button>
               </>
             )}
+            <InstallPWAButton className="relative hidden sm:block" />
             <LanguageSwitcher />
             <Sheet>
               <SheetTrigger asChild>
@@ -115,6 +117,8 @@ export function SiteHeader() {
                       <Link to="/signup" className="px-4 py-3 rounded-lg bg-primary text-primary-foreground font-medium text-center">{t("nav.signup")}</Link>
                     </>
                   )}
+                  <div className="border-t my-4" />
+                  <InstallPWAButton className="relative px-2" />
                 </div>
               </SheetContent>
             </Sheet>
