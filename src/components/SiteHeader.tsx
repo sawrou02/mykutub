@@ -25,18 +25,6 @@ export function SiteHeader() {
 
   return (
     <>
-      {/* Top publish bar */}
-      <div className="w-full bg-primary text-primary-foreground">
-        <div className="max-w-7xl mx-auto flex items-center justify-between gap-3 px-4 md:px-8 py-2">
-          <p className="text-xs md:text-sm font-medium truncate">
-            Partagez vos livres avec la communauté MYKUTUB
-          </p>
-          <Button asChild size="sm" variant="secondary" className="h-8 gap-1.5 font-bold text-xs md:text-sm flex-shrink-0">
-            <Link to="/publish"><PlusCircle size={14} /> Déposer une annonce</Link>
-          </Button>
-        </div>
-      </div>
-
       <header className="sticky top-0 z-50 w-full border-b bg-card/90 backdrop-blur-md">
         <div className="max-w-7xl mx-auto flex h-16 items-center justify-between px-4 md:px-8">
           <Link to="/" className="flex items-center gap-2">
