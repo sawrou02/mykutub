@@ -4,7 +4,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import {
   Search, SlidersHorizontal, MapPin, X, Check, History, Trash2,
-  LayoutGrid, List as ListIcon, Truck, Heart, Star,
+  LayoutGrid, List as ListIcon, Truck,
 } from "lucide-react";
 import { BookCard } from "@/components/BookCard";
 import { Badge } from "@/components/ui/badge";
