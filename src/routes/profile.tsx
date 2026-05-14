@@ -1,5 +1,6 @@
 import { createFileRoute, useNavigate, Link } from "@tanstack/react-router";
 import { useEffect, useRef, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -27,6 +28,7 @@ type Profile = {
 
 function ProfilePage() {
   const navigate = useNavigate();
+  const { t } = useTranslation();
   const { user, loading: authLoading, signOut } = useAuth();
   const [myBooks, setMyBooks] = useState<Book[]>([]);
   const [favorites, setFavorites] = useState<Book[]>([]);
@@ -58,31 +60,30 @@ function ProfilePage() {
   };
 
   const handleDelete = async (id: string) => {
-    if (!confirm("Voulez-vous vraiment supprimer cette annonce ?")) return;
+    if (!confirm(t("profile.confirmDelete"))) return;
     const { error } = await supabase.from("books").delete().eq("id", id);
-    if (error) toast.error("Erreur lors de la suppression");
+    if (error) toast.error(t("profile.deleteError"));
     else {
       setMyBooks(b => b.filter(x => x.id !== id));
-      toast.success("Annonce supprimée");
+      toast.success(t("profile.deleted"));
     }
   };
 
   const handleAvatarUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file || !user) return;
-    if (file.size > 2 * 1024 * 1024) { toast.error("Image > 2 Mo"); return; }
+    if (file.size > 2 * 1024 * 1024) { toast.error(t("profile.avatarTooBig")); return; }
     setUploading(true);
     const ext = file.name.split(".").pop();
     const path = `${user.id}/avatar-${Date.now()}.${ext}`;
     const { error } = await supabase.storage.from("avatars").upload(path, file, { upsert: true });
     if (error) { toast.error(error.message); setUploading(false); return; }
-    // Bucket is private — use long-lived signed URL (1 year)
     const { data: signed, error: signErr } = await supabase.storage.from("avatars").createSignedUrl(path, 60 * 60 * 24 * 365);
     if (signErr || !signed) { toast.error(signErr?.message ?? "URL error"); setUploading(false); return; }
     const url = signed.signedUrl;
     await supabase.from("profiles").update({ avatar_url: url }).eq("id", user.id);
     setProfile(p => p ? { ...p, avatar_url: url } : p);
-    toast.success("Photo mise à jour");
+    toast.success(t("profile.avatarUpdated"));
     setUploading(false);
   };
 
@@ -97,18 +98,18 @@ function ProfilePage() {
     }).eq("id", user.id);
     setSaving(false);
     if (error) toast.error(error.message);
-    else toast.success("Profil enregistré");
+    else toast.success(t("profile.profileSaved"));
   };
 
-  if (authLoading) return <div className="p-10 text-center">Chargement...</div>;
+  if (authLoading) return <div className="p-10 text-center">{t("common.loading")}</div>;
 
   if (!user) {
     return (
       <div className="flex flex-col items-center justify-center min-h-screen p-6 text-center space-y-6">
         <UserCircle size={80} className="text-muted-foreground" />
-        <h1 className="text-2xl font-bold">Connectez-vous pour voir votre profil</h1>
+        <h1 className="text-2xl font-bold">{t("profile.loginCta")}</h1>
         <Button onClick={() => navigate({ to: "/login" })} className="w-full max-w-sm h-14 text-lg font-bold rounded-xl">
-          Se connecter
+          {t("profile.login")}
         </Button>
       </div>
     );
@@ -150,47 +151,47 @@ function ProfilePage() {
         <Tabs defaultValue="info">
           <TabsList className="w-full bg-transparent border-b rounded-none h-12 mb-6">
             <TabsTrigger value="info" className="flex-1 rounded-none border-b-2 border-transparent data-[state=active]:border-primary font-bold">
-              Mes infos
+              {t("profile.tabInfo")}
             </TabsTrigger>
             <TabsTrigger value="ads" className="flex-1 rounded-none border-b-2 border-transparent data-[state=active]:border-primary font-bold">
-              Annonces
+              {t("profile.tabAds")}
             </TabsTrigger>
             <TabsTrigger value="likes" className="flex-1 rounded-none border-b-2 border-transparent data-[state=active]:border-primary font-bold">
-              Favoris
+              {t("profile.tabFavs")}
             </TabsTrigger>
           </TabsList>
 
           <TabsContent value="info">
             <div className="bg-card rounded-2xl border p-6 space-y-5">
-              <h2 className="font-headline font-bold text-lg">Informations personnelles</h2>
+              <h2 className="font-headline font-bold text-lg">{t("profile.info")}</h2>
 
               <div className="space-y-1.5">
-                <Label className="text-xs font-bold uppercase tracking-widest">Nom / Pseudo</Label>
+                <Label className="text-xs font-bold uppercase tracking-widest">{t("profile.name")}</Label>
                 <Input value={profile?.display_name ?? ""} onChange={(e) => setProfile(p => p ? { ...p, display_name: e.target.value } : p)} className="h-11" />
               </div>
 
               <div className="space-y-1.5">
-                <Label className="text-xs font-bold uppercase tracking-widest flex items-center gap-1.5"><Mail size={12} /> Email</Label>
+                <Label className="text-xs font-bold uppercase tracking-widest flex items-center gap-1.5"><Mail size={12} /> {t("profile.email")}</Label>
                 <Input value={user.email ?? ""} disabled className="h-11 bg-muted" />
               </div>
 
               <div className="space-y-1.5">
-                <Label className="text-xs font-bold uppercase tracking-widest flex items-center gap-1.5"><Phone size={12} /> Téléphone</Label>
+                <Label className="text-xs font-bold uppercase tracking-widest flex items-center gap-1.5"><Phone size={12} /> {t("profile.phone")}</Label>
                 <Input value={profile?.phone ?? ""} placeholder="06 12 34 56 78" onChange={(e) => setProfile(p => p ? { ...p, phone: e.target.value } : p)} className="h-11" />
                 <div className="flex items-center justify-between p-3 rounded-lg bg-muted/50 mt-2">
-                  <Label className="text-sm">Téléphone visible par les autres utilisateurs</Label>
+                  <Label className="text-sm">{t("profile.phoneVisible")}</Label>
                   <Switch checked={profile?.phone_visible ?? false} onCheckedChange={(v) => setProfile(p => p ? { ...p, phone_visible: v } : p)} />
                 </div>
               </div>
 
               <div className="space-y-1.5">
-                <Label className="text-xs font-bold uppercase tracking-widest flex items-center gap-1.5"><MapPin size={12} /> Localisation / Ville</Label>
+                <Label className="text-xs font-bold uppercase tracking-widest flex items-center gap-1.5"><MapPin size={12} /> {t("profile.city")}</Label>
                 <Input value={profile?.city ?? ""} placeholder="Paris" onChange={(e) => setProfile(p => p ? { ...p, city: e.target.value } : p)} className="h-11" />
               </div>
 
               <Button onClick={handleSaveProfile} disabled={saving} className="w-full h-12 rounded-xl font-bold gap-2">
                 {saving ? <Loader2 className="animate-spin" size={16} /> : <Save size={16} />}
-                Enregistrer
+                {t("profile.save")}
               </Button>
             </div>
           </TabsContent>
@@ -215,7 +216,7 @@ function ProfilePage() {
               ))}
               <Link to="/publish" className="aspect-[3/4] border-2 border-dashed border-primary/20 rounded-2xl flex flex-col items-center justify-center text-primary/60 hover:bg-primary/5 transition-colors gap-2">
                 <Package size={32} />
-                <span className="font-bold text-xs uppercase tracking-wider text-center px-2">Nouvelle annonce</span>
+                <span className="font-bold text-xs uppercase tracking-wider text-center px-2">{t("profile.newAd")}</span>
               </Link>
             </div>
           </TabsContent>
@@ -224,8 +225,8 @@ function ProfilePage() {
             {favorites.length === 0 ? (
               <div className="flex flex-col items-center justify-center py-20 text-center">
                 <Heart size={40} className="text-muted-foreground mb-4" />
-                <p className="font-bold text-lg">Aucun favori</p>
-                <p className="text-sm text-muted-foreground mt-1">Cliquez sur le cœur d'une annonce pour la sauvegarder.</p>
+                <p className="font-bold text-lg">{t("profile.noFavorites")}</p>
+                <p className="text-sm text-muted-foreground mt-1">{t("profile.noFavoritesHint")}</p>
               </div>
             ) : (
               <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
@@ -242,13 +243,13 @@ function ProfilePage() {
             <Link to="/settings" className="w-full flex items-center justify-between p-4 hover:bg-muted/50 transition-colors">
               <div className="flex items-center gap-3">
                 <div className="p-2 bg-muted rounded-lg"><Settings size={18} /></div>
-                <span className="font-bold text-sm">Paramètres du compte</span>
+                <span className="font-bold text-sm">{t("profile.settings")}</span>
               </div>
             </Link>
             <button onClick={handleLogout} className="w-full flex items-center justify-between p-4 hover:bg-destructive/10 text-destructive transition-colors">
               <div className="flex items-center gap-3">
                 <div className="p-2 bg-destructive/10 rounded-lg"><LogOut size={18} /></div>
-                <span className="font-bold text-sm">Déconnexion</span>
+                <span className="font-bold text-sm">{t("profile.logout")}</span>
               </div>
             </button>
           </div>

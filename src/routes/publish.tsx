@@ -1,5 +1,6 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useRef, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -101,6 +102,7 @@ function PreviewCard({
 
 function PublishPage() {
   const navigate = useNavigate();
+  const { t } = useTranslation();
   const { user } = useAuth();
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [isDonation, setIsDonation] = useState(false);
@@ -120,7 +122,7 @@ function PublishPage() {
     const file = e.target.files?.[0];
     if (!file) return;
     if (file.size > 5 * 1024 * 1024) {
-      toast.error("Image trop volumineuse (max 5 Mo).");
+      toast.error(t("publish.photoTooBig"));
       return;
     }
     setImageFile(file);
@@ -132,12 +134,12 @@ function PublishPage() {
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     if (!user) {
-      toast.error("Connexion requise.");
+      toast.error(t("common.loginRequired"));
       navigate({ to: "/login" });
       return;
     }
     if (!imageFile) {
-      toast.error("Veuillez ajouter une photo.");
+      toast.error(t("publish.addPhotoFirst"));
       return;
     }
     setLoading(true);
@@ -169,7 +171,7 @@ function PublishPage() {
     setLoading(false);
     if (error) toast.error(error.message);
     else {
-      toast.success("Annonce publiée !");
+      toast.success(t("publish.success"));
       navigate({ to: "/" });
     }
   }
@@ -183,13 +185,13 @@ function PublishPage() {
     <div className="bg-background min-h-screen pb-24">
       <header className="sticky top-0 z-40 bg-card border-b px-4 py-3 flex items-center gap-3">
         <button onClick={() => history.back()} className="p-2"><ChevronLeft size={24} /></button>
-        <h1 className="font-headline text-xl font-bold">Publier une annonce</h1>
+        <h1 className="font-headline text-xl font-bold">{t("publish.title")}</h1>
       </header>
 
       <div className="max-w-6xl mx-auto lg:grid lg:grid-cols-[1fr_320px] lg:gap-8 lg:px-6">
         <form onSubmit={handleSubmit} className="p-4 space-y-6">
           <div>
-            <Label className="text-xs font-bold uppercase tracking-widest mb-2 block">Photo *</Label>
+            <Label className="text-xs font-bold uppercase tracking-widest mb-2 block">{t("publish.photo")} *</Label>
             <input ref={fileInputRef} type="file" accept="image/*" onChange={handleFileChange} className="hidden" />
             {imagePreview ? (
               <div className="relative aspect-[3/4] w-full max-w-xs mx-auto rounded-2xl overflow-hidden bg-muted">
@@ -203,35 +205,35 @@ function PublishPage() {
               <button type="button" onClick={() => fileInputRef.current?.click()}
                 className="aspect-[3/4] w-full max-w-xs mx-auto border-2 border-dashed border-primary/30 rounded-2xl flex flex-col items-center justify-center gap-3 text-primary/60 hover:bg-primary/5">
                 <Camera size={40} />
-                <span className="font-bold text-xs uppercase tracking-wider">Ajouter une photo</span>
+                <span className="font-bold text-xs uppercase tracking-wider">{t("publish.addPhoto")}</span>
               </button>
             )}
           </div>
 
           <div className="space-y-1.5">
-            <Label htmlFor="title" className="text-xs font-bold uppercase tracking-widest">Titre *</Label>
+            <Label htmlFor="title" className="text-xs font-bold uppercase tracking-widest">{t("publish.bookTitle")} *</Label>
             <Input id="title" value={title} onChange={(e) => setTitle(e.target.value)} required className="h-11" />
           </div>
 
           <div className="space-y-1.5">
-            <Label htmlFor="description" className="text-xs font-bold uppercase tracking-widest">Description</Label>
+            <Label htmlFor="description" className="text-xs font-bold uppercase tracking-widest">{t("publish.description")}</Label>
             <Textarea id="description" value={description} onChange={(e) => setDescription(e.target.value)} rows={4} />
           </div>
 
           <div className="grid grid-cols-2 gap-3">
             <div className="space-y-1.5">
-              <Label className="text-xs font-bold uppercase tracking-widest">Catégorie *</Label>
+              <Label className="text-xs font-bold uppercase tracking-widest">{t("publish.category")} *</Label>
               <Select value={category} onValueChange={setCategory} required>
-                <SelectTrigger className="h-11"><SelectValue placeholder="Choisir" /></SelectTrigger>
+                <SelectTrigger className="h-11"><SelectValue placeholder={t("publish.choose")} /></SelectTrigger>
                 <SelectContent>
                   {categoriesNoTout.map(c => <SelectItem key={c} value={c}>{c}</SelectItem>)}
                 </SelectContent>
               </Select>
             </div>
             <div className="space-y-1.5">
-              <Label className="text-xs font-bold uppercase tracking-widest">État *</Label>
+              <Label className="text-xs font-bold uppercase tracking-widest">{t("publish.condition")} *</Label>
               <Select value={condition} onValueChange={setCondition} required>
-                <SelectTrigger className="h-11"><SelectValue placeholder="Choisir" /></SelectTrigger>
+                <SelectTrigger className="h-11"><SelectValue placeholder={t("publish.choose")} /></SelectTrigger>
                 <SelectContent>
                   {CONDITIONS.map(c => <SelectItem key={c} value={c}>{c}</SelectItem>)}
                 </SelectContent>
@@ -241,18 +243,18 @@ function PublishPage() {
 
           <div className="grid grid-cols-2 gap-3">
             <div className="space-y-1.5">
-              <Label className="text-xs font-bold uppercase tracking-widest">Ville *</Label>
+              <Label className="text-xs font-bold uppercase tracking-widest">{t("publish.city")} *</Label>
               <Select value={city} onValueChange={setCity} required>
-                <SelectTrigger className="h-11"><SelectValue placeholder="Choisir" /></SelectTrigger>
+                <SelectTrigger className="h-11"><SelectValue placeholder={t("publish.choose")} /></SelectTrigger>
                 <SelectContent>
                   {ALL_CITIES.map(c => <SelectItem key={c} value={c}>{c}</SelectItem>)}
                 </SelectContent>
               </Select>
             </div>
             <div className="space-y-1.5">
-              <Label className="text-xs font-bold uppercase tracking-widest">Langue *</Label>
+              <Label className="text-xs font-bold uppercase tracking-widest">{t("publish.language")} *</Label>
               <Select value={language} onValueChange={setLanguage} required>
-                <SelectTrigger className="h-11"><SelectValue placeholder="Choisir" /></SelectTrigger>
+                <SelectTrigger className="h-11"><SelectValue placeholder={t("publish.choose")} /></SelectTrigger>
                 <SelectContent>
                   {LANG_OPTIONS.map(l => <SelectItem key={l} value={l}>{l}</SelectItem>)}
                 </SelectContent>
@@ -262,20 +264,20 @@ function PublishPage() {
 
           <div className="flex items-center gap-3 p-4 bg-secondary/10 rounded-2xl">
             <Checkbox id="donation" checked={isDonation} onCheckedChange={(v) => setIsDonation(!!v)} />
-            <Label htmlFor="donation" className="font-bold text-sm cursor-pointer">Je donne ce livre gratuitement</Label>
+            <Label htmlFor="donation" className="font-bold text-sm cursor-pointer">{t("publish.donation")}</Label>
           </div>
 
           <div className="flex items-start gap-3 p-4 bg-primary/5 rounded-2xl">
             <Checkbox id="delivery" checked={canDeliver} onCheckedChange={(v) => setCanDeliver(!!v)} className="mt-0.5" />
             <div className="flex-1">
-              <Label htmlFor="delivery" className="font-bold text-sm cursor-pointer">Livraison possible</Label>
-              <p className="text-xs text-muted-foreground mt-0.5">Cochez si vous proposez la livraison à l'acheteur.</p>
+              <Label htmlFor="delivery" className="font-bold text-sm cursor-pointer">{t("publish.canDeliver")}</Label>
+              <p className="text-xs text-muted-foreground mt-0.5">{t("publish.canDeliverHint")}</p>
             </div>
           </div>
 
           {!isDonation && (
             <div className="space-y-1.5">
-              <Label htmlFor="price" className="text-xs font-bold uppercase tracking-widest">Prix (€) *</Label>
+              <Label htmlFor="price" className="text-xs font-bold uppercase tracking-widest">{t("publish.price")} *</Label>
               <Input id="price" type="number" min={0} step={0.5} value={price} onChange={(e) => setPrice(e.target.value)} required className="h-11" />
             </div>
           )}
@@ -285,12 +287,12 @@ function PublishPage() {
             <Sheet>
               <SheetTrigger asChild>
                 <Button type="button" variant="outline" className="w-full h-12 rounded-2xl gap-2 font-bold">
-                  <Eye size={16} /> Voir l'aperçu
+                  <Eye size={16} /> {t("publish.seePreview")}
                 </Button>
               </SheetTrigger>
               <SheetContent side="bottom" className="rounded-t-3xl">
                 <SheetHeader className="text-left mb-4">
-                  <SheetTitle>Aperçu de l'annonce</SheetTitle>
+                  <SheetTitle>{t("publish.previewTitle")}</SheetTitle>
                 </SheetHeader>
                 <div className="max-w-[220px] mx-auto pb-6">
                   <PreviewCard {...previewProps} />
@@ -300,7 +302,7 @@ function PublishPage() {
           </div>
 
           <Button type="submit" disabled={loading} className="w-full h-14 rounded-2xl text-base font-bold">
-            {loading ? <Loader2 className="animate-spin" /> : "Publier l'annonce"}
+            {loading ? <Loader2 className="animate-spin" /> : t("publish.submit")}
           </Button>
         </form>
 
@@ -309,13 +311,13 @@ function PublishPage() {
           <div className="sticky top-20 pt-4">
             <div className="bg-card border rounded-3xl p-5">
               <div className="flex items-center gap-2 mb-4 text-xs font-bold uppercase tracking-widest text-muted-foreground">
-                <Eye size={14} /> Aperçu en direct
+                <Eye size={14} /> {t("publish.livePreview")}
               </div>
               <div className="max-w-[240px] mx-auto">
                 <PreviewCard {...previewProps} />
               </div>
               <p className="text-[11px] text-muted-foreground text-center mt-4">
-                Voici comment votre annonce apparaîtra dans le catalogue.
+                {t("publish.previewHint")}
               </p>
             </div>
           </div>
