@@ -61,10 +61,9 @@ export function SiteHeader() {
             })}
           </nav>
 
-          <div className="hidden md:flex items-center gap-2">
-            <LanguageSwitcher />
+          <div className="flex items-center gap-2">
             {user ? (
-              <>
+              <div className="hidden md:flex items-center gap-2">
                 {isAdmin && (
                   <Button asChild variant="ghost" size="icon" title="Admin">
                     <Link to="/admin"><ShieldCheck size={18} className="text-primary" /></Link>
@@ -83,20 +82,17 @@ export function SiteHeader() {
                 <Button asChild variant="outline" size="sm" className="gap-2">
                   <Link to="/profile"><User size={16} /> {t("nav.account")}</Link>
                 </Button>
-              </>
+              </div>
             ) : (
               <>
-                <Button asChild variant="ghost" size="sm">
+                <Button asChild variant="outline" size="sm" className="border-primary text-primary hover:bg-primary/10 hover:text-primary font-bold">
                   <Link to="/login">{t("nav.login")}</Link>
                 </Button>
-                <Button asChild size="sm">
+                <Button asChild size="sm" className="bg-primary text-primary-foreground hover:bg-primary/90 font-bold">
                   <Link to="/signup">{t("nav.signup")}</Link>
                 </Button>
               </>
             )}
-          </div>
-
-          <div className="flex items-center gap-1 lg:hidden">
             <LanguageSwitcher />
             <Sheet>
               <SheetTrigger asChild>
