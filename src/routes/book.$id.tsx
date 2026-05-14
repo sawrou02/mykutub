@@ -7,6 +7,8 @@ import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import type { Book } from "@/lib/mykutub";
 import { SellerReviews } from "@/components/SellerReviews";
+import { BookReservation } from "@/components/BookReservation";
+import { OnlineStatusLabel } from "@/components/OnlineDot";
 import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/book/$id")({
@@ -198,7 +200,10 @@ function BookDetailPage() {
               </div>
             </div>
 
-            {/* Key info */}
+            {/* Reservation status */}
+            <BookReservation book={book} onBookChange={setBook} />
+
+
             <div className="bg-card lg:rounded-xl border px-4 lg:px-6 py-5">
               <h2 className="font-bold text-lg mb-4">Les informations clés</h2>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-y-4 gap-x-6">
