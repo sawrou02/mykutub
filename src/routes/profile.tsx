@@ -60,12 +60,12 @@ function ProfilePage() {
   };
 
   const handleDelete = async (id: string) => {
-    if (!confirm("Voulez-vous vraiment supprimer cette annonce ?")) return;
+    if (!confirm(t("profile.confirmDelete"))) return;
     const { error } = await supabase.from("books").delete().eq("id", id);
-    if (error) toast.error("Erreur lors de la suppression");
+    if (error) toast.error(t("profile.deleteError"));
     else {
       setMyBooks(b => b.filter(x => x.id !== id));
-      toast.success("Annonce supprimée");
+      toast.success(t("profile.deleted"));
     }
   };
 
