@@ -122,7 +122,7 @@ function PublishPage() {
     const file = e.target.files?.[0];
     if (!file) return;
     if (file.size > 5 * 1024 * 1024) {
-      toast.error("Image trop volumineuse (max 5 Mo).");
+      toast.error(t("publish.photoTooBig"));
       return;
     }
     setImageFile(file);
