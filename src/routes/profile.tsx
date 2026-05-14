@@ -76,8 +76,10 @@ function ProfilePage() {
     const path = `${user.id}/avatar-${Date.now()}.${ext}`;
     const { error } = await supabase.storage.from("avatars").upload(path, file, { upsert: true });
     if (error) { toast.error(error.message); setUploading(false); return; }
-    const { data: pub } = supabase.storage.from("avatars").getPublicUrl(path);
-    const url = pub.publicUrl;
+    // Bucket is private — use long-lived signed URL (1 year)
+    const { data: signed, error: signErr } = await supabase.storage.from("avatars").createSignedUrl(path, 60 * 60 * 24 * 365);
+    if (signErr || !signed) { toast.error(signErr?.message ?? "URL error"); setUploading(false); return; }
+    const url = signed.signedUrl;
     await supabase.from("profiles").update({ avatar_url: url }).eq("id", user.id);
     setProfile(p => p ? { ...p, avatar_url: url } : p);
     toast.success("Photo mise à jour");
