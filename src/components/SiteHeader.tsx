@@ -117,6 +117,8 @@ export function SiteHeader() {
                       <Link to="/signup" className="px-4 py-3 rounded-lg bg-primary text-primary-foreground font-medium text-center">{t("nav.signup")}</Link>
                     </>
                   )}
+                  <div className="border-t my-4" />
+                  <InstallPWAButton className="relative px-2" />
                 </div>
               </SheetContent>
             </Sheet>
