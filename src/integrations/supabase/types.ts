@@ -14,6 +14,33 @@ export type Database = {
   }
   public: {
     Tables: {
+      book_requests: {
+        Row: {
+          book_id: string
+          created_at: string
+          id: string
+          requester_id: string
+          requester_name: string
+          status: string
+        }
+        Insert: {
+          book_id: string
+          created_at?: string
+          id?: string
+          requester_id: string
+          requester_name: string
+          status?: string
+        }
+        Update: {
+          book_id?: string
+          created_at?: string
+          id?: string
+          requester_id?: string
+          requester_name?: string
+          status?: string
+        }
+        Relationships: []
+      }
       books: {
         Row: {
           can_deliver: boolean
@@ -26,8 +53,11 @@ export type Database = {
           image_url: string
           is_donation: boolean
           price: number
+          reserved_at: string | null
+          reserved_by: string | null
           seller_id: string
           seller_name: string
+          status: string
           title: string
         }
         Insert: {
@@ -41,8 +71,11 @@ export type Database = {
           image_url: string
           is_donation?: boolean
           price?: number
+          reserved_at?: string | null
+          reserved_by?: string | null
           seller_id: string
           seller_name: string
+          status?: string
           title: string
         }
         Update: {
@@ -56,8 +89,11 @@ export type Database = {
           image_url?: string
           is_donation?: boolean
           price?: number
+          reserved_at?: string | null
+          reserved_by?: string | null
           seller_id?: string
           seller_name?: string
+          status?: string
           title?: string
         }
         Relationships: []
@@ -132,6 +168,7 @@ export type Database = {
           chat_id: string
           created_at: string
           id: string
+          read_at: string | null
           sender_id: string
           sender_name: string
           text: string
@@ -140,6 +177,7 @@ export type Database = {
           chat_id: string
           created_at?: string
           id?: string
+          read_at?: string | null
           sender_id: string
           sender_name: string
           text: string
@@ -148,6 +186,7 @@ export type Database = {
           chat_id?: string
           created_at?: string
           id?: string
+          read_at?: string | null
           sender_id?: string
           sender_name?: string
           text?: string
@@ -162,6 +201,36 @@ export type Database = {
           },
         ]
       }
+      notifications: {
+        Row: {
+          created_at: string
+          id: string
+          is_read: boolean
+          link: string | null
+          message: string
+          type: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          is_read?: boolean
+          link?: string | null
+          message: string
+          type?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          is_read?: boolean
+          link?: string | null
+          message?: string
+          type?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           avatar_url: string | null
@@ -170,6 +239,8 @@ export type Database = {
           created_at: string
           display_name: string | null
           id: string
+          is_online: boolean
+          last_seen: string
           notify_email: boolean
           notify_push: boolean
           notify_sms: boolean
@@ -185,6 +256,8 @@ export type Database = {
           created_at?: string
           display_name?: string | null
           id: string
+          is_online?: boolean
+          last_seen?: string
           notify_email?: boolean
           notify_push?: boolean
           notify_sms?: boolean
@@ -200,6 +273,8 @@ export type Database = {
           created_at?: string
           display_name?: string | null
           id?: string
+          is_online?: boolean
+          last_seen?: string
           notify_email?: boolean
           notify_push?: boolean
           notify_sms?: boolean
