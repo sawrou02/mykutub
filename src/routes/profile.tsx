@@ -98,18 +98,18 @@ function ProfilePage() {
     }).eq("id", user.id);
     setSaving(false);
     if (error) toast.error(error.message);
-    else toast.success("Profil enregistré");
+    else toast.success(t("profile.profileSaved"));
   };
 
-  if (authLoading) return <div className="p-10 text-center">Chargement...</div>;
+  if (authLoading) return <div className="p-10 text-center">{t("common.loading")}</div>;
 
   if (!user) {
     return (
       <div className="flex flex-col items-center justify-center min-h-screen p-6 text-center space-y-6">
         <UserCircle size={80} className="text-muted-foreground" />
-        <h1 className="text-2xl font-bold">Connectez-vous pour voir votre profil</h1>
+        <h1 className="text-2xl font-bold">{t("profile.loginCta")}</h1>
         <Button onClick={() => navigate({ to: "/login" })} className="w-full max-w-sm h-14 text-lg font-bold rounded-xl">
-          Se connecter
+          {t("profile.login")}
         </Button>
       </div>
     );
