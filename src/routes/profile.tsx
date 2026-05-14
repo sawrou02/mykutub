@@ -72,19 +72,18 @@ function ProfilePage() {
   const handleAvatarUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file || !user) return;
-    if (file.size > 2 * 1024 * 1024) { toast.error("Image > 2 Mo"); return; }
+    if (file.size > 2 * 1024 * 1024) { toast.error(t("profile.avatarTooBig")); return; }
     setUploading(true);
     const ext = file.name.split(".").pop();
     const path = `${user.id}/avatar-${Date.now()}.${ext}`;
     const { error } = await supabase.storage.from("avatars").upload(path, file, { upsert: true });
     if (error) { toast.error(error.message); setUploading(false); return; }
-    // Bucket is private — use long-lived signed URL (1 year)
     const { data: signed, error: signErr } = await supabase.storage.from("avatars").createSignedUrl(path, 60 * 60 * 24 * 365);
     if (signErr || !signed) { toast.error(signErr?.message ?? "URL error"); setUploading(false); return; }
     const url = signed.signedUrl;
     await supabase.from("profiles").update({ avatar_url: url }).eq("id", user.id);
     setProfile(p => p ? { ...p, avatar_url: url } : p);
-    toast.success("Photo mise à jour");
+    toast.success(t("profile.avatarUpdated"));
     setUploading(false);
   };
 
