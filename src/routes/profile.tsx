@@ -28,6 +28,7 @@ type Profile = {
 
 function ProfilePage() {
   const navigate = useNavigate();
+  const { t } = useTranslation();
   const { user, loading: authLoading, signOut } = useAuth();
   const [myBooks, setMyBooks] = useState<Book[]>([]);
   const [favorites, setFavorites] = useState<Book[]>([]);
