@@ -228,7 +228,7 @@ function AdminPage() {
         </TabsContent>
 
         <TabsContent value="reports" className="space-y-2">
-          {reports.length === 0 && <p className="text-muted-foreground text-center py-8">Aucun signalement</p>}
+          {reports.length === 0 && <p className="text-muted-foreground text-center py-8">{t("admin.noReports")}</p>}
           {reports.map(r => {
             const bk = reportBooks[r.book_id];
             const isPending = r.statut === "en_attente";
