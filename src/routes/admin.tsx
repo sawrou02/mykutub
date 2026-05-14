@@ -164,7 +164,7 @@ function AdminPage() {
               </Button>
             </Card>
           ))}
-          {books.length === 0 && <p className="text-muted-foreground text-center py-8">Aucune annonce</p>}
+          {books.length === 0 && <p className="text-muted-foreground text-center py-8">{t("admin.noBooks")}</p>}
         </TabsContent>
 
         <TabsContent value="reviews" className="space-y-2">
