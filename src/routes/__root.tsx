@@ -6,6 +6,7 @@ import { SiteHeader } from "@/components/SiteHeader";
 import { SiteFooter } from "@/components/SiteFooter";
 import { Toaster } from "@/components/ui/sonner";
 import { I18nProvider } from "@/components/I18nProvider";
+import { usePresence } from "@/hooks/usePresence";
 import "@/lib/i18n";
 
 function NotFoundComponent() {
@@ -90,6 +91,7 @@ function RootComponent() {
   return (
     <AuthProvider>
       <I18nProvider>
+        <PresenceTracker />
         <div className="min-h-screen bg-background flex flex-col">
           {!hideAll && <SiteHeader />}
           <main className="flex-1 pb-20 md:pb-0">
@@ -102,4 +104,9 @@ function RootComponent() {
       </I18nProvider>
     </AuthProvider>
   );
+}
+
+function PresenceTracker() {
+  usePresence();
+  return null;
 }

@@ -8,6 +8,7 @@ import { useIsAdmin } from "@/hooks/useIsAdmin";
 import { useUnreadChats } from "@/hooks/useUnreadChats";
 import { useTranslation } from "react-i18next";
 import { LanguageSwitcher } from "./LanguageSwitcher";
+import { NotificationBell } from "./NotificationBell";
 
 export function SiteHeader() {
   const { pathname } = useLocation();
@@ -69,6 +70,7 @@ export function SiteHeader() {
                     <Link to="/admin"><ShieldCheck size={18} className="text-primary" /></Link>
                   </Button>
                 )}
+                <NotificationBell />
                 <Button asChild variant="ghost" size="icon" className="relative">
                   <Link to="/messages">
                     <MessageCircle size={18} />
