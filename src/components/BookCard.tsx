@@ -100,7 +100,7 @@ export function BookCard({ book, onUnfavorite }: { book: Book; onUnfavorite?: (i
         </button>
         {book.is_donation && (
           <span className="absolute top-1.5 left-1.5 bg-secondary text-secondary-foreground text-[8px] font-bold uppercase px-1.5 py-0.5 rounded">
-            Sadaqa
+            Don
           </span>
         )}
       </div>

@@ -30,8 +30,8 @@ const categories = [
     items: [
       { q: "Comment publier une annonce ?", a: "Clique sur « Publier un livre », remplis le formulaire avec la photo, le titre, l'état, le prix et ta ville. Ton annonce est visible immédiatement après publication." },
       { q: "Quels livres puis-je vendre ?", a: "Tous les livres de science islamique : Coran, Tafsir, Hadith, Fiqh, Aqida, Sira, langue arabe, etc. Les livres doivent être en rapport avec l'islam et en bon état général." },
-      { q: "Comment fixer mon prix ?", a: "C'est toi qui décides. Tu peux aussi proposer le livre gratuitement en cochant l'option « Don Sadaqa ». Nous recommandons des prix entre 20% et 50% du prix neuf." },
-      { q: "Qu'est-ce que la Sadaqa Jariya ?", a: "Donner un livre de science islamique est considéré comme une Sadaqa Jariya — une aumône continue dont la récompense dure après la mort. En cochant cette option, ton livre sera proposé gratuitement à qui en a besoin." },
+      { q: "Comment fixer mon prix ?", a: "C'est toi qui décides. Tu peux aussi proposer le livre gratuitement en cochant l'option « Don ». Nous recommandons des prix entre 20% et 50% du prix neuf." },
+      { q: "Puis-je donner un livre gratuitement ?", a: "Oui. Lors de la publication, coche simplement l'option « Don ». Ton annonce sera mise en avant avec un badge Don pour que d'autres membres puissent en bénéficier sans frais." },
     ],
   },
   {
