@@ -106,6 +106,16 @@ export function BookCard({ book, onUnfavorite }: { book: Book; onUnfavorite?: (i
             Don
           </span>
         )}
+        {book.status === "reserved" && (
+          <div className="absolute inset-0 bg-black/40 flex items-center justify-center">
+            <span className="bg-amber-500 text-white text-[10px] font-bold uppercase px-2 py-1 rounded shadow">Réservé</span>
+          </div>
+        )}
+        {book.status === "given" && (
+          <div className="absolute inset-0 bg-black/55 flex items-center justify-center">
+            <span className="bg-red-600 text-white text-[10px] font-bold uppercase px-2 py-1 rounded shadow">Déjà donné</span>
+          </div>
+        )}
       </div>
       <div className="pt-1.5 space-y-0.5">
         <h3 className="font-semibold text-[13px] leading-tight line-clamp-2 group-hover:text-primary transition-colors">

@@ -7,6 +7,8 @@ import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import type { Book } from "@/lib/mykutub";
 import { SellerReviews } from "@/components/SellerReviews";
+import { BookReservation } from "@/components/BookReservation";
+import { OnlineStatusLabel } from "@/components/OnlineDot";
 import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/book/$id")({
@@ -198,7 +200,10 @@ function BookDetailPage() {
               </div>
             </div>
 
-            {/* Key info */}
+            {/* Reservation status */}
+            <BookReservation book={book} onBookChange={setBook} />
+
+
             <div className="bg-card lg:rounded-xl border px-4 lg:px-6 py-5">
               <h2 className="font-bold text-lg mb-4">Les informations clés</h2>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-y-4 gap-x-6">
@@ -244,14 +249,15 @@ function BookDetailPage() {
                 </div>
                 <div className="flex-1 min-w-0">
                   <p className="font-semibold text-base truncate">{book.seller_name}</p>
+                  <OnlineStatusLabel userId={book.seller_id} />
                   {rating ? (
-                    <div className="flex items-center gap-1 text-xs">
+                    <div className="flex items-center gap-1 text-xs mt-0.5">
                       <Star size={12} className="fill-amber-500 text-amber-500" />
                       <span className="font-semibold">{rating.avg.toFixed(1)}</span>
                       <span className="text-muted-foreground">({rating.count})</span>
                     </div>
                   ) : (
-                    <p className="text-xs text-muted-foreground">Aucun avis</p>
+                    <p className="text-xs text-muted-foreground mt-0.5">Aucun avis</p>
                   )}
                 </div>
               </div>

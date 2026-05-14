@@ -2288,6 +2288,28 @@ export type Book = {
   seller_name: string;
   can_deliver?: boolean;
   created_at: string;
+  status?: "available" | "reserved" | "given";
+  reserved_by?: string | null;
+  reserved_at?: string | null;
+};
+
+export type BookRequest = {
+  id: string;
+  book_id: string;
+  requester_id: string;
+  requester_name: string;
+  status: "pending" | "accepted" | "rejected";
+  created_at: string;
+};
+
+export type Notification = {
+  id: string;
+  user_id: string;
+  message: string;
+  type: string;
+  link: string | null;
+  is_read: boolean;
+  created_at: string;
 };
 
 export type Review = {
@@ -2320,4 +2342,5 @@ export type Message = {
   sender_name: string;
   text: string;
   created_at: string;
+  read_at?: string | null;
 };

@@ -1,40 +1,14 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
-import { useEffect, useState } from "react";
-import { Search, ChevronRight, MessageSquare } from "lucide-react";
-import { Input } from "@/components/ui/input";
+import { createFileRoute } from "@tanstack/react-router";
+import { ContactsSidebar } from "@/components/ContactsSidebar";
 import { useAuth } from "@/hooks/useAuth";
-import { supabase } from "@/integrations/supabase/client";
-import { formatDistanceToNow } from "date-fns";
-import { fr } from "date-fns/locale";
-import type { Chat } from "@/lib/mykutub";
+import { MessageSquare } from "lucide-react";
 
 export const Route = createFileRoute("/messages/")({
-  component: MessagesPage,
+  component: MessagesIndex,
 });
 
-function MessagesPage() {
+function MessagesIndex() {
   const { user } = useAuth();
-  const [chats, setChats] = useState<Chat[]>([]);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    if (!user) { setLoading(false); return; }
-    supabase.from("chats").select("*").contains("participants", [user.id])
-      .order("last_message_at", { ascending: false })
-      .then(({ data }) => {
-        setChats((data as Chat[]) ?? []);
-        setLoading(false);
-      });
-
-    const channel = supabase.channel("chats-list")
-      .on("postgres_changes", { event: "*", schema: "public", table: "chats" }, () => {
-        supabase.from("chats").select("*").contains("participants", [user.id])
-          .order("last_message_at", { ascending: false })
-          .then(({ data }) => setChats((data as Chat[]) ?? []));
-      })
-      .subscribe();
-    return () => { supabase.removeChannel(channel); };
-  }, [user]);
 
   if (!user) {
     return (
@@ -46,56 +20,20 @@ function MessagesPage() {
   }
 
   return (
-    <div className="bg-background min-h-screen pb-20">
-      <header className="sticky top-0 z-40 bg-card border-b px-4 py-3">
-        <h1 className="font-bold text-base">Messages</h1>
-      </header>
-
-      <div className="max-w-3xl mx-auto p-3">
-        <div className="relative mb-3">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" size={14} />
-          <Input placeholder="Rechercher..." className="pl-9 h-9 text-sm bg-card rounded-lg" />
-        </div>
-
-        <div className="divide-y border rounded-lg bg-card">
-          {loading ? (
-            Array.from({ length: 3 }).map((_, i) => <div key={i} className="h-16 animate-pulse bg-muted/30" />)
-          ) : chats.length > 0 ? (
-            chats.map(chat => {
-              const lastUpdate = chat.last_message_at ? new Date(chat.last_message_at) : null;
-              const isUnread = chat.unread_by?.includes(user.id);
-              return (
-                <Link key={chat.id} to="/messages/$id" params={{ id: chat.id }}
-                  className="flex items-center gap-2.5 px-3 py-2.5 hover:bg-muted/30 transition-colors">
-                  <div className="relative w-11 h-11 rounded-md overflow-hidden bg-muted flex-shrink-0">
-                    {chat.book_image_url && <img src={chat.book_image_url} alt={chat.book_title ?? ""} className="w-full h-full object-cover" />}
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <div className="flex justify-between items-baseline gap-2">
-                      <p className="text-[11px] font-semibold text-primary truncate">{chat.book_title}</p>
-                      <span className="text-[10px] text-muted-foreground flex-shrink-0">
-                        {lastUpdate ? formatDistanceToNow(lastUpdate, { addSuffix: true, locale: fr }) : ""}
-                      </span>
-                    </div>
-                    <p className={`text-xs truncate mt-0.5 ${isUnread ? "font-semibold text-foreground" : "text-muted-foreground"}`}>
-                      {chat.last_message}
-                    </p>
-                  </div>
-                  {isUnread && <div className="w-2 h-2 rounded-full bg-destructive flex-shrink-0" />}
-                  <ChevronRight size={14} className="text-muted-foreground flex-shrink-0" />
-                </Link>
-              );
-            })
-          ) : (
-            <div className="flex flex-col items-center justify-center py-12 text-center">
-              <MessageSquare size={36} className="text-muted-foreground/30 mb-2" />
-              <p className="font-semibold text-sm">Aucune conversation</p>
-              <p className="text-xs text-muted-foreground mt-1">
-                Contactez un vendeur pour démarrer une discussion.
-              </p>
-            </div>
-          )}
-        </div>
+    <div className="bg-background min-h-[calc(100vh-4rem)] pb-20 md:pb-0">
+      <div className="max-w-6xl mx-auto md:flex md:gap-0 md:border md:rounded-lg md:overflow-hidden md:my-4 md:h-[calc(100vh-6rem)]">
+        <aside className="md:w-[280px] md:border-r flex-shrink-0 md:h-full">
+          <ContactsSidebar />
+        </aside>
+        <section className="hidden md:flex flex-1 items-center justify-center text-center p-8 bg-muted/20">
+          <div>
+            <MessageSquare size={48} className="text-muted-foreground/30 mx-auto mb-3" />
+            <p className="font-semibold">Sélectionnez une conversation</p>
+            <p className="text-sm text-muted-foreground mt-1">
+              Choisissez un contact dans la liste pour démarrer.
+            </p>
+          </div>
+        </section>
       </div>
     </div>
   );
