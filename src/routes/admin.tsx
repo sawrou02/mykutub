@@ -204,7 +204,7 @@ function AdminPage() {
                 <div className="flex items-start gap-3">
                   <button onClick={() => openMessage(m.id, m.is_read)} className="flex-1 text-left min-w-0">
                     <div className="flex items-center gap-2 mb-1">
-                      {!m.is_read && <Badge className="bg-destructive text-destructive-foreground h-5 text-[10px]">Nouveau</Badge>}
+                      {!m.is_read && <Badge className="bg-destructive text-destructive-foreground h-5 text-[10px]">{t("admin.new")}</Badge>}
                       <p className="font-semibold truncate">{m.subject}</p>
                     </div>
                     <p className="text-xs text-muted-foreground truncate">
