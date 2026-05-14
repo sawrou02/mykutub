@@ -274,9 +274,11 @@ function BookDetailPage() {
               </div>
 
               <div className="mt-4 pt-4 border-t flex items-center gap-4 text-xs text-muted-foreground">
-                <button className="flex items-center gap-1.5 hover:text-foreground"><Flag size={13} /> Signaler l'annonce</button>
+              <div className="mt-4 pt-4 border-t flex items-center gap-4 text-xs text-muted-foreground">
+                <button onClick={() => setReportOpen(true)} className="flex items-center gap-1.5 hover:text-foreground"><Flag size={13} /> Signaler l'annonce</button>
                 <button className="flex items-center gap-1.5 hover:text-foreground"><Info size={13} /> Vos droits</button>
               </div>
+              <ReportDialog bookId={bookId} open={reportOpen} onOpenChange={setReportOpen} />
             </div>
           </div>
 
