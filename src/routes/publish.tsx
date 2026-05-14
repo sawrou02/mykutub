@@ -134,12 +134,12 @@ function PublishPage() {
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     if (!user) {
-      toast.error("Connexion requise.");
+      toast.error(t("common.loginRequired"));
       navigate({ to: "/login" });
       return;
     }
     if (!imageFile) {
-      toast.error("Veuillez ajouter une photo.");
+      toast.error(t("publish.addPhotoFirst"));
       return;
     }
     setLoading(true);
