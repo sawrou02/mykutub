@@ -264,20 +264,20 @@ function PublishPage() {
 
           <div className="flex items-center gap-3 p-4 bg-secondary/10 rounded-2xl">
             <Checkbox id="donation" checked={isDonation} onCheckedChange={(v) => setIsDonation(!!v)} />
-            <Label htmlFor="donation" className="font-bold text-sm cursor-pointer">Je donne ce livre gratuitement</Label>
+            <Label htmlFor="donation" className="font-bold text-sm cursor-pointer">{t("publish.donation")}</Label>
           </div>
 
           <div className="flex items-start gap-3 p-4 bg-primary/5 rounded-2xl">
             <Checkbox id="delivery" checked={canDeliver} onCheckedChange={(v) => setCanDeliver(!!v)} className="mt-0.5" />
             <div className="flex-1">
-              <Label htmlFor="delivery" className="font-bold text-sm cursor-pointer">Livraison possible</Label>
-              <p className="text-xs text-muted-foreground mt-0.5">Cochez si vous proposez la livraison à l'acheteur.</p>
+              <Label htmlFor="delivery" className="font-bold text-sm cursor-pointer">{t("publish.canDeliver")}</Label>
+              <p className="text-xs text-muted-foreground mt-0.5">{t("publish.canDeliverHint")}</p>
             </div>
           </div>
 
           {!isDonation && (
             <div className="space-y-1.5">
-              <Label htmlFor="price" className="text-xs font-bold uppercase tracking-widest">Prix (€) *</Label>
+              <Label htmlFor="price" className="text-xs font-bold uppercase tracking-widest">{t("publish.price")} *</Label>
               <Input id="price" type="number" min={0} step={0.5} value={price} onChange={(e) => setPrice(e.target.value)} required className="h-11" />
             </div>
           )}
