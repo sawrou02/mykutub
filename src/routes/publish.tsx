@@ -211,12 +211,12 @@ function PublishPage() {
           </div>
 
           <div className="space-y-1.5">
-            <Label htmlFor="title" className="text-xs font-bold uppercase tracking-widest">Titre *</Label>
+            <Label htmlFor="title" className="text-xs font-bold uppercase tracking-widest">{t("publish.bookTitle")} *</Label>
             <Input id="title" value={title} onChange={(e) => setTitle(e.target.value)} required className="h-11" />
           </div>
 
           <div className="space-y-1.5">
-            <Label htmlFor="description" className="text-xs font-bold uppercase tracking-widest">Description</Label>
+            <Label htmlFor="description" className="text-xs font-bold uppercase tracking-widest">{t("publish.description")}</Label>
             <Textarea id="description" value={description} onChange={(e) => setDescription(e.target.value)} rows={4} />
           </div>
 
