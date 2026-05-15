@@ -54,6 +54,9 @@ export function SiteHeader() {
           <div className="flex items-center gap-2">
             {user ? (
               <div className="hidden md:flex items-center gap-2">
+                <Button asChild size="sm" className="gap-1.5 bg-primary text-primary-foreground hover:bg-primary/90 font-bold">
+                  <Link to="/publish"><PlusCircle size={16} /> <span className="hidden xl:inline">{t("home.publishBtn")}</span><span className="xl:hidden">{t("nav.publishBook")}</span></Link>
+                </Button>
                 {isAdmin && (
                   <Button asChild variant="ghost" size="icon" title="Admin">
                     <Link to="/admin"><ShieldCheck size={18} className="text-primary" /></Link>
@@ -71,11 +74,14 @@ export function SiteHeader() {
                   </Link>
                 </Button>
                 <Button asChild variant="outline" size="sm" className="gap-2">
-                  <Link to="/profile"><User size={16} /> {t("nav.account")}</Link>
+                  <Link to="/profile"><User size={16} /> <span className="hidden xl:inline">{t("nav.account")}</span></Link>
                 </Button>
               </div>
             ) : (
               <>
+                <Button asChild size="sm" className="hidden md:inline-flex gap-1.5 bg-primary text-primary-foreground hover:bg-primary/90 font-bold">
+                  <Link to="/publish"><PlusCircle size={16} /> <span className="hidden lg:inline">{t("home.publishBtn")}</span><span className="lg:hidden">{t("nav.publishBook")}</span></Link>
+                </Button>
                 <Button asChild variant="outline" size="sm" className="border-primary text-primary hover:bg-primary/10 hover:text-primary font-bold">
                   <Link to="/login">{t("nav.login")}</Link>
                 </Button>
