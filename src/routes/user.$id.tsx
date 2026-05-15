@@ -169,8 +169,14 @@ function UserProfilePage() {
               </div>
             </div>
             {!isMe && user && (
-              <Button size="sm" variant="outline" className="rounded-full text-xs h-8" asChild>
-                <Link to="/messages">Suivre</Link>
+              <Button
+                size="sm"
+                variant={isFollowing ? "outline" : "default"}
+                className="rounded-full text-xs h-8 gap-1"
+                disabled={followBusy}
+                onClick={toggleFollow}
+              >
+                {isFollowing ? <><UserMinus size={13} /> Se désabonner</> : <><UserPlus size={13} /> Suivre</>}
               </Button>
             )}
           </div>
