@@ -33,19 +33,26 @@ function UserProfilePage() {
   const [loading, setLoading] = useState(true);
   const [confirmBlock, setConfirmBlock] = useState(false);
   const [blocking, setBlocking] = useState(false);
+  const [isFollowing, setIsFollowing] = useState(false);
+  const [followersCount, setFollowersCount] = useState(0);
+  const [followBusy, setFollowBusy] = useState(false);
 
   useEffect(() => {
     Promise.all([
       supabase.from("profiles").select("display_name, created_at").eq("id", userId).maybeSingle(),
       supabase.from("books").select("*").eq("seller_id", userId).order("created_at", { ascending: false }),
       supabase.from("reviews").select("*").eq("seller_id", userId),
-    ]).then(([p, b, r]) => {
+      supabase.from("follows").select("id", { count: "exact", head: true }).eq("following_id", userId),
+      user ? supabase.from("follows").select("id").eq("follower_id", user.id).eq("following_id", userId).maybeSingle() : Promise.resolve({ data: null } as any),
+    ]).then(([p, b, r, fc, mf]: any[]) => {
       setProfile((p.data as any) ?? { display_name: null });
       setBooks((b.data as Book[]) ?? []);
       setReviews((r.data as Review[]) ?? []);
+      setFollowersCount(fc.count ?? 0);
+      setIsFollowing(!!mf.data);
       setLoading(false);
     });
-  }, [userId]);
+  }, [userId, user]);
 
   const displayName = profile?.display_name || "Utilisateur";
   const initials = displayName.split(" ").map(s => s[0]).join("").slice(0, 2).toUpperCase();
