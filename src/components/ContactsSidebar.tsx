@@ -172,6 +172,8 @@ export function ContactsSidebar({ activeChatId }: { activeChatId?: string }) {
     }
     setConfirmBlock(null);
   };
+
+  const startLongPress = (chat: Chat) => {
     if (longPressTimer.current) clearTimeout(longPressTimer.current);
     longPressTimer.current = setTimeout(() => setOpenMenuId(chat.id), 450);
   };
