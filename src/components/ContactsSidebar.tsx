@@ -158,7 +158,20 @@ export function ContactsSidebar({ activeChatId }: { activeChatId?: string }) {
     toast.success("Conversation supprimée");
   };
 
-  const startLongPress = (chat: Chat) => {
+  const handleBlock = async () => {
+    if (!confirmBlock) return;
+    const { error } = await supabase.from("blocked_users").insert({
+      blocker_id: user.id,
+      blocked_id: confirmBlock.userId,
+    });
+    if (error && !error.message.toLowerCase().includes("duplicate")) {
+      toast.error("Impossible de bloquer cet utilisateur");
+    } else {
+      setBlockedIds((prev) => new Set(prev).add(confirmBlock.userId));
+      toast.success(`${confirmBlock.name} a été bloqué`);
+    }
+    setConfirmBlock(null);
+  };
     if (longPressTimer.current) clearTimeout(longPressTimer.current);
     longPressTimer.current = setTimeout(() => setOpenMenuId(chat.id), 450);
   };
