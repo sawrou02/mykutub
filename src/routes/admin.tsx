@@ -162,6 +162,99 @@ function AdminPage() {
     .map(([bookId, items]) => ({ bookId, items, count: items.length, latest: items[0] }))
     .sort((a, b) => b.count - a.count);
 
+  // ---- Moderation helpers ----
+  const [sanctionFor, setSanctionFor] = useState<any>(null);
+  const [sancDays, setSancDays] = useState<number>(7);
+  const [sancReason, setSancReason] = useState<string>(SUSPENSION_REASONS[0]);
+  const [banFor, setBanFor] = useState<any>(null);
+  const [banReason, setBanReason] = useState<string>("");
+  const [globalMsg, setGlobalMsg] = useState("");
+  const [globalSending, setGlobalSending] = useState(false);
+  const [userSearch, setUserSearch] = useState("");
+
+  const refreshProfile = (id: string, patch: any) =>
+    setProfiles(prev => prev.map(p => p.id === id ? { ...p, ...patch } : p));
+
+  const suspendUser = async () => {
+    if (!sanctionFor) return;
+    const until = new Date(Date.now() + sancDays * 86400000).toISOString();
+    const { error } = await supabase.from("profiles").update({
+      suspended_until: until, suspension_reason: sancReason, banned_at: null, ban_reason: null,
+    }).eq("id", sanctionFor.id);
+    if (error) return toast.error(error.message);
+    await supabase.rpc("notify_user_action", {
+      _user_id: sanctionFor.id,
+      _message: `Votre compte a été suspendu pendant ${sancDays} jours. Raison : ${sancReason}.`,
+      _link: "/profile", _type: "moderation",
+    });
+    refreshProfile(sanctionFor.id, { suspended_until: until, suspension_reason: sancReason });
+    toast.success(`Utilisateur suspendu ${sancDays} jours`);
+    setSanctionFor(null);
+  };
+
+  const liftSanction = async (p: any) => {
+    const { error } = await supabase.from("profiles").update({
+      suspended_until: null, suspension_reason: null, banned_at: null, ban_reason: null,
+    }).eq("id", p.id);
+    if (error) return toast.error(error.message);
+    refreshProfile(p.id, { suspended_until: null, suspension_reason: null, banned_at: null, ban_reason: null });
+    toast.success("Sanction levée");
+  };
+
+  const banUser = async () => {
+    if (!banFor || !banReason.trim()) { toast.error("Raison requise"); return; }
+    const { error } = await supabase.from("profiles").update({
+      banned_at: new Date().toISOString(), ban_reason: banReason.trim(), suspended_until: null,
+    }).eq("id", banFor.id);
+    if (error) return toast.error(error.message);
+    await supabase.rpc("notify_user_action", {
+      _user_id: banFor.id,
+      _message: `Votre compte a été banni définitivement. Raison : ${banReason.trim()}.`,
+      _link: "/profile", _type: "moderation",
+    });
+    refreshProfile(banFor.id, { banned_at: new Date().toISOString(), ban_reason: banReason.trim() });
+    toast.success("Utilisateur banni");
+    setBanFor(null); setBanReason("");
+  };
+
+  const toggleVerified = async (p: any) => {
+    const next = !p.verified;
+    const { error } = await supabase.from("profiles").update({ verified: next }).eq("id", p.id);
+    if (error) return toast.error(error.message);
+    refreshProfile(p.id, { verified: next });
+    toast.success(next ? "Profil vérifié" : "Vérification retirée");
+  };
+
+  const sendGlobal = async () => {
+    if (!globalMsg.trim()) return;
+    setGlobalSending(true);
+    const { data, error } = await supabase.rpc("send_global_notification", { _message: globalMsg.trim(), _link: null });
+    setGlobalSending(false);
+    if (error) return toast.error(error.message);
+    setGlobalMsg("");
+    toast.success(`Notification envoyée à ${data ?? 0} utilisateurs`);
+  };
+
+  const replyInChat = async (otherUserId: string) => {
+    if (!adminUser) return;
+    const { data: existing } = await supabase
+      .from("chats").select("id").contains("participants", [adminUser.id, otherUserId]).limit(1);
+    let chatId = existing?.[0]?.id;
+    if (!chatId) {
+      const { data: created, error } = await supabase.from("chats")
+        .insert({ participants: [adminUser.id, otherUserId] }).select("id").single();
+      if (error) return toast.error(error.message);
+      chatId = created.id;
+    }
+    navigate({ to: "/messages/$id", params: { id: chatId } });
+  };
+
+  const filteredProfiles = profiles.filter(p => {
+    const q = userSearch.toLowerCase().trim();
+    if (!q) return true;
+    return (p.display_name ?? "").toLowerCase().includes(q) || p.id.toLowerCase().includes(q);
+  });
+
   return (
     <div className="max-w-7xl mx-auto p-4 md:p-8 pb-24 space-y-6">
       <div className="flex items-center gap-3">
