@@ -5,7 +5,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { OnlineDot } from "@/components/OnlineDot";
 import { cn } from "@/lib/utils";
 import type { Chat } from "@/lib/mykutub";
-import { MessageSquare, Search, User as UserIcon } from "lucide-react";
+import { MessageSquare, Search, User as UserIcon, BookOpen } from "lucide-react";
 
 type ProfileLite = {
   id: string;
@@ -32,6 +32,7 @@ export function ContactsSidebar({ activeChatId }: { activeChatId?: string }) {
   const [me, setMe] = useState<ProfileLite | null>(null);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
+  const [filter, setFilter] = useState<"all" | "unread">("all");
   const pathname = useRouterState({ select: (r) => r.location.pathname });
 
   useEffect(() => {
@@ -69,15 +70,21 @@ export function ContactsSidebar({ activeChatId }: { activeChatId?: string }) {
   const filtered = useMemo(() => {
     if (!user) return [];
     const q = search.trim().toLowerCase();
-    if (!q) return chats;
     return chats.filter((c) => {
+      if (filter === "unread" && !c.unread_by?.includes(user.id)) return false;
+      if (!q) return true;
       const otherId = c.participants.find((p) => p !== user.id);
       const name = (otherId && profiles[otherId]?.display_name) || "";
       return name.toLowerCase().includes(q)
         || (c.book_title ?? "").toLowerCase().includes(q)
         || (c.last_message ?? "").toLowerCase().includes(q);
     });
-  }, [chats, profiles, search, user]);
+  }, [chats, profiles, search, user, filter]);
+
+  const unreadCount = useMemo(() => {
+    if (!user) return 0;
+    return chats.filter((c) => c.unread_by?.includes(user.id)).length;
+  }, [chats, user]);
 
   if (!user) return null;
 
@@ -85,9 +92,9 @@ export function ContactsSidebar({ activeChatId }: { activeChatId?: string }) {
   const myInitials = myName.split(" ").map((s: string) => s[0]).join("").slice(0, 2).toUpperCase();
 
   return (
-    <div className="flex flex-col h-full" style={{ background: "#f0f2f5" }}>
+    <div className="flex flex-col h-full bg-card">
       {/* My profile header */}
-      <div className="px-4 py-3 flex items-center gap-3 bg-card border-b">
+      <div className="px-4 py-3 flex items-center gap-3 border-b">
         <div className="w-10 h-10 rounded-full bg-muted flex items-center justify-center overflow-hidden border">
           {me?.avatar_url ? (
             <img src={me.avatar_url} alt={myName} className="w-full h-full object-cover" />
@@ -102,7 +109,7 @@ export function ContactsSidebar({ activeChatId }: { activeChatId?: string }) {
       </div>
 
       {/* Search */}
-      <div className="px-3 py-2 bg-card border-b">
+      <div className="px-3 py-2 border-b">
         <div className="relative">
           <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
           <input
@@ -112,6 +119,34 @@ export function ContactsSidebar({ activeChatId }: { activeChatId?: string }) {
             className="w-full pl-9 pr-3 py-2 rounded-lg bg-muted/50 text-sm border-none outline-none focus:bg-muted"
           />
         </div>
+      </div>
+
+      {/* Filter tabs */}
+      <div className="px-3 py-2 border-b flex items-center gap-2">
+        <button
+          onClick={() => setFilter("all")}
+          className={cn(
+            "px-3 py-1.5 rounded-full text-xs font-semibold transition-colors",
+            filter === "all" ? "bg-primary text-primary-foreground" : "bg-muted text-muted-foreground hover:bg-muted/70",
+          )}
+        >
+          Tout ({chats.length})
+        </button>
+        <button
+          onClick={() => setFilter("unread")}
+          className={cn(
+            "px-3 py-1.5 rounded-full text-xs font-semibold transition-colors flex items-center gap-1",
+            filter === "unread" ? "bg-primary text-primary-foreground" : "bg-muted text-muted-foreground hover:bg-muted/70",
+          )}
+        >
+          Non lus
+          {unreadCount > 0 && (
+            <span className={cn(
+              "min-w-[18px] h-[18px] px-1 rounded-full text-[10px] font-bold flex items-center justify-center",
+              filter === "unread" ? "bg-primary-foreground text-primary" : "bg-destructive text-white",
+            )}>{unreadCount}</span>
+          )}
+        </button>
       </div>
 
       {/* List */}
@@ -134,7 +169,6 @@ export function ContactsSidebar({ activeChatId }: { activeChatId?: string }) {
             const otherId = chat.participants.find((p) => p !== user.id);
             const profile = otherId ? profiles[otherId] : null;
             const contactName = profile?.display_name || "Utilisateur";
-            const initials = contactName.split(" ").map((s) => s[0]).join("").slice(0, 2).toUpperCase();
             const lastUpdate = chat.last_message_at ? new Date(chat.last_message_at) : null;
             return (
               <Link
@@ -142,36 +176,42 @@ export function ContactsSidebar({ activeChatId }: { activeChatId?: string }) {
                 to="/messages/$id"
                 params={{ id: chat.id }}
                 className={cn(
-                  "flex items-center gap-3 px-3 py-3 transition-colors border-b border-border/40",
-                  isActive ? "bg-primary/10" : "bg-card hover:bg-muted/50",
+                  "flex items-center gap-3 px-3 py-3 transition-colors border-b border-border/40 border-l-4 relative",
+                  isActive
+                    ? "bg-primary/5 border-l-primary"
+                    : "border-l-transparent bg-card hover:bg-muted/40",
                 )}
               >
+                {/* Book thumbnail */}
                 <div className="relative flex-shrink-0">
-                  <div className="w-12 h-12 rounded-full bg-muted flex items-center justify-center overflow-hidden border">
-                    {profile?.avatar_url ? (
-                      <img src={profile.avatar_url} alt={contactName} className="w-full h-full object-cover" />
+                  <div className="w-12 h-14 rounded-md bg-muted overflow-hidden border flex items-center justify-center">
+                    {chat.book_image_url ? (
+                      <img src={chat.book_image_url} alt={chat.book_title ?? ""} className="w-full h-full object-cover" />
                     ) : (
-                      <span className="text-sm font-bold text-muted-foreground">{initials || <UserIcon size={18} />}</span>
+                      <BookOpen size={18} className="text-muted-foreground/50" />
                     )}
                   </div>
-                  <span className="absolute bottom-0 right-0">
-                    <OnlineDot userId={otherId} size={12} />
+                  <span className="absolute -bottom-1 -right-1">
+                    <OnlineDot userId={otherId} size={10} />
                   </span>
                 </div>
                 <div className="flex-1 min-w-0">
                   <div className="flex justify-between items-baseline gap-2">
-                    <p className="font-semibold text-sm truncate">{contactName}</p>
+                    <p className={cn("text-sm truncate", isUnread ? "font-bold" : "font-semibold")}>
+                      {chat.book_title || "Conversation"}
+                    </p>
                     <span className={cn("text-[10px] flex-shrink-0", isUnread ? "text-primary font-semibold" : "text-muted-foreground")}>
                       {lastUpdate ? formatTime(lastUpdate) : ""}
                     </span>
                   </div>
+                  <p className="text-xs text-muted-foreground truncate mt-0.5">{contactName}</p>
                   <div className="flex justify-between items-center gap-2 mt-0.5">
-                    <p className={cn("text-xs truncate", isUnread ? "font-semibold text-foreground" : "text-muted-foreground")}>
-                      {chat.last_message || chat.book_title || "Nouvelle conversation"}
+                    <p className={cn("text-xs truncate", isUnread ? "font-semibold text-foreground" : "text-muted-foreground/80")}>
+                      {chat.last_message || "Nouvelle conversation"}
                     </p>
                     {isUnread && (
-                      <span className="flex-shrink-0 min-w-[20px] h-5 px-1.5 rounded-full bg-destructive text-white text-[10px] font-bold flex items-center justify-center">
-                        1
+                      <span className="flex-shrink-0 px-1.5 h-4 rounded-full bg-destructive text-white text-[9px] font-bold flex items-center justify-center uppercase tracking-wide">
+                        Nouveau
                       </span>
                     )}
                   </div>
