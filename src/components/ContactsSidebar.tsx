@@ -343,6 +343,15 @@ export function ContactsSidebar({ activeChatId }: { activeChatId?: string }) {
                       <DropdownMenuSeparator />
                       <DropdownMenuItem
                         className="text-destructive focus:text-destructive focus:bg-destructive/10"
+                        onSelect={() => {
+                          if (otherId) setConfirmBlock({ chat, userId: otherId, name: contactName });
+                        }}
+                      >
+                        <Ban size={15} className="mr-2" />
+                        Bloquer cet utilisateur
+                      </DropdownMenuItem>
+                      <DropdownMenuItem
+                        className="text-destructive focus:text-destructive focus:bg-destructive/10"
                         onSelect={() => setConfirmDelete(chat)}
                       >
                         <Trash2 size={15} className="mr-2" />
