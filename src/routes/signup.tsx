@@ -50,6 +50,10 @@ function SignupPage() {
       setErrors(errs);
       return;
     }
+    if (!charteAccepted) {
+      toast.error("Vous devez accepter la Charte Communautaire pour vous inscrire.");
+      return;
+    }
     setLoading(true);
     const { firstName, lastName, email, password } = parsed.data;
     const { data, error } = await supabase.auth.signUp({
