@@ -36,7 +36,7 @@ function Landing() {
   return (
     <div>
       {/* Hero */}
-      <section className="relative overflow-hidden bg-card min-h-[60vh] md:min-h-[70vh] md:max-h-[70vh] flex items-center">
+      <section className="relative overflow-hidden bg-card rounded-b-[3rem] md:rounded-b-[5rem]">
         <div className="max-w-7xl mx-auto px-4 md:px-8 py-8 md:py-12 grid md:grid-cols-2 gap-6 md:gap-10 items-center w-full">
           <div className="space-y-4 md:space-y-6 z-10">
             <Button asChild size="lg" className="gap-2 h-14 rounded-2xl text-base font-black px-8 w-fit uppercase tracking-wide shadow-xl shadow-primary/30 ring-2 ring-primary/20 hover:scale-105 transition-transform">
@@ -68,8 +68,15 @@ function Landing() {
         </div>
       </section>
 
+      {/* Separator with icon */}
+      <div className="relative -mt-6 md:-mt-10 flex justify-center z-10">
+        <div className="w-14 h-14 md:w-16 md:h-16 rounded-2xl bg-primary text-primary-foreground flex items-center justify-center shadow-xl ring-4 ring-background">
+          <BookOpen size={26} />
+        </div>
+      </div>
+
       {/* Featured catalog */}
-      <section className="max-w-7xl mx-auto px-4 md:px-8 py-16 md:py-24">
+      <section className="max-w-7xl mx-auto px-4 md:px-8 pt-8 md:pt-12 pb-16 md:pb-24">
         <div className="flex items-end justify-between mb-8">
           <div>
             <h2 className="font-headline text-3xl md:text-4xl font-black">{t("home.latest")}</h2>
