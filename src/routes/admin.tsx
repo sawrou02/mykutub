@@ -9,6 +9,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Trash2, Users, BookOpen, MessageSquare, Star, ShieldCheck, Loader2, Mail, Inbox, Flag, Check, AlertTriangle, ImageOff, Image as ImageIcon, BadgeCheck, Bell, Ban, Clock, Reply, Send } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
+import { sendEmail } from "@/lib/email";
 import { DEFAULT_BOOK_IMAGE } from "@/lib/moderation";
 import {
   Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger,
