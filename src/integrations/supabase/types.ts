@@ -106,35 +106,44 @@ export type Database = {
       }
       chats: {
         Row: {
+          archived_for: string[]
           book_id: string | null
           book_image_url: string | null
           book_title: string | null
           created_at: string
+          deleted_for: string[]
           id: string
           last_message: string | null
           last_message_at: string | null
+          muted_for: string[]
           participants: string[]
           unread_by: string[] | null
         }
         Insert: {
+          archived_for?: string[]
           book_id?: string | null
           book_image_url?: string | null
           book_title?: string | null
           created_at?: string
+          deleted_for?: string[]
           id?: string
           last_message?: string | null
           last_message_at?: string | null
+          muted_for?: string[]
           participants: string[]
           unread_by?: string[] | null
         }
         Update: {
+          archived_for?: string[]
           book_id?: string | null
           book_image_url?: string | null
           book_title?: string | null
           created_at?: string
+          deleted_for?: string[]
           id?: string
           last_message?: string | null
           last_message_at?: string | null
+          muted_for?: string[]
           participants?: string[]
           unread_by?: string[] | null
         }
