@@ -3,13 +3,20 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import {
   ChevronLeft, Send, MoreVertical, User, Flag, Trash2, BookOpen, User as UserIcon,
   Check, CheckCheck, Smile, Plus, Star, X, Info, Trash, UserMinus,
+  BellOff, Bell, Archive, ArchiveRestore, Ban,
 } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
 import {
   DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog";
+import {
+  AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent,
+  AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import type { Chat, Message, Book } from "@/lib/mykutub";
 import { ContactsSidebar } from "@/components/ContactsSidebar";
