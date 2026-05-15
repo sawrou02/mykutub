@@ -8,6 +8,8 @@ import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { z } from "zod";
 import { GoogleAuthButton } from "@/components/GoogleAuthButton";
+import { Checkbox } from "@/components/ui/checkbox";
+import { CharteModal } from "@/components/CharteModal";
 
 export const Route = createFileRoute("/signup")({
   component: SignupPage,
