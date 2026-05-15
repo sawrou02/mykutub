@@ -9,6 +9,7 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as UnsubscribeRouteImport } from './routes/unsubscribe'
 import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
 import { Route as SignupRouteImport } from './routes/signup'
 import { Route as SettingsRouteImport } from './routes/settings'
@@ -30,6 +31,11 @@ import { Route as ModifierIdRouteImport } from './routes/modifier.$id'
 import { Route as MessagesIdRouteImport } from './routes/messages.$id'
 import { Route as BookIdRouteImport } from './routes/book.$id'
 
+const UnsubscribeRoute = UnsubscribeRouteImport.update({
+  id: '/unsubscribe',
+  path: '/unsubscribe',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
   id: '/sitemap.xml',
   path: '/sitemap.xml',
@@ -147,6 +153,7 @@ export interface FileRoutesByFullPath {
   '/settings': typeof SettingsRoute
   '/signup': typeof SignupRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
+  '/unsubscribe': typeof UnsubscribeRoute
   '/book/$id': typeof BookIdRoute
   '/messages/$id': typeof MessagesIdRoute
   '/modifier/$id': typeof ModifierIdRoute
@@ -169,6 +176,7 @@ export interface FileRoutesByTo {
   '/settings': typeof SettingsRoute
   '/signup': typeof SignupRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
+  '/unsubscribe': typeof UnsubscribeRoute
   '/book/$id': typeof BookIdRoute
   '/messages/$id': typeof MessagesIdRoute
   '/modifier/$id': typeof ModifierIdRoute
@@ -192,6 +200,7 @@ export interface FileRoutesById {
   '/settings': typeof SettingsRoute
   '/signup': typeof SignupRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
+  '/unsubscribe': typeof UnsubscribeRoute
   '/book/$id': typeof BookIdRoute
   '/messages/$id': typeof MessagesIdRoute
   '/modifier/$id': typeof ModifierIdRoute
@@ -216,6 +225,7 @@ export interface FileRouteTypes {
     | '/settings'
     | '/signup'
     | '/sitemap.xml'
+    | '/unsubscribe'
     | '/book/$id'
     | '/messages/$id'
     | '/modifier/$id'
@@ -238,6 +248,7 @@ export interface FileRouteTypes {
     | '/settings'
     | '/signup'
     | '/sitemap.xml'
+    | '/unsubscribe'
     | '/book/$id'
     | '/messages/$id'
     | '/modifier/$id'
@@ -260,6 +271,7 @@ export interface FileRouteTypes {
     | '/settings'
     | '/signup'
     | '/sitemap.xml'
+    | '/unsubscribe'
     | '/book/$id'
     | '/messages/$id'
     | '/modifier/$id'
@@ -283,6 +295,7 @@ export interface RootRouteChildren {
   SettingsRoute: typeof SettingsRoute
   SignupRoute: typeof SignupRoute
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
+  UnsubscribeRoute: typeof UnsubscribeRoute
   BookIdRoute: typeof BookIdRoute
   MessagesIdRoute: typeof MessagesIdRoute
   ModifierIdRoute: typeof ModifierIdRoute
@@ -292,6 +305,13 @@ export interface RootRouteChildren {
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/unsubscribe': {
+      id: '/unsubscribe'
+      path: '/unsubscribe'
+      fullPath: '/unsubscribe'
+      preLoaderRoute: typeof UnsubscribeRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/sitemap.xml': {
       id: '/sitemap.xml'
       path: '/sitemap.xml'
@@ -451,6 +471,7 @@ const rootRouteChildren: RootRouteChildren = {
   SettingsRoute: SettingsRoute,
   SignupRoute: SignupRoute,
   SitemapDotxmlRoute: SitemapDotxmlRoute,
+  UnsubscribeRoute: UnsubscribeRoute,
   BookIdRoute: BookIdRoute,
   MessagesIdRoute: MessagesIdRoute,
   ModifierIdRoute: ModifierIdRoute,
