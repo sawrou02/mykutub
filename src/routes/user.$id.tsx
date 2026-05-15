@@ -39,7 +39,7 @@ function UserProfilePage() {
 
   useEffect(() => {
     Promise.all([
-      supabase.from("profiles").select("display_name, created_at").eq("id", userId).maybeSingle(),
+      supabase.from("profiles").select("display_name, created_at, verified").eq("id", userId).maybeSingle(),
       supabase.from("books").select("*").eq("seller_id", userId).order("created_at", { ascending: false }),
       supabase.from("reviews").select("*").eq("seller_id", userId),
       supabase.from("follows").select("id", { count: "exact", head: true }).eq("following_id", userId),
