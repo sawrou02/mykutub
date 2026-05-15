@@ -1,6 +1,6 @@
 import { createFileRoute, useNavigate, Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
-import { ChevronLeft, MessageCircle, Star, Calendar, Users, BadgeCheck, MoreVertical, Ban } from "lucide-react";
+import { ChevronLeft, MessageCircle, Star, Calendar, Users, BadgeCheck, MoreVertical, Ban, UserPlus, UserMinus } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { BookCard } from "@/components/BookCard";
