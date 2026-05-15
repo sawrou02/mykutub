@@ -333,6 +333,8 @@ export type Database = {
       profiles: {
         Row: {
           avatar_url: string | null
+          ban_reason: string | null
+          banned_at: string | null
           birthdate: string | null
           city: string | null
           created_at: string
@@ -345,11 +347,16 @@ export type Database = {
           notify_sms: boolean
           phone: string | null
           phone_visible: boolean
+          suspended_until: string | null
+          suspension_reason: string | null
           title: string | null
           updated_at: string
+          verified: boolean
         }
         Insert: {
           avatar_url?: string | null
+          ban_reason?: string | null
+          banned_at?: string | null
           birthdate?: string | null
           city?: string | null
           created_at?: string
@@ -362,11 +369,16 @@ export type Database = {
           notify_sms?: boolean
           phone?: string | null
           phone_visible?: boolean
+          suspended_until?: string | null
+          suspension_reason?: string | null
           title?: string | null
           updated_at?: string
+          verified?: boolean
         }
         Update: {
           avatar_url?: string | null
+          ban_reason?: string | null
+          banned_at?: string | null
           birthdate?: string | null
           city?: string | null
           created_at?: string
@@ -379,8 +391,11 @@ export type Database = {
           notify_sms?: boolean
           phone?: string | null
           phone_visible?: boolean
+          suspended_until?: string | null
+          suspension_reason?: string | null
           title?: string | null
           updated_at?: string
+          verified?: boolean
         }
         Relationships: []
       }
@@ -500,6 +515,20 @@ export type Database = {
       is_blocked_by: {
         Args: { _blocked: string; _blocker: string }
         Returns: boolean
+      }
+      is_user_sanctioned: { Args: { _uid: string }; Returns: boolean }
+      notify_user_action: {
+        Args: {
+          _link?: string
+          _message: string
+          _type?: string
+          _user_id: string
+        }
+        Returns: undefined
+      }
+      send_global_notification: {
+        Args: { _link?: string; _message: string }
+        Returns: number
       }
     }
     Enums: {
