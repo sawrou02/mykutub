@@ -18,6 +18,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Textarea } from "@/components/ui/textarea";
 import { Input } from "@/components/ui/input";
 import { useAuth } from "@/hooks/useAuth";
+import { AdminUsersTab } from "@/components/admin/AdminUsersTab";
 
 const SUSPENSION_REASONS = ["Spam", "Arnaque", "Contenu inapproprié", "Harcèlement", "Non-respect des règles islamiques"] as const;
 const SUSPENSION_DURATIONS = [
@@ -335,16 +336,8 @@ function AdminPage() {
           {reviews.length === 0 && <p className="text-muted-foreground text-center py-8">{t("admin.noReviews")}</p>}
         </TabsContent>
 
-        <TabsContent value="users" className="space-y-2">
-          {profiles.map(p => (
-            <Card key={p.id} className="p-3 flex items-center justify-between">
-              <div>
-                <p className="font-semibold">{p.display_name ?? t("admin.noName")}</p>
-                <p className="text-xs text-muted-foreground font-mono">{p.id.slice(0, 8)}…</p>
-              </div>
-              <p className="text-xs text-muted-foreground">{new Date(p.created_at).toLocaleDateString()}</p>
-            </Card>
-          ))}
+        <TabsContent value="users">
+          <AdminUsersTab />
         </TabsContent>
 
         <TabsContent value="contact" className="space-y-2">
