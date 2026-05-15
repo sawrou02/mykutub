@@ -371,7 +371,15 @@ function BookDetailPage() {
                   </div>
                 )}
                 {isOwner && (
-                  <p className="mt-4 text-xs text-center text-muted-foreground">Ceci est votre annonce</p>
+                  <div className="mt-4 space-y-2">
+                    <p className="text-xs text-center text-muted-foreground">Ceci est votre annonce</p>
+                    <Button asChild variant="outline" className="w-full h-10 rounded-full font-semibold">
+                      <Link to="/modifier/$id" params={{ id: bookId }}><Pencil size={16} className="mr-1.5" /> Modifier</Link>
+                    </Button>
+                    <Button onClick={() => setDeleteOpen(true)} variant="destructive" className="w-full h-10 rounded-full font-semibold">
+                      <Trash2 size={16} className="mr-1.5" /> Supprimer
+                    </Button>
+                  </div>
                 )}
               </div>
             </div>
