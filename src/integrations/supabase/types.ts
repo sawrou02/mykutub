@@ -158,6 +158,27 @@ export type Database = {
         }
         Relationships: []
       }
+      charte_settings: {
+        Row: {
+          current_version: string
+          id: number
+          updated_at: string
+          updated_by: string | null
+        }
+        Insert: {
+          current_version?: string
+          id?: number
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Update: {
+          current_version?: string
+          id?: number
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Relationships: []
+      }
       chats: {
         Row: {
           archived_by_user1: boolean
@@ -430,6 +451,9 @@ export type Database = {
           banned_at: string | null
           banned_by: string | null
           birthdate: string | null
+          charte_accepted: boolean
+          charte_accepted_at: string | null
+          charte_version: string | null
           city: string | null
           created_at: string
           display_name: string | null
@@ -463,6 +487,9 @@ export type Database = {
           banned_at?: string | null
           banned_by?: string | null
           birthdate?: string | null
+          charte_accepted?: boolean
+          charte_accepted_at?: string | null
+          charte_version?: string | null
           city?: string | null
           created_at?: string
           display_name?: string | null
@@ -496,6 +523,9 @@ export type Database = {
           banned_at?: string | null
           banned_by?: string | null
           birthdate?: string | null
+          charte_accepted?: boolean
+          charte_accepted_at?: string | null
+          charte_version?: string | null
           city?: string | null
           created_at?: string
           display_name?: string | null
@@ -646,6 +676,7 @@ export type Database = {
     Functions: {
       _is_target_admin: { Args: { _uid: string }; Returns: boolean }
       _require_admin: { Args: never; Returns: undefined }
+      accept_charte: { Args: never; Returns: undefined }
       admin_ban_user: {
         Args: { _reason: string; _target: string }
         Returns: undefined
@@ -657,6 +688,10 @@ export type Database = {
       admin_send_message: {
         Args: { _target: string; _text: string }
         Returns: string
+      }
+      admin_set_charte_version: {
+        Args: { _version: string }
+        Returns: undefined
       }
       admin_set_verified: {
         Args: { _target: string; _value: boolean }
