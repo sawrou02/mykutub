@@ -53,7 +53,23 @@ function ProfilePage() {
         const { data: bks } = await supabase.from("books").select("*").in("id", ids);
         setFavorites((bks as Book[]) ?? []);
       });
+
+    supabase.from("follows").select("following_id").eq("follower_id", user.id)
+      .then(async ({ data }) => {
+        const ids = (data ?? []).map((r: any) => r.following_id);
+        if (!ids.length) { setFollowing([]); return; }
+        const { data: profs } = await supabase.from("profiles").select("id, display_name, avatar_url").in("id", ids);
+        setFollowing((profs as any[]) ?? []);
+      });
   }, [user]);
+
+  const handleUnfollow = async (sellerId: string) => {
+    if (!user) return;
+    const { error } = await supabase.from("follows").delete().eq("follower_id", user.id).eq("following_id", sellerId);
+    if (error) { toast.error("Erreur"); return; }
+    setFollowing(prev => prev.filter(f => f.id !== sellerId));
+    toast.success("Désabonné");
+  };
 
   const handleLogout = async () => {
     await signOut();
