@@ -70,6 +70,12 @@ function ChatDetailPage() {
   const [showBookInfo, setShowBookInfo] = useState(false);
   const [uploading, setUploading] = useState(false);
   const [actionMsg, setActionMsg] = useState<Message | null>(null);
+  const [reportOpen, setReportOpen] = useState(false);
+  const [reportReasons, setReportReasons] = useState<Set<string>>(new Set());
+  const [reportDescription, setReportDescription] = useState("");
+  const [reportSubmitting, setReportSubmitting] = useState(false);
+  const [confirmBlock, setConfirmBlock] = useState(false);
+  const [confirmDeleteChat, setConfirmDeleteChat] = useState(false);
   const scrollRef = useRef<HTMLDivElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const lastTypingSent = useRef(0);
