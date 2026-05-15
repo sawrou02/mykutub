@@ -2,6 +2,7 @@ import { createFileRoute, useNavigate, Link } from "@tanstack/react-router";
 import { useEffect, useMemo, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { ChevronLeft, MapPin, Share2, Heart, MessageCircle, Truck, Package, Star, CalendarDays, Clock, ShieldCheck, BookOpen, Palette, Flag, Info, Pencil, Trash2, Search, X, Lock, Mail, Link2, Facebook, Twitter, MessageSquare } from "lucide-react";
+import { VerifiedBadge } from "@/components/VerifiedBadge";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import {
   AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent,
