@@ -461,7 +461,7 @@ function ChatDetailPage() {
             </span>
           </div>
           <div className="min-w-0">
-            <p className="font-semibold text-sm leading-tight truncate">{otherName}</p>
+            <p className="font-semibold text-sm leading-tight truncate flex items-center gap-1">{otherName}{otherProfile?.verified && <VerifiedBadge size={12} />}</p>
             {otherTyping ? (
               <p className="text-xs text-primary italic">en train d'écrire…</p>
             ) : (
