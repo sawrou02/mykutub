@@ -36,7 +36,7 @@ function SettingsPage() {
   const [pwd, setPwd] = useState("");
   const [pwd2, setPwd2] = useState("");
   const [pwdLoading, setPwdLoading] = useState(false);
-  const [prefs, setPrefs] = useState<Prefs>({ notify_email: true, notify_sms: false, notify_push: true, phone_visible: false });
+  const [prefs, setPrefs] = useState<Prefs>({ notify_email: true, notify_sms: false, notify_push: true, phone_visible: false, notify_reservations: true, notify_messages: true, notify_followers: true, notify_admin: true });
   const [savingPrefs, setSavingPrefs] = useState(false);
   const [deleting, setDeleting] = useState(false);
   const [blocked, setBlocked] = useState<Array<{ id: string; blocked_id: string; name: string }>>([]);
