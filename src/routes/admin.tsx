@@ -6,10 +6,24 @@ import { useIsAdmin } from "@/hooks/useIsAdmin";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Trash2, Users, BookOpen, MessageSquare, Star, ShieldCheck, Loader2, Mail, Inbox, Flag, Check, AlertTriangle, ImageOff, Image as ImageIcon } from "lucide-react";
+import { Trash2, Users, BookOpen, MessageSquare, Star, ShieldCheck, Loader2, Mail, Inbox, Flag, Check, AlertTriangle, ImageOff, Image as ImageIcon, BadgeCheck, Bell, Ban, Clock, Reply, Send } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
 import { DEFAULT_BOOK_IMAGE } from "@/lib/moderation";
+import {
+  Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger,
+} from "@/components/ui/dialog";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Textarea } from "@/components/ui/textarea";
+import { Input } from "@/components/ui/input";
+import { useAuth } from "@/hooks/useAuth";
+
+const SUSPENSION_REASONS = ["Spam", "Arnaque", "Contenu inapproprié", "Harcèlement", "Non-respect des règles islamiques"] as const;
+const SUSPENSION_DURATIONS = [
+  { label: "7 jours", days: 7 },
+  { label: "30 jours", days: 30 },
+  { label: "90 jours", days: 90 },
+] as const;
 
 export const Route = createFileRoute("/admin")({ component: AdminPage });
 
