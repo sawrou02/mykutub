@@ -152,6 +152,10 @@ export function BookReservation({ book, onBookChange }: Props) {
         type: "reservation_cancelled",
         link: `/book/${book.id}`,
       });
+      sendEmail("send-reservation-email", {
+        userId: previous, kind: "cancelled",
+        bookTitle: book.title, bookId: book.id,
+      });
     }
     if (!error) await supabase.from("book_requests").update({ status: "pending" }).eq("book_id", book.id);
     setBusy(false);
