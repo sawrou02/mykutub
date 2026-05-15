@@ -159,10 +159,29 @@ function SignupPage() {
               {errors.confirm && <p className="text-xs text-destructive">{errors.confirm}</p>}
             </div>
 
+            <div className="flex items-start gap-2 pt-2">
+              <Checkbox
+                id="charte"
+                checked={charteAccepted}
+                onCheckedChange={(v) => setCharteAccepted(v === true)}
+                className="mt-0.5"
+              />
+              <label htmlFor="charte" className="text-sm leading-snug cursor-pointer">
+                J'ai lu et j'accepte la{" "}
+                <button
+                  type="button"
+                  onClick={() => setCharteOpen(true)}
+                  className="text-primary font-semibold hover:underline"
+                >
+                  Charte Communautaire de MyKutub →
+                </button>
+              </label>
+            </div>
+
             <Button
               type="submit"
-              disabled={loading}
-              className="w-full h-12 rounded-xl text-base font-bold bg-primary text-primary-foreground hover:bg-primary/90 mt-2"
+              disabled={loading || !charteAccepted}
+              className="w-full h-12 rounded-xl text-base font-bold bg-primary text-primary-foreground hover:bg-primary/90 mt-2 disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {loading ? <Loader2 className="animate-spin" /> : "Créer mon compte"}
             </Button>
