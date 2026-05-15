@@ -92,7 +92,7 @@ function ChatDetailPage() {
     if (!chat || !user) return;
     const otherId = chat.participants.find((p) => p !== user.id);
     if (otherId) {
-      supabase.from("profiles").select("id,display_name,avatar_url").eq("id", otherId).single()
+      supabase.from("profiles").select("id,display_name,avatar_url,verified").eq("id", otherId).single()
         .then(({ data }) => setOtherProfile(data as ProfileLite | null));
     }
     if (chat.book_id) {
