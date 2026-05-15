@@ -5,7 +5,7 @@ import { createClient } from "https://esm.sh/@supabase/supabase-js@2.45.0";
 const RESEND_API_KEY = Deno.env.get("RESEND_API_KEY")!;
 const SUPABASE_URL = Deno.env.get("SUPABASE_URL")!;
 const SERVICE_KEY = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
-const FROM = "MyKutub <noreply@mykutub.com>";
+const FROM = "MyKutub <onboarding@resend.dev>";
 const ADMIN = "admin@mykutub.com";
 const SITE = "https://mykutub.lovable.app";
 const TEAL = "#0d6e6e";
