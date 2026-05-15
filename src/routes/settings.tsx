@@ -5,9 +5,13 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
-import { ChevronLeft, KeyRound, Bell, Shield, Trash2, Loader2 } from "lucide-react";
+import { ChevronLeft, KeyRound, Bell, Shield, Trash2, Loader2, Ban } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
+import {
+  AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent,
+  AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/settings")({
@@ -31,12 +35,38 @@ function SettingsPage() {
   const [prefs, setPrefs] = useState<Prefs>({ notify_email: true, notify_sms: false, notify_push: true, phone_visible: false });
   const [savingPrefs, setSavingPrefs] = useState(false);
   const [deleting, setDeleting] = useState(false);
+  const [blocked, setBlocked] = useState<Array<{ id: string; blocked_id: string; name: string }>>([]);
+  const [confirmUnblock, setConfirmUnblock] = useState<{ id: string; name: string } | null>(null);
+
+  const loadBlocked = async (uid: string) => {
+    const { data } = await supabase
+      .from("blocked_users")
+      .select("id, blocked_id")
+      .eq("blocker_id", uid)
+      .order("created_at", { ascending: false });
+    const rows = (data ?? []) as Array<{ id: string; blocked_id: string }>;
+    if (rows.length === 0) { setBlocked([]); return; }
+    const { data: profs } = await supabase
+      .from("profiles").select("id, display_name").in("id", rows.map(r => r.blocked_id));
+    const nameMap = new Map<string, string>();
+    (profs ?? []).forEach((p: { id: string; display_name: string | null }) => nameMap.set(p.id, p.display_name || "Utilisateur"));
+    setBlocked(rows.map(r => ({ id: r.id, blocked_id: r.blocked_id, name: nameMap.get(r.blocked_id) || "Utilisateur" })));
+  };
 
   useEffect(() => {
     if (!user) return;
     supabase.from("profiles").select("notify_email, notify_sms, notify_push, phone_visible").eq("id", user.id).maybeSingle()
       .then(({ data }) => { if (data) setPrefs(data as Prefs); });
+    loadBlocked(user.id);
   }, [user]);
+
+  const unblock = async () => {
+    if (!confirmUnblock || !user) return;
+    const { error } = await supabase.from("blocked_users").delete().eq("id", confirmUnblock.id);
+    if (error) toast.error("Échec du déblocage");
+    else { toast.success(`${confirmUnblock.name} a été débloqué`); loadBlocked(user.id); }
+    setConfirmUnblock(null);
+  };
 
   if (authLoading) return <div className="p-10 text-center">{t("common.loading")}</div>;
   if (!user) {
@@ -144,6 +174,47 @@ function SettingsPage() {
             <Switch checked={prefs.phone_visible} onCheckedChange={(v) => savePrefs({ ...prefs, phone_visible: v })} />
           </div>
         </section>
+
+        <section className="bg-card border rounded-2xl p-6 space-y-4">
+          <div className="flex items-center gap-3">
+            <div className="p-2 bg-destructive/10 rounded-lg text-destructive"><Ban size={18} /></div>
+            <h2 className="font-headline font-bold text-lg">Utilisateurs bloqués</h2>
+          </div>
+          {blocked.length === 0 ? (
+            <p className="text-sm text-muted-foreground">Vous n'avez bloqué aucun utilisateur.</p>
+          ) : (
+            <ul className="divide-y">
+              {blocked.map((b) => (
+                <li key={b.id} className="flex items-center justify-between py-3">
+                  <span className="text-sm font-medium">{b.name}</span>
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    className="rounded-full"
+                    onClick={() => setConfirmUnblock({ id: b.id, name: b.name })}
+                  >
+                    Débloquer
+                  </Button>
+                </li>
+              ))}
+            </ul>
+          )}
+        </section>
+
+        <AlertDialog open={!!confirmUnblock} onOpenChange={(o) => !o && setConfirmUnblock(null)}>
+          <AlertDialogContent>
+            <AlertDialogHeader>
+              <AlertDialogTitle>Débloquer {confirmUnblock?.name} ?</AlertDialogTitle>
+              <AlertDialogDescription>
+                Cet utilisateur pourra à nouveau vous envoyer des messages et voir vos annonces.
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter>
+              <AlertDialogCancel>Annuler</AlertDialogCancel>
+              <AlertDialogAction onClick={unblock}>Débloquer</AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
 
         <section className="bg-card border border-destructive/30 rounded-2xl p-6 space-y-4">
           <div className="flex items-center gap-3">

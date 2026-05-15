@@ -5,7 +5,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { OnlineDot } from "@/components/OnlineDot";
 import { cn } from "@/lib/utils";
 import type { Chat } from "@/lib/mykutub";
-import { MessageSquare, Search, User as UserIcon, BookOpen, MoreVertical, Trash2, Archive, ArchiveRestore, BellOff, Bell } from "lucide-react";
+import { MessageSquare, Search, User as UserIcon, BookOpen, MoreVertical, Trash2, Archive, ArchiveRestore, BellOff, Bell, Ban } from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -54,7 +54,9 @@ export function ContactsSidebar({ activeChatId }: { activeChatId?: string }) {
   const [search, setSearch] = useState("");
   const [filter, setFilter] = useState<FilterMode>("all");
   const [confirmDelete, setConfirmDelete] = useState<Chat | null>(null);
+  const [confirmBlock, setConfirmBlock] = useState<{ chat: Chat; userId: string; name: string } | null>(null);
   const [openMenuId, setOpenMenuId] = useState<string | null>(null);
+  const [blockedIds, setBlockedIds] = useState<Set<string>>(new Set());
   const longPressTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const pathname = useRouterState({ select: (r) => r.location.pathname });
 
@@ -65,6 +67,10 @@ export function ContactsSidebar({ activeChatId }: { activeChatId?: string }) {
     }
     supabase.from("profiles").select("id,display_name,avatar_url").eq("id", user.id).single()
       .then(({ data }) => setMe(data as ProfileLite | null));
+    const loadBlocked = async () => {
+      const { data } = await supabase.from("blocked_users").select("blocked_id").eq("blocker_id", user.id);
+      setBlockedIds(new Set((data ?? []).map((r: { blocked_id: string }) => r.blocked_id)));
+    };
     const load = async () => {
       const { data } = await supabase
         .from("chats").select("*")
@@ -82,10 +88,12 @@ export function ContactsSidebar({ activeChatId }: { activeChatId?: string }) {
       }
       setLoading(false);
     };
+    loadBlocked();
     load();
     const channel = supabase
       .channel(`chats-sidebar-${user.id}`)
       .on("postgres_changes", { event: "*", schema: "public", table: "chats" }, load)
+      .on("postgres_changes", { event: "*", schema: "public", table: "blocked_users", filter: `blocker_id=eq.${user.id}` }, loadBlocked)
       .subscribe();
     return () => { supabase.removeChannel(channel); };
   }, [user]);
@@ -94,6 +102,8 @@ export function ContactsSidebar({ activeChatId }: { activeChatId?: string }) {
     if (!user) return [];
     const q = search.trim().toLowerCase();
     return chats.filter((c) => {
+      const otherId = c.participants.find((p) => p !== user.id);
+      if (otherId && blockedIds.has(otherId)) return false;
       const isDeleted = (c.deleted_for ?? []).includes(user.id);
       if (isDeleted) return false;
       const isArchived = (c.archived_for ?? []).includes(user.id);
@@ -104,13 +114,12 @@ export function ContactsSidebar({ activeChatId }: { activeChatId?: string }) {
         if (filter === "unread" && !c.unread_by?.includes(user.id)) return false;
       }
       if (!q) return true;
-      const otherId = c.participants.find((p) => p !== user.id);
       const name = (otherId && profiles[otherId]?.display_name) || "";
       return name.toLowerCase().includes(q)
         || (c.book_title ?? "").toLowerCase().includes(q)
         || (c.last_message ?? "").toLowerCase().includes(q);
     });
-  }, [chats, profiles, search, user, filter]);
+  }, [chats, profiles, search, user, filter, blockedIds]);
 
   const counts = useMemo(() => {
     if (!user) return { all: 0, unread: 0, archived: 0 };
@@ -147,6 +156,21 @@ export function ContactsSidebar({ activeChatId }: { activeChatId?: string }) {
     await updateChatArray(confirmDelete, "deleted_for", true);
     setConfirmDelete(null);
     toast.success("Conversation supprimée");
+  };
+
+  const handleBlock = async () => {
+    if (!confirmBlock) return;
+    const { error } = await supabase.from("blocked_users").insert({
+      blocker_id: user.id,
+      blocked_id: confirmBlock.userId,
+    });
+    if (error && !error.message.toLowerCase().includes("duplicate")) {
+      toast.error("Impossible de bloquer cet utilisateur");
+    } else {
+      setBlockedIds((prev) => new Set(prev).add(confirmBlock.userId));
+      toast.success(`${confirmBlock.name} a été bloqué`);
+    }
+    setConfirmBlock(null);
   };
 
   const startLongPress = (chat: Chat) => {
@@ -334,6 +358,15 @@ export function ContactsSidebar({ activeChatId }: { activeChatId?: string }) {
                       <DropdownMenuSeparator />
                       <DropdownMenuItem
                         className="text-destructive focus:text-destructive focus:bg-destructive/10"
+                        onSelect={() => {
+                          if (otherId) setConfirmBlock({ chat, userId: otherId, name: contactName });
+                        }}
+                      >
+                        <Ban size={15} className="mr-2" />
+                        Bloquer cet utilisateur
+                      </DropdownMenuItem>
+                      <DropdownMenuItem
+                        className="text-destructive focus:text-destructive focus:bg-destructive/10"
                         onSelect={() => setConfirmDelete(chat)}
                       >
                         <Trash2 size={15} className="mr-2" />
@@ -364,6 +397,29 @@ export function ContactsSidebar({ activeChatId }: { activeChatId?: string }) {
               className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
             >
               Supprimer
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
+      <AlertDialog open={!!confirmBlock} onOpenChange={(o) => !o && setConfirmBlock(null)}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle className="flex items-center gap-2">
+              <Ban size={18} className="text-destructive" /> Bloquer {confirmBlock?.name} ?
+            </AlertDialogTitle>
+            <AlertDialogDescription>
+              Voulez-vous bloquer {confirmBlock?.name} ? Il ne pourra plus vous envoyer de messages
+              ni voir vos annonces.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Annuler</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={handleBlock}
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+            >
+              Bloquer
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>

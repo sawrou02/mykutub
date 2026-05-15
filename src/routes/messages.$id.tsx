@@ -145,9 +145,19 @@ function ChatDetailPage() {
     if (!user || !chat) return;
     const recipientId = chat.participants.find((p) => p !== user.id);
     const senderName = user.user_metadata?.display_name || user.email?.split("@")[0] || "Utilisateur";
-    await supabase.from("messages").insert({
+    const { error } = await supabase.from("messages").insert({
       chat_id: chatId, sender_id: user.id, sender_name: senderName, text,
     });
+    if (error) {
+      // RLS block from blocked_users restrictive policy returns a 42501 / row-level error
+      const msg = (error.message || "").toLowerCase();
+      if (msg.includes("row-level") || msg.includes("policy") || error.code === "42501") {
+        toast.error("Vous ne pouvez pas contacter cet utilisateur");
+      } else {
+        toast.error("Échec de l'envoi");
+      }
+      throw error;
+    }
     const preview = text.startsWith(IMAGE_PREFIX) ? "📷 Photo" : text;
     await supabase.from("chats").update({
       last_message: preview,
