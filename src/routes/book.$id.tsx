@@ -2,6 +2,7 @@ import { createFileRoute, useNavigate, Link } from "@tanstack/react-router";
 import { useEffect, useMemo, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { ChevronLeft, MapPin, Share2, Heart, MessageCircle, Truck, Package, Star, CalendarDays, Clock, ShieldCheck, BookOpen, Palette, Flag, Info, Pencil, Trash2, Search, X, Lock, Mail, Link2, Facebook, Twitter, MessageSquare } from "lucide-react";
+import { VerifiedBadge } from "@/components/VerifiedBadge";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import {
   AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent,
@@ -85,6 +86,7 @@ function BookDetailPage() {
   const [creating, setCreating] = useState(false);
   const [rating, setRating] = useState<{ avg: number; count: number } | null>(null);
   const [sellerJoined, setSellerJoined] = useState<string | null>(null);
+  const [sellerVerified, setSellerVerified] = useState(false);
   const [reportOpen, setReportOpen] = useState(false);
   const [deleteOpen, setDeleteOpen] = useState(false);
   const [deleting, setDeleting] = useState(false);
@@ -104,8 +106,11 @@ function BookDetailPage() {
           setRating({ avg, count: data.length });
         }
       });
-    supabase.from("profiles").select("created_at").eq("id", book.seller_id).single()
-      .then(({ data }) => setSellerJoined((data as any)?.created_at ?? null));
+    supabase.from("profiles").select("created_at, verified").eq("id", book.seller_id).single()
+      .then(({ data }) => {
+        setSellerJoined((data as any)?.created_at ?? null);
+        setSellerVerified(!!(data as any)?.verified);
+      });
   }, [book?.seller_id]);
 
   const handleContactSeller = async () => {
@@ -293,7 +298,7 @@ function BookDetailPage() {
                   {initial}
                 </div>
                 <div className="flex-1 min-w-0">
-                  <p className="font-semibold text-base truncate">{book.seller_name}</p>
+                  <p className="font-semibold text-base truncate flex items-center gap-1.5">{book.seller_name}{sellerVerified && <VerifiedBadge size={14} />}</p>
                   <OnlineStatusLabel userId={book.seller_id} />
                   {rating ? (
                     <div className="flex items-center gap-1 text-xs mt-0.5">
@@ -345,7 +350,7 @@ function BookDetailPage() {
                     {initial}
                   </div>
                   <div className="flex-1 min-w-0">
-                    <p className="font-bold text-lg truncate">{book.seller_name}</p>
+                    <p className="font-bold text-lg truncate flex items-center gap-1.5">{book.seller_name}{sellerVerified && <VerifiedBadge size={16} />}</p>
                     {rating ? (
                       <div className="flex items-center gap-1 text-xs">
                         <Star size={12} className="fill-amber-500 text-amber-500" />

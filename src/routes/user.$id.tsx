@@ -27,7 +27,7 @@ function UserProfilePage() {
   const { chatId } = Route.useSearch();
   const navigate = useNavigate();
   const { user } = useAuth();
-  const [profile, setProfile] = useState<{ display_name: string | null; created_at?: string | null } | null>(null);
+  const [profile, setProfile] = useState<{ display_name: string | null; created_at?: string | null; verified?: boolean | null } | null>(null);
   const [books, setBooks] = useState<Book[]>([]);
   const [reviews, setReviews] = useState<Review[]>([]);
   const [loading, setLoading] = useState(true);
@@ -39,7 +39,7 @@ function UserProfilePage() {
 
   useEffect(() => {
     Promise.all([
-      supabase.from("profiles").select("display_name, created_at").eq("id", userId).maybeSingle(),
+      supabase.from("profiles").select("display_name, created_at, verified").eq("id", userId).maybeSingle(),
       supabase.from("books").select("*").eq("seller_id", userId).order("created_at", { ascending: false }),
       supabase.from("reviews").select("*").eq("seller_id", userId),
       supabase.from("follows").select("id", { count: "exact", head: true }).eq("following_id", userId),
@@ -193,9 +193,11 @@ function UserProfilePage() {
             <div className="flex items-center gap-1.5">
               <UserPlus size={12} /> {followersCount} abonné{followersCount > 1 ? "s" : ""}
             </div>
-            <div className="flex items-center gap-1.5">
-              <BadgeCheck size={12} className="text-emerald-600" /> Profil vérifié
-            </div>
+            {profile?.verified && (
+              <div className="flex items-center gap-1.5">
+                <BadgeCheck size={12} className="text-emerald-600" /> Profil vérifié
+              </div>
+            )}
           </div>
 
           {!isMe && user && (

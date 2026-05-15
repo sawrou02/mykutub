@@ -22,12 +22,13 @@ import type { Chat, Message, Book } from "@/lib/mykutub";
 import { ContactsSidebar } from "@/components/ContactsSidebar";
 import { OnlineDot, OnlineStatusLabel } from "@/components/OnlineDot";
 import { cn } from "@/lib/utils";
+import { VerifiedBadge } from "@/components/VerifiedBadge";
 
 export const Route = createFileRoute("/messages/$id")({
   component: ChatDetailPage,
 });
 
-type ProfileLite = { id: string; display_name: string | null; avatar_url: string | null };
+type ProfileLite = { id: string; display_name: string | null; avatar_url: string | null; verified?: boolean | null };
 
 const SYSTEM_PREFIX = "__system__:";
 const IMAGE_PREFIX = "__image__:";
@@ -92,7 +93,7 @@ function ChatDetailPage() {
     if (!chat || !user) return;
     const otherId = chat.participants.find((p) => p !== user.id);
     if (otherId) {
-      supabase.from("profiles").select("id,display_name,avatar_url").eq("id", otherId).single()
+      supabase.from("profiles").select("id,display_name,avatar_url,verified").eq("id", otherId).single()
         .then(({ data }) => setOtherProfile(data as ProfileLite | null));
     }
     if (chat.book_id) {
@@ -461,7 +462,7 @@ function ChatDetailPage() {
             </span>
           </div>
           <div className="min-w-0">
-            <p className="font-semibold text-sm leading-tight truncate">{otherName}</p>
+            <p className="font-semibold text-sm leading-tight truncate flex items-center gap-1">{otherName}{otherProfile?.verified && <VerifiedBadge size={12} />}</p>
             {otherTyping ? (
               <p className="text-xs text-primary italic">en train d'écrire…</p>
             ) : (
