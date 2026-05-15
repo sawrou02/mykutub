@@ -25,7 +25,7 @@ export const Route = createFileRoute("/catalog")({
   head: () => ({
     meta: [
       { title: "Catalogue — Livres islamiques d'occasion | MYKUTUB" },
-      { name: "description", content: "Parcourez des centaines de livres de science islamique d'occasion : Tafsir, Hadith, Fiqh, Aqida, Sira. Prix accessibles, vendeurs vérifiés, livraison en France." },
+      { name: "description", content: "Parcourez des centaines de livres de science islamique d'occasion : Tafsir, Hadith, Fiqh, Aqida, Sira. Prix accessibles, vendeurs vérifiés, livraison en Europe." },
       { property: "og:title", content: "Catalogue — Livres islamiques d'occasion | MYKUTUB" },
       { property: "og:description", content: "Tafsir, Hadith, Fiqh, Aqida, Sira et plus. Vendeurs vérifiés, prix accessibles." },
       { property: "og:url", content: "https://mykutub.lovable.app/catalog" },
