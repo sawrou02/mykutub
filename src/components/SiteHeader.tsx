@@ -79,7 +79,7 @@ export function SiteHeader() {
               </div>
             ) : (
               <>
-                <Button asChild size="sm" className="hidden md:inline-flex gap-1.5 bg-primary text-primary-foreground hover:bg-primary/90 font-bold">
+                <Button asChild size="sm" className="hidden sm:inline-flex gap-1.5 bg-primary text-primary-foreground hover:bg-primary/90 font-bold">
                   <Link to="/publish"><PlusCircle size={16} /> <span className="hidden lg:inline">{t("home.publishBtn")}</span><span className="lg:hidden">{t("nav.publishBook")}</span></Link>
                 </Button>
                 <Button asChild variant="outline" size="sm" className="border-primary text-primary hover:bg-primary/10 hover:text-primary font-bold">
