@@ -674,12 +674,12 @@ function ChatDetailPage() {
   );
 
   return (
-    <div className="h-[calc(100vh-4rem)] flex overflow-hidden">
-      <aside className="hidden md:flex w-[300px] border-r flex-shrink-0 h-full">
+    <div className="h-[calc(100vh-4rem)] flex overflow-hidden w-full">
+      <aside className="hidden md:flex w-[320px] min-w-[320px] max-w-[320px] flex-shrink-0 h-full border-r overflow-hidden">
         <ContactsSidebar activeChatId={chatId} />
       </aside>
-      <section className="flex-1 h-full min-w-0">{ChatPane}</section>
-      <aside className="hidden lg:flex w-[320px] border-l flex-shrink-0 h-full">
+      <section className="flex-1 h-full min-w-0 flex flex-col overflow-hidden">{ChatPane}</section>
+      <aside className="hidden lg:flex w-[280px] min-w-[280px] max-w-[280px] flex-shrink-0 h-full border-l overflow-hidden">
         {BookInfoPanel}
       </aside>
 
