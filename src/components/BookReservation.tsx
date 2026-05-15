@@ -129,6 +129,11 @@ export function BookReservation({ book, onBookChange }: Props) {
         })),
     ];
     if (notifs.length) await supabase.from("notifications").insert(notifs);
+    sendEmail("send-reservation-email", {
+      userId: req.requester_id, kind: "confirmed",
+      recipientName: req.requester_name, otherName: book.seller_name,
+      bookTitle: book.title, bookId: book.id,
+    });
     toast.success("Livre réservé.");
     setBusy(false);
   };
