@@ -193,10 +193,52 @@ function ChatDetailPage() {
     navigate({ to: "/messages" });
   };
 
+  const deleteForEveryone = async (m: Message) => {
+    if (!user || m.sender_id !== user.id) return;
+    const ageMs = Date.now() - new Date(m.created_at).getTime();
+    if (ageMs > 24 * 60 * 60 * 1000) {
+      toast.error("Trop tard : la suppression pour tous n'est possible que dans les 24h.");
+      return;
+    }
+    const { error } = await supabase.from("messages").update({
+      deleted_for_everyone: true,
+      deleted_at: new Date().toISOString(),
+      deleted_by: user.id,
+      text: "",
+    }).eq("id", m.id);
+    if (error) toast.error("Échec de la suppression");
+    else setActionMsg(null);
+  };
+
+  const deleteForMe = async (m: Message) => {
+    if (!user) return;
+    const next = Array.from(new Set([...(m.hidden_for ?? []), user.id]));
+    const { error } = await supabase.from("messages").update({ hidden_for: next }).eq("id", m.id);
+    if (error) toast.error("Échec");
+    else {
+      setMessages((prev) => prev.map((x) => x.id === m.id ? { ...x, hidden_for: next } : x));
+      setActionMsg(null);
+    }
+  };
+
+  const startLongPress = (m: Message) => {
+    if (m.sender_id !== user?.id || m.deleted_for_everyone) return;
+    if (longPressTimer.current) window.clearTimeout(longPressTimer.current);
+    longPressTimer.current = window.setTimeout(() => setActionMsg(m), 500);
+  };
+  const cancelLongPress = () => {
+    if (longPressTimer.current) { window.clearTimeout(longPressTimer.current); longPressTimer.current = null; }
+  };
+
+  const visibleMessages = useMemo(
+    () => messages.filter((m) => !(m.hidden_for ?? []).includes(user?.id ?? "")),
+    [messages, user?.id],
+  );
+
   const grouped = useMemo(() => {
     const out: Array<{ type: "date"; label: string; key: string } | { type: "msg"; msg: Message }> = [];
     let lastDay = "";
-    for (const m of messages) {
+    for (const m of visibleMessages) {
       const d = new Date(m.created_at);
       const key = d.toDateString();
       if (key !== lastDay) {
@@ -206,7 +248,7 @@ function ChatDetailPage() {
       out.push({ type: "msg", msg: m });
     }
     return out;
-  }, [messages]);
+  }, [visibleMessages]);
 
   if (!chat) {
     return (
