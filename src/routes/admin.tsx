@@ -30,6 +30,7 @@ export const Route = createFileRoute("/admin")({ component: AdminPage });
 function AdminPage() {
   const navigate = useNavigate();
   const { t } = useTranslation();
+  const { user: adminUser } = useAuth();
   const { isAdmin, loading } = useIsAdmin();
   const [stats, setStats] = useState({ users: 0, books: 0, messages: 0, reviews: 0 });
   const [books, setBooks] = useState<any[]>([]);
