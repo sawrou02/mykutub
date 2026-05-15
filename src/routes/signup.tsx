@@ -8,6 +8,8 @@ import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { z } from "zod";
 import { GoogleAuthButton } from "@/components/GoogleAuthButton";
+import { Checkbox } from "@/components/ui/checkbox";
+import { CharteModal } from "@/components/CharteModal";
 
 export const Route = createFileRoute("/signup")({
   component: SignupPage,
@@ -28,6 +30,8 @@ function SignupPage() {
   const [loading, setLoading] = useState(false);
   const [sentTo, setSentTo] = useState<string | null>(null);
   const [errors, setErrors] = useState<Record<string, string>>({});
+  const [charteAccepted, setCharteAccepted] = useState(false);
+  const [charteOpen, setCharteOpen] = useState(false);
 
   const handleSignup = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -44,6 +48,10 @@ function SignupPage() {
       const errs: Record<string, string> = {};
       parsed.error.issues.forEach((i) => { errs[i.path[0] as string] = i.message; });
       setErrors(errs);
+      return;
+    }
+    if (!charteAccepted) {
+      toast.error("Vous devez accepter la Charte Communautaire pour vous inscrire.");
       return;
     }
     setLoading(true);
@@ -151,10 +159,29 @@ function SignupPage() {
               {errors.confirm && <p className="text-xs text-destructive">{errors.confirm}</p>}
             </div>
 
+            <div className="flex items-start gap-2 pt-2">
+              <Checkbox
+                id="charte"
+                checked={charteAccepted}
+                onCheckedChange={(v) => setCharteAccepted(v === true)}
+                className="mt-0.5"
+              />
+              <label htmlFor="charte" className="text-sm leading-snug cursor-pointer">
+                J'ai lu et j'accepte la{" "}
+                <button
+                  type="button"
+                  onClick={() => setCharteOpen(true)}
+                  className="text-primary font-semibold hover:underline"
+                >
+                  Charte Communautaire de MyKutub →
+                </button>
+              </label>
+            </div>
+
             <Button
               type="submit"
-              disabled={loading}
-              className="w-full h-12 rounded-xl text-base font-bold bg-primary text-primary-foreground hover:bg-primary/90 mt-2"
+              disabled={loading || !charteAccepted}
+              className="w-full h-12 rounded-xl text-base font-bold bg-primary text-primary-foreground hover:bg-primary/90 mt-2 disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {loading ? <Loader2 className="animate-spin" /> : "Créer mon compte"}
             </Button>
@@ -183,6 +210,11 @@ function SignupPage() {
           </p>
         </div>
       </div>
+      <CharteModal
+        open={charteOpen}
+        onOpenChange={setCharteOpen}
+        onAccept={() => setCharteAccepted(true)}
+      />
     </div>
   );
 }

@@ -19,6 +19,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Input } from "@/components/ui/input";
 import { useAuth } from "@/hooks/useAuth";
 import { AdminUsersTab } from "@/components/admin/AdminUsersTab";
+import { AdminCharteTab } from "@/components/admin/AdminCharteTab";
 
 const SUSPENSION_REASONS = ["Spam", "Arnaque", "Contenu inapproprié", "Harcèlement", "Non-respect des règles islamiques"] as const;
 const SUSPENSION_DURATIONS = [
@@ -302,6 +303,7 @@ function AdminPage() {
               <Badge className="ml-2 h-5 min-w-5 px-1.5 bg-destructive text-destructive-foreground">{pendingReports}</Badge>
             )}
           </TabsTrigger>
+          <TabsTrigger value="charte">Charte</TabsTrigger>
         </TabsList>
 
         <TabsContent value="books" className="space-y-2">
@@ -438,6 +440,10 @@ function AdminPage() {
               </Card>
             );
           })}
+        </TabsContent>
+
+        <TabsContent value="charte">
+          <AdminCharteTab />
         </TabsContent>
       </Tabs>
     </div>
