@@ -19,6 +19,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Input } from "@/components/ui/input";
 import { useAuth } from "@/hooks/useAuth";
 import { AdminUsersTab } from "@/components/admin/AdminUsersTab";
+import { AdminCharteTab } from "@/components/admin/AdminCharteTab";
 
 const SUSPENSION_REASONS = ["Spam", "Arnaque", "Contenu inapproprié", "Harcèlement", "Non-respect des règles islamiques"] as const;
 const SUSPENSION_DURATIONS = [
