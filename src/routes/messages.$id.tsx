@@ -579,6 +579,39 @@ function ChatDetailPage() {
           </div>
         </div>
       )}
+
+      <Dialog open={!!actionMsg} onOpenChange={(o) => !o && setActionMsg(null)}>
+        <DialogContent className="sm:max-w-sm rounded-2xl">
+          <DialogHeader>
+            <DialogTitle>Supprimer le message ?</DialogTitle>
+            <DialogDescription>
+              Choisis comment supprimer ce message.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="flex flex-col gap-2 mt-2">
+            {actionMsg && (Date.now() - new Date(actionMsg.created_at).getTime()) < 24 * 60 * 60 * 1000 && (
+              <button
+                onClick={() => actionMsg && deleteForEveryone(actionMsg)}
+                className="flex items-center gap-3 w-full px-4 py-3 rounded-full bg-primary text-primary-foreground font-semibold text-sm hover:bg-primary/90 transition-colors"
+              >
+                <Trash size={18} /> Supprimer pour tout le monde
+              </button>
+            )}
+            <button
+              onClick={() => actionMsg && deleteForMe(actionMsg)}
+              className="flex items-center gap-3 w-full px-4 py-3 rounded-full bg-primary/10 text-primary font-semibold text-sm hover:bg-primary/20 transition-colors"
+            >
+              <UserMinus size={18} /> Supprimer pour moi
+            </button>
+            <button
+              onClick={() => setActionMsg(null)}
+              className="flex items-center gap-3 w-full px-4 py-3 rounded-full bg-muted text-foreground font-semibold text-sm hover:bg-muted/80 transition-colors justify-center"
+            >
+              Annuler
+            </button>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
