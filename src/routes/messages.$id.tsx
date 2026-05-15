@@ -62,9 +62,11 @@ function ChatDetailPage() {
   const [otherTyping, setOtherTyping] = useState(false);
   const [showBookInfo, setShowBookInfo] = useState(false);
   const [uploading, setUploading] = useState(false);
+  const [actionMsg, setActionMsg] = useState<Message | null>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const lastTypingSent = useRef(0);
+  const longPressTimer = useRef<number | null>(null);
 
   useEffect(() => {
     supabase.from("chats").select("*").eq("id", chatId).single()
