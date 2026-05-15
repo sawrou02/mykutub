@@ -13,6 +13,7 @@ import {
   AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import { toast } from "sonner";
+import { sendEmail } from "@/lib/email";
 import type { Book, Review } from "@/lib/mykutub";
 
 export const Route = createFileRoute("/user/$id")({
