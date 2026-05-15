@@ -172,6 +172,9 @@ function AdminPage() {
               <Badge className="ml-2 h-5 min-w-5 px-1.5 bg-destructive text-destructive-foreground">{unreadCount}</Badge>
             )}
           </TabsTrigger>
+          <TabsTrigger value="photos">
+            <ImageIcon size={14} className="mr-1.5" /> Photos
+          </TabsTrigger>
           <TabsTrigger value="reports" className="relative">
             <Flag size={14} className="mr-1.5" /> {t("admin.tabReports")}
             {pendingReports > 0 && (
@@ -256,43 +259,68 @@ function AdminPage() {
           })}
         </TabsContent>
 
+        <TabsContent value="photos" className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
+          {books.length === 0 && <p className="text-muted-foreground text-center py-8 col-span-full">Aucune photo</p>}
+          {books.map(b => (
+            <Card key={b.id} className="p-2 space-y-2">
+              <div className="relative aspect-square rounded-lg overflow-hidden bg-muted">
+                <img src={b.image_url} alt={b.title} className="absolute inset-0 w-full h-full object-cover" />
+              </div>
+              <p className="text-xs font-semibold truncate">{b.title}</p>
+              <Button size="sm" variant="outline" onClick={() => removeBookPhoto(b.id)} className="w-full text-destructive gap-1.5">
+                <ImageOff size={14} /> Supprimer photo
+              </Button>
+            </Card>
+          ))}
+        </TabsContent>
+
         <TabsContent value="reports" className="space-y-2">
-          {reports.length === 0 && <p className="text-muted-foreground text-center py-8">{t("admin.noReports")}</p>}
-          {reports.map(r => {
-            const bk = reportBooks[r.book_id];
-            const isPending = r.statut === "en_attente";
+          {groupedReports.length === 0 && <p className="text-muted-foreground text-center py-8">{t("admin.noReports")}</p>}
+          {groupedReports.map(({ bookId, items, count, latest }) => {
+            const bk = reportBooks[bookId];
+            const reasons = Array.from(new Set(items.map(i => i.raison)));
+            const hasPending = items.some(i => i.statut === "en_attente");
             return (
-              <Card key={r.id} className={`p-3 ${isPending ? "border-destructive/40 bg-destructive/5" : ""}`}>
+              <Card key={bookId} className={`p-3 ${hasPending ? "border-destructive/40 bg-destructive/5" : ""}`}>
                 <div className="flex items-start gap-3">
-                  {bk?.image_url && <img src={bk.image_url} alt="" className="w-14 h-14 object-cover rounded shrink-0" />}
+                  {bk?.image_url && <img src={bk.image_url} alt="" className="w-16 h-16 object-cover rounded shrink-0" />}
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2 mb-1 flex-wrap">
-                      <Badge variant={isPending ? "destructive" : "secondary"} className="h-5 text-[10px]">{r.statut}</Badge>
-                      <Badge variant="outline" className="h-5 text-[10px]">{r.raison}</Badge>
+                      <Badge variant="destructive" className="h-5 text-[10px] gap-1">
+                        <AlertTriangle size={10} /> {count} signalement{count > 1 ? "s" : ""}
+                      </Badge>
+                      {reasons.map(r => (
+                        <Badge key={r} variant="outline" className="h-5 text-[10px]">{r}</Badge>
+                      ))}
                     </div>
                     {bk ? (
-                      <Link to="/book/$id" params={{ id: r.book_id }} className="font-semibold hover:underline truncate block">{bk.title}</Link>
+                      <Link to="/book/$id" params={{ id: bookId }} className="font-semibold hover:underline truncate block">{bk.title}</Link>
                     ) : (
                       <p className="font-semibold text-muted-foreground italic">{t("admin.deletedListing")}</p>
                     )}
-                    {r.description && <p className="text-xs text-muted-foreground mt-1">{r.description}</p>}
-                    <p className="text-[10px] text-muted-foreground mt-1">{new Date(r.created_at).toLocaleString("fr-FR")}</p>
+                    {latest.description && <p className="text-xs text-muted-foreground mt-1 line-clamp-2">{latest.description}</p>}
+                    <p className="text-[10px] text-muted-foreground mt-1">Dernier : {new Date(latest.created_at).toLocaleString("fr-FR")}</p>
                   </div>
-                  <div className="flex flex-col gap-1">
-                    {isPending && (
-                      <>
-                        <Button size="icon" variant="ghost" onClick={() => updateReportStatus(r.id, "traite")} className="text-emerald-600" title={t("admin.markTreated")}>
-                          <Check size={16} />
-                        </Button>
-                        <Button size="icon" variant="ghost" onClick={() => updateReportStatus(r.id, "rejete")} className="text-muted-foreground" title={t("admin.reject")}>
-                          <Flag size={16} />
-                        </Button>
-                      </>
-                    )}
-                    <Button size="icon" variant="ghost" onClick={() => deleteReport(r.id)} className="text-destructive">
-                      <Trash2 size={16} />
-                    </Button>
-                  </div>
+                </div>
+                <div className="flex flex-wrap gap-2 mt-3 pt-3 border-t">
+                  <Button size="sm" variant="destructive" onClick={async () => {
+                    if (!bk) return;
+                    await deleteBook(bookId);
+                    await Promise.all(items.map(i => supabase.from("reports").update({ statut: "traite" }).eq("id", i.id)));
+                    setReports(prev => prev.map(r => r.book_id === bookId ? { ...r, statut: "traite" } : r));
+                  }} className="gap-1.5">
+                    <Trash2 size={14} /> Supprimer l'annonce
+                  </Button>
+                  <Button size="sm" variant="outline" disabled={!bk?.seller_id} onClick={() => bk?.seller_id && warnSeller(bk.seller_id, bk.title)} className="gap-1.5">
+                    <AlertTriangle size={14} /> Avertir
+                  </Button>
+                  <Button size="sm" variant="ghost" onClick={async () => {
+                    await Promise.all(items.filter(i => i.statut === "en_attente").map(i => supabase.from("reports").update({ statut: "rejete" }).eq("id", i.id)));
+                    setReports(prev => prev.map(r => r.book_id === bookId && r.statut === "en_attente" ? { ...r, statut: "rejete" } : r));
+                    toast.success("Signalements rejetés");
+                  }} className="gap-1.5 text-emerald-600">
+                    <Check size={14} /> Approuver l'annonce
+                  </Button>
                 </div>
               </Card>
             );
