@@ -162,7 +162,7 @@ function AdminPage() {
       </div>
 
       <Tabs defaultValue="books">
-        <TabsList>
+        <TabsList className="flex flex-wrap h-auto gap-1">
           <TabsTrigger value="books">{t("admin.tabBooks")}</TabsTrigger>
           <TabsTrigger value="reviews">{t("admin.tabReviews")}</TabsTrigger>
           <TabsTrigger value="users">{t("admin.tabUsers")}</TabsTrigger>
