@@ -54,7 +54,9 @@ export function ContactsSidebar({ activeChatId }: { activeChatId?: string }) {
   const [search, setSearch] = useState("");
   const [filter, setFilter] = useState<FilterMode>("all");
   const [confirmDelete, setConfirmDelete] = useState<Chat | null>(null);
+  const [confirmBlock, setConfirmBlock] = useState<{ chat: Chat; userId: string; name: string } | null>(null);
   const [openMenuId, setOpenMenuId] = useState<string | null>(null);
+  const [blockedIds, setBlockedIds] = useState<Set<string>>(new Set());
   const longPressTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const pathname = useRouterState({ select: (r) => r.location.pathname });
 
@@ -65,6 +67,10 @@ export function ContactsSidebar({ activeChatId }: { activeChatId?: string }) {
     }
     supabase.from("profiles").select("id,display_name,avatar_url").eq("id", user.id).single()
       .then(({ data }) => setMe(data as ProfileLite | null));
+    const loadBlocked = async () => {
+      const { data } = await supabase.from("blocked_users").select("blocked_id").eq("blocker_id", user.id);
+      setBlockedIds(new Set((data ?? []).map((r: { blocked_id: string }) => r.blocked_id)));
+    };
     const load = async () => {
       const { data } = await supabase
         .from("chats").select("*")
@@ -82,10 +88,12 @@ export function ContactsSidebar({ activeChatId }: { activeChatId?: string }) {
       }
       setLoading(false);
     };
+    loadBlocked();
     load();
     const channel = supabase
       .channel(`chats-sidebar-${user.id}`)
       .on("postgres_changes", { event: "*", schema: "public", table: "chats" }, load)
+      .on("postgres_changes", { event: "*", schema: "public", table: "blocked_users", filter: `blocker_id=eq.${user.id}` }, loadBlocked)
       .subscribe();
     return () => { supabase.removeChannel(channel); };
   }, [user]);
