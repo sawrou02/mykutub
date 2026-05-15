@@ -78,6 +78,11 @@ export function BookReservation({ book, onBookChange }: Props) {
         type: "request",
         link: `/book/${book.id}`,
       });
+      sendEmail("send-reservation-email", {
+        userId: book.seller_id, kind: "request",
+        recipientName: book.seller_name, otherName: requesterName,
+        bookTitle: book.title, bookId: book.id,
+      });
       toast.success("Demande envoyée !");
     }
     setBusy(false);
