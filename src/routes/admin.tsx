@@ -172,14 +172,6 @@ function AdminPage() {
     .sort((a, b) => b.count - a.count);
 
   // ---- Moderation helpers ----
-  const [sanctionFor, setSanctionFor] = useState<any>(null);
-  const [sancDays, setSancDays] = useState<number>(7);
-  const [sancReason, setSancReason] = useState<string>(SUSPENSION_REASONS[0]);
-  const [banFor, setBanFor] = useState<any>(null);
-  const [banReason, setBanReason] = useState<string>("");
-  const [globalMsg, setGlobalMsg] = useState("");
-  const [globalSending, setGlobalSending] = useState(false);
-  const [userSearch, setUserSearch] = useState("");
 
   const refreshProfile = (id: string, patch: any) =>
     setProfiles(prev => prev.map(p => p.id === id ? { ...p, ...patch } : p));
