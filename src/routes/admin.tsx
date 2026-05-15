@@ -217,6 +217,10 @@ function AdminPage() {
       _message: `Votre compte a été banni définitivement. Raison : ${banReason.trim()}.`,
       _link: "/profile", _type: "moderation",
     });
+    sendEmail("send-suspension-email", {
+      userId: banFor.id, kind: "banned",
+      recipientName: banFor.display_name, reason: banReason.trim(),
+    });
     refreshProfile(banFor.id, { banned_at: new Date().toISOString(), ban_reason: banReason.trim() });
     toast.success("Utilisateur banni");
     setBanFor(null); setBanReason("");
@@ -226,6 +230,9 @@ function AdminPage() {
     const next = !p.verified;
     const { error } = await supabase.from("profiles").update({ verified: next }).eq("id", p.id);
     if (error) return toast.error(error.message);
+    if (next) {
+      sendEmail("send-admin-email", { userId: p.id, kind: "verified", recipientName: p.display_name });
+    }
     refreshProfile(p.id, { verified: next });
     toast.success(next ? "Profil vérifié" : "Vérification retirée");
   };
