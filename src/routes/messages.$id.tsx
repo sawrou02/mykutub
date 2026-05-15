@@ -179,6 +179,11 @@ function ChatDetailPage() {
       last_message_at: new Date().toISOString(),
       unread_by: recipientId ? [recipientId] : [],
     }).eq("id", chatId);
+    if (recipientId) {
+      sendEmail("send-message-notification-email", {
+        userId: recipientId, senderName, preview, chatId,
+      });
+    }
   };
 
   const handleSend = async () => {
