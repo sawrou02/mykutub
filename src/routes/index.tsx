@@ -35,26 +35,26 @@ function Landing() {
 
   return (
     <div>
-      {/* Hero */}
-      <section className="relative overflow-hidden bg-card rounded-b-[3rem] md:rounded-b-[5rem]">
-        <div className="max-w-7xl mx-auto px-4 md:px-8 py-8 md:py-12 grid md:grid-cols-2 gap-6 md:gap-10 items-center w-full">
-          <div className="space-y-4 md:space-y-6 z-10">
-            <Button asChild size="lg" className="gap-2 h-14 rounded-2xl text-base font-black px-8 w-fit uppercase tracking-wide shadow-xl shadow-primary/30 ring-2 ring-primary/20 hover:scale-105 transition-transform">
-              <Link to="/publish"><PlusCircle size={20} /> {t("home.publishBtn")}</Link>
-            </Button>
-            <h1 className="font-headline font-black leading-[1.05] tracking-tight text-[2.5rem] md:text-[3.5rem]">
-              {t("home.h1a")}<br /><span className="text-primary">{t("home.h1b")}</span>
+      {/* Hero compact */}
+      <section className="relative overflow-hidden bg-card">
+        <div className="max-w-7xl mx-auto px-4 md:px-8 py-4 md:py-6 grid md:grid-cols-2 gap-4 md:gap-8 items-center w-full md:max-h-[50vh]">
+          <div className="space-y-3 md:space-y-4 z-10">
+            <h1 className="font-headline font-black leading-[1.05] tracking-tight text-[2rem] md:text-[3rem]">
+              {t("home.h1a")} <span className="text-primary">{t("home.h1b")}</span>
             </h1>
-            <p className="text-base md:text-lg text-muted-foreground max-w-lg">
+            <p className="text-sm md:text-base text-muted-foreground max-w-lg">
               {t("home.intro")}
             </p>
             <div className="flex flex-wrap gap-3">
-              <Button asChild size="lg" variant="outline" className="gap-2 h-12 rounded-2xl text-base font-bold px-6">
-                <Link to="/catalog">{t("common.explore")} <ArrowRight size={18} /></Link>
+              <Button asChild size="lg" className="gap-2 h-12 rounded-2xl text-sm font-black px-6 uppercase tracking-wide shadow-xl shadow-primary/30 ring-2 ring-primary/20 hover:scale-105 transition-transform">
+                <Link to="/publish"><PlusCircle size={18} /> {t("home.publishBtn")}</Link>
+              </Button>
+              <Button asChild size="lg" variant="outline" className="gap-2 h-12 rounded-2xl text-sm font-bold px-6">
+                <Link to="/catalog">{t("common.explore")} <ArrowRight size={16} /></Link>
               </Button>
             </div>
           </div>
-          <div className="relative aspect-[4/3] md:aspect-[4/3] md:min-h-[70vh] rounded-3xl overflow-hidden shadow-2xl">
+          <div className="relative aspect-[4/3] md:aspect-[16/10] md:max-h-[42vh] rounded-2xl overflow-hidden shadow-2xl">
             <img
               src={heroImage}
               alt="Livres de science islamique empilés dont un Coran vert avec calligraphie arabe"
@@ -68,16 +68,9 @@ function Landing() {
         </div>
       </section>
 
-      {/* Separator with icon */}
-      <div className="relative -mt-6 md:-mt-10 flex justify-center z-10">
-        <div className="w-14 h-14 md:w-16 md:h-16 rounded-2xl bg-primary text-primary-foreground flex items-center justify-center shadow-xl ring-4 ring-background">
-          <BookOpen size={26} />
-        </div>
-      </div>
-
       {/* Featured catalog */}
-      <section className="max-w-7xl mx-auto px-4 md:px-8 pt-8 md:pt-12 pb-16 md:pb-24">
-        <div className="flex items-end justify-between mb-8">
+      <section className="max-w-7xl mx-auto px-4 md:px-8 pt-6 md:pt-8 pb-16 md:pb-24">
+        <div className="flex items-end justify-between mb-6">
           <div>
             <h2 className="font-headline text-3xl md:text-4xl font-black">{t("home.latest")}</h2>
             <p className="text-muted-foreground mt-2">{t("home.latestSub")}</p>
