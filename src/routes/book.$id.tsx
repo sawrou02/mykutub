@@ -86,6 +86,9 @@ function BookDetailPage() {
   const [rating, setRating] = useState<{ avg: number; count: number } | null>(null);
   const [sellerJoined, setSellerJoined] = useState<string | null>(null);
   const [reportOpen, setReportOpen] = useState(false);
+  const [deleteOpen, setDeleteOpen] = useState(false);
+  const [deleting, setDeleting] = useState(false);
+  const [shareOpen, setShareOpen] = useState(false);
 
   useEffect(() => {
     supabase.from("books").select("*").eq("id", bookId).single()
