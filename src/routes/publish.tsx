@@ -315,7 +315,23 @@ function PublishPage() {
             </Sheet>
           </div>
 
-          <Button type="submit" disabled={loading} className="w-full h-14 rounded-2xl text-base font-bold">
+          <div className="p-4 bg-primary/5 border border-primary/20 rounded-2xl space-y-3">
+            <p className="text-xs font-bold uppercase tracking-widest text-primary">Checklist de validation</p>
+            <label className="flex items-start gap-3 cursor-pointer">
+              <Checkbox checked={checkIslamic} onCheckedChange={(v) => setCheckIslamic(!!v)} className="mt-0.5" />
+              <span className="text-sm">Le livre est islamique ou éducatif</span>
+            </label>
+            <label className="flex items-start gap-3 cursor-pointer">
+              <Checkbox checked={checkPrice} onCheckedChange={(v) => setCheckPrice(!!v)} className="mt-0.5" />
+              <span className="text-sm">Prix raisonnable et réaliste</span>
+            </label>
+            <label className="flex items-start gap-3 cursor-pointer">
+              <Checkbox checked={checkPhoto} onCheckedChange={(v) => setCheckPhoto(!!v)} className="mt-0.5" />
+              <span className="text-sm">Photos conformes (pas de nudité, pas de contenu offensant)</span>
+            </label>
+          </div>
+
+          <Button type="submit" disabled={loading || !checklistOk} className="w-full h-14 rounded-2xl text-base font-bold">
             {loading ? <Loader2 className="animate-spin" /> : t("publish.submit")}
           </Button>
         </form>
