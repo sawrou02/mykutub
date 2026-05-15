@@ -188,6 +188,10 @@ function AdminPage() {
       _message: `Votre compte a été suspendu pendant ${sancDays} jours. Raison : ${sancReason}.`,
       _link: "/profile", _type: "moderation",
     });
+    sendEmail("send-suspension-email", {
+      userId: sanctionFor.id, kind: "suspended",
+      recipientName: sanctionFor.display_name, reason: sancReason, duration: `${sancDays} jours`,
+    });
     refreshProfile(sanctionFor.id, { suspended_until: until, suspension_reason: sancReason });
     toast.success(`Utilisateur suspendu ${sancDays} jours`);
     setSanctionFor(null);
