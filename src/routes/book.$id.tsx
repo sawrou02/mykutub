@@ -396,6 +396,33 @@ function BookDetailPage() {
           </Button>
         </div>
       )}
+      {isOwner && (
+        <div className="lg:hidden fixed bottom-0 left-0 right-0 p-3 bg-card/95 backdrop-blur-xl border-t z-50 flex gap-2">
+          <Button asChild variant="outline" className="flex-1 h-11 rounded-full font-semibold">
+            <Link to="/modifier/$id" params={{ id: bookId }}><Pencil size={16} className="mr-1.5" /> Modifier</Link>
+          </Button>
+          <Button onClick={() => setDeleteOpen(true)} variant="destructive" className="flex-1 h-11 rounded-full font-semibold">
+            <Trash2 size={16} className="mr-1.5" /> Supprimer
+          </Button>
+        </div>
+      )}
+
+      <AlertDialog open={deleteOpen} onOpenChange={setDeleteOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Supprimer cette annonce ?</AlertDialogTitle>
+            <AlertDialogDescription>
+              Cette action est irréversible. L'annonce « {book.title} » sera définitivement supprimée.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel disabled={deleting}>Annuler</AlertDialogCancel>
+            <AlertDialogAction onClick={handleDelete} disabled={deleting} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">
+              {deleting ? "Suppression..." : "Supprimer"}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }
