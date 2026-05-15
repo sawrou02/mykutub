@@ -5,7 +5,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { OnlineDot } from "@/components/OnlineDot";
 import { cn } from "@/lib/utils";
 import type { Chat } from "@/lib/mykutub";
-import { MessageSquare, Search, User as UserIcon, BookOpen, MoreVertical, Trash2, Archive, ArchiveRestore, BellOff, Bell } from "lucide-react";
+import { MessageSquare, Search, User as UserIcon, BookOpen, MoreVertical, Trash2, Archive, ArchiveRestore, BellOff, Bell, Ban } from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuContent,
