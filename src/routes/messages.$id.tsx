@@ -209,11 +209,84 @@ function ChatDetailPage() {
     }
   };
 
+  const updateChatArray = async (column: "deleted_for" | "archived_for" | "muted_for", add: boolean) => {
+    if (!chat || !user) return;
+    const current = (chat[column] ?? []) as string[];
+    const next = add
+      ? Array.from(new Set([...current, user.id]))
+      : current.filter((id) => id !== user.id);
+    setChat({ ...chat, [column]: next } as Chat);
+    const payload: Record<string, string[]> = { [column]: next };
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const { error } = await supabase.from("chats").update(payload as any).eq("id", chatId);
+    if (error) {
+      toast.error("Action impossible");
+      setChat({ ...chat, [column]: current } as Chat);
+      return false;
+    }
+    return true;
+  };
+
   const handleDeleteChat = async () => {
-    if (!confirm("Supprimer la conversation ?")) return;
-    await supabase.from("chats").delete().eq("id", chatId);
-    toast.success("Conversation supprimée");
-    navigate({ to: "/messages" });
+    const ok = await updateChatArray("deleted_for", true);
+    setConfirmDeleteChat(false);
+    if (ok) {
+      toast.success("Conversation supprimée");
+      navigate({ to: "/messages" });
+    }
+  };
+
+  const handleToggleArchive = async () => {
+    const isArchived = (chat?.archived_for ?? []).includes(user?.id ?? "");
+    const ok = await updateChatArray("archived_for", !isArchived);
+    if (ok) toast.success(isArchived ? "Conversation désarchivée" : "Conversation archivée");
+  };
+
+  const handleToggleMute = async () => {
+    const isMuted = (chat?.muted_for ?? []).includes(user?.id ?? "");
+    const ok = await updateChatArray("muted_for", !isMuted);
+    if (ok) toast.success(isMuted ? "Notifications réactivées" : "Notifications désactivées");
+  };
+
+  const handleBlockUser = async () => {
+    if (!user || !otherIdMemo) return;
+    const { error } = await supabase.from("blocked_users").insert({
+      blocker_id: user.id,
+      blocked_id: otherIdMemo,
+    });
+    setConfirmBlock(false);
+    if (error && !error.message.toLowerCase().includes("duplicate")) {
+      toast.error("Impossible de bloquer cet utilisateur");
+    } else {
+      toast.success(`${otherProfile?.display_name ?? "Utilisateur"} a été bloqué`);
+      navigate({ to: "/messages" });
+    }
+  };
+
+  const submitReport = async () => {
+    if (!user || reportReasons.size === 0) {
+      toast.error("Sélectionnez au moins une raison");
+      return;
+    }
+    setReportSubmitting(true);
+    const reasons = Array.from(reportReasons).join(", ");
+    const { error } = await supabase.from("reports").insert({
+      reporter_id: user.id,
+      book_id: chat?.book_id ?? chatId,
+      raison: reasons,
+      description: reportDescription.slice(0, 500) || null,
+    });
+    setReportSubmitting(false);
+    if (error) {
+      toast.error("Échec du signalement");
+      return;
+    }
+    setReportOpen(false);
+    setReportReasons(new Set());
+    setReportDescription("");
+    toast.success("JazakAllahu Khayran 🤲", {
+      description: "Votre signalement a bien été transmis à notre équipe.",
+    });
   };
 
   const deleteForEveryone = async (m: Message) => {
