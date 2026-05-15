@@ -9,6 +9,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Trash2, Users, BookOpen, MessageSquare, Star, ShieldCheck, Loader2, Mail, Inbox, Flag, Check, AlertTriangle, ImageOff, Image as ImageIcon, BadgeCheck, Bell, Ban, Clock, Reply, Send } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
+import { sendEmail } from "@/lib/email";
 import { DEFAULT_BOOK_IMAGE } from "@/lib/moderation";
 import {
   Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger,
@@ -187,6 +188,10 @@ function AdminPage() {
       _message: `Votre compte a été suspendu pendant ${sancDays} jours. Raison : ${sancReason}.`,
       _link: "/profile", _type: "moderation",
     });
+    sendEmail("send-suspension-email", {
+      userId: sanctionFor.id, kind: "suspended",
+      recipientName: sanctionFor.display_name, reason: sancReason, duration: `${sancDays} jours`,
+    });
     refreshProfile(sanctionFor.id, { suspended_until: until, suspension_reason: sancReason });
     toast.success(`Utilisateur suspendu ${sancDays} jours`);
     setSanctionFor(null);
@@ -212,6 +217,10 @@ function AdminPage() {
       _message: `Votre compte a été banni définitivement. Raison : ${banReason.trim()}.`,
       _link: "/profile", _type: "moderation",
     });
+    sendEmail("send-suspension-email", {
+      userId: banFor.id, kind: "banned",
+      recipientName: banFor.display_name, reason: banReason.trim(),
+    });
     refreshProfile(banFor.id, { banned_at: new Date().toISOString(), ban_reason: banReason.trim() });
     toast.success("Utilisateur banni");
     setBanFor(null); setBanReason("");
@@ -221,6 +230,9 @@ function AdminPage() {
     const next = !p.verified;
     const { error } = await supabase.from("profiles").update({ verified: next }).eq("id", p.id);
     if (error) return toast.error(error.message);
+    if (next) {
+      sendEmail("send-admin-email", { userId: p.id, kind: "verified", recipientName: p.display_name });
+    }
     refreshProfile(p.id, { verified: next });
     toast.success(next ? "Profil vérifié" : "Vérification retirée");
   };

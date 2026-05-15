@@ -4,6 +4,7 @@ import { Check, X, UserCheck, RotateCcw, Loader2 } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
+import { sendEmail } from "@/lib/email";
 import { OnlineDot } from "@/components/OnlineDot";
 import type { Book, BookRequest } from "@/lib/mykutub";
 import { formatDistanceToNow } from "date-fns";
@@ -77,6 +78,11 @@ export function BookReservation({ book, onBookChange }: Props) {
         type: "request",
         link: `/book/${book.id}`,
       });
+      sendEmail("send-reservation-email", {
+        userId: book.seller_id, kind: "request",
+        recipientName: book.seller_name, otherName: requesterName,
+        bookTitle: book.title, bookId: book.id,
+      });
       toast.success("Demande envoyée !");
     }
     setBusy(false);
@@ -123,6 +129,11 @@ export function BookReservation({ book, onBookChange }: Props) {
         })),
     ];
     if (notifs.length) await supabase.from("notifications").insert(notifs);
+    sendEmail("send-reservation-email", {
+      userId: req.requester_id, kind: "confirmed",
+      recipientName: req.requester_name, otherName: book.seller_name,
+      bookTitle: book.title, bookId: book.id,
+    });
     toast.success("Livre réservé.");
     setBusy(false);
   };
@@ -140,6 +151,10 @@ export function BookReservation({ book, onBookChange }: Props) {
         message: `La réservation pour « ${book.title} » a été annulée.`,
         type: "reservation_cancelled",
         link: `/book/${book.id}`,
+      });
+      sendEmail("send-reservation-email", {
+        userId: previous, kind: "cancelled",
+        bookTitle: book.title, bookId: book.id,
       });
     }
     if (!error) await supabase.from("book_requests").update({ status: "pending" }).eq("book_id", book.id);

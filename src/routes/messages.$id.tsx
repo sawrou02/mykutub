@@ -7,6 +7,7 @@ import {
 } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
+import { sendEmail } from "@/lib/email";
 import {
   DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
@@ -178,6 +179,11 @@ function ChatDetailPage() {
       last_message_at: new Date().toISOString(),
       unread_by: recipientId ? [recipientId] : [],
     }).eq("id", chatId);
+    if (recipientId) {
+      sendEmail("send-message-notification-email", {
+        userId: recipientId, senderName, preview, chatId,
+      });
+    }
   };
 
   const handleSend = async () => {

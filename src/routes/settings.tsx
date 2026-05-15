@@ -23,6 +23,10 @@ type Prefs = {
   notify_sms: boolean;
   notify_push: boolean;
   phone_visible: boolean;
+  notify_reservations: boolean;
+  notify_messages: boolean;
+  notify_followers: boolean;
+  notify_admin: boolean;
 };
 
 function SettingsPage() {
@@ -32,7 +36,7 @@ function SettingsPage() {
   const [pwd, setPwd] = useState("");
   const [pwd2, setPwd2] = useState("");
   const [pwdLoading, setPwdLoading] = useState(false);
-  const [prefs, setPrefs] = useState<Prefs>({ notify_email: true, notify_sms: false, notify_push: true, phone_visible: false });
+  const [prefs, setPrefs] = useState<Prefs>({ notify_email: true, notify_sms: false, notify_push: true, phone_visible: false, notify_reservations: true, notify_messages: true, notify_followers: true, notify_admin: true });
   const [savingPrefs, setSavingPrefs] = useState(false);
   const [deleting, setDeleting] = useState(false);
   const [blocked, setBlocked] = useState<Array<{ id: string; blocked_id: string; name: string }>>([]);
@@ -55,7 +59,7 @@ function SettingsPage() {
 
   useEffect(() => {
     if (!user) return;
-    supabase.from("profiles").select("notify_email, notify_sms, notify_push, phone_visible").eq("id", user.id).maybeSingle()
+    supabase.from("profiles").select("notify_email, notify_sms, notify_push, phone_visible, notify_reservations, notify_messages, notify_followers, notify_admin").eq("id", user.id).maybeSingle()
       .then(({ data }) => { if (data) setPrefs(data as Prefs); });
     loadBlocked(user.id);
   }, [user]);
@@ -149,6 +153,10 @@ function SettingsPage() {
               { key: "notify_email" as const, label: t("settings.notifEmail"), desc: t("settings.notifEmailDesc") },
               { key: "notify_sms" as const, label: t("settings.notifSms"), desc: t("settings.notifSmsDesc") },
               { key: "notify_push" as const, label: t("settings.notifPush"), desc: t("settings.notifPushDesc") },
+              { key: "notify_reservations" as const, label: "Emails réservations", desc: "Demandes, confirmations et annulations" },
+              { key: "notify_messages" as const, label: "Emails messages", desc: "Nouveau message (max 1 / 30 min)" },
+              { key: "notify_followers" as const, label: "Emails abonnés", desc: "Quand quelqu'un vous suit" },
+              { key: "notify_admin" as const, label: "Emails admin", desc: "Vérification, annonces officielles" },
             ].map(opt => (
               <div key={opt.key} className="flex items-center justify-between p-3 rounded-lg bg-muted/50">
                 <div>

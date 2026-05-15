@@ -13,6 +13,7 @@ import {
   AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import { toast } from "sonner";
+import { sendEmail } from "@/lib/email";
 import type { Book, Review } from "@/lib/mykutub";
 
 export const Route = createFileRoute("/user/$id")({
@@ -99,6 +100,10 @@ function UserProfilePage() {
         setIsFollowing(true);
         setFollowersCount(c => c + 1);
         toast.success(`Vous suivez ${displayName}`);
+        const followerName = user.user_metadata?.display_name || user.email?.split("@")[0] || "Quelqu'un";
+        sendEmail("send-admin-email", {
+          userId, kind: "follower", followerName, followerId: user.id,
+        });
       }
     }
     setFollowBusy(false);
