@@ -255,6 +255,41 @@ function ProfilePage() {
           </TabsContent>
         </Tabs>
 
+        <section className="mt-8">
+          <div className="bg-card rounded-2xl border p-5">
+            <h2 className="font-headline font-bold text-lg flex items-center gap-2 mb-4">
+              <Users size={18} className="text-primary" /> Mes abonnements
+              <span className="text-xs font-normal text-muted-foreground">({following.length})</span>
+            </h2>
+            {following.length === 0 ? (
+              <p className="text-sm text-muted-foreground text-center py-6">
+                Vous ne suivez aucun vendeur pour le moment.
+              </p>
+            ) : (
+              <ul className="divide-y">
+                {following.map(f => {
+                  const initials = (f.display_name || "U").split(" ").map(s => s[0]).join("").slice(0, 2).toUpperCase();
+                  return (
+                    <li key={f.id} className="flex items-center gap-3 py-3">
+                      <Link to="/user/$id" params={{ id: f.id }} className="flex items-center gap-3 flex-1 min-w-0">
+                        <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center overflow-hidden flex-shrink-0">
+                          {f.avatar_url
+                            ? <img src={f.avatar_url} alt="" className="w-full h-full object-cover" />
+                            : <span className="text-primary font-bold text-sm">{initials}</span>}
+                        </div>
+                        <span className="font-semibold text-sm truncate">{f.display_name || "Utilisateur"}</span>
+                      </Link>
+                      <Button size="sm" variant="outline" className="rounded-full text-xs h-8 gap-1" onClick={() => handleUnfollow(f.id)}>
+                        <UserMinus size={13} /> Se désabonner
+                      </Button>
+                    </li>
+                  );
+                })}
+              </ul>
+            )}
+          </div>
+        </section>
+
         <div className="mt-8 space-y-3">
           <div className="bg-card rounded-2xl overflow-hidden shadow-sm border divide-y">
             <Link to="/settings" className="w-full flex items-center justify-between p-4 hover:bg-muted/50 transition-colors">
