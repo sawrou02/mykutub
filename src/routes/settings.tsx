@@ -35,12 +35,38 @@ function SettingsPage() {
   const [prefs, setPrefs] = useState<Prefs>({ notify_email: true, notify_sms: false, notify_push: true, phone_visible: false });
   const [savingPrefs, setSavingPrefs] = useState(false);
   const [deleting, setDeleting] = useState(false);
+  const [blocked, setBlocked] = useState<Array<{ id: string; blocked_id: string; name: string }>>([]);
+  const [confirmUnblock, setConfirmUnblock] = useState<{ id: string; name: string } | null>(null);
+
+  const loadBlocked = async (uid: string) => {
+    const { data } = await supabase
+      .from("blocked_users")
+      .select("id, blocked_id")
+      .eq("blocker_id", uid)
+      .order("created_at", { ascending: false });
+    const rows = (data ?? []) as Array<{ id: string; blocked_id: string }>;
+    if (rows.length === 0) { setBlocked([]); return; }
+    const { data: profs } = await supabase
+      .from("profiles").select("id, display_name").in("id", rows.map(r => r.blocked_id));
+    const nameMap = new Map<string, string>();
+    (profs ?? []).forEach((p: { id: string; display_name: string | null }) => nameMap.set(p.id, p.display_name || "Utilisateur"));
+    setBlocked(rows.map(r => ({ id: r.id, blocked_id: r.blocked_id, name: nameMap.get(r.blocked_id) || "Utilisateur" })));
+  };
 
   useEffect(() => {
     if (!user) return;
     supabase.from("profiles").select("notify_email, notify_sms, notify_push, phone_visible").eq("id", user.id).maybeSingle()
       .then(({ data }) => { if (data) setPrefs(data as Prefs); });
+    loadBlocked(user.id);
   }, [user]);
+
+  const unblock = async () => {
+    if (!confirmUnblock || !user) return;
+    const { error } = await supabase.from("blocked_users").delete().eq("id", confirmUnblock.id);
+    if (error) toast.error("Échec du déblocage");
+    else { toast.success(`${confirmUnblock.name} a été débloqué`); loadBlocked(user.id); }
+    setConfirmUnblock(null);
+  };
 
   if (authLoading) return <div className="p-10 text-center">{t("common.loading")}</div>;
   if (!user) {
