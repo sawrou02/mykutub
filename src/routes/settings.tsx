@@ -175,6 +175,47 @@ function SettingsPage() {
           </div>
         </section>
 
+        <section className="bg-card border rounded-2xl p-6 space-y-4">
+          <div className="flex items-center gap-3">
+            <div className="p-2 bg-destructive/10 rounded-lg text-destructive"><Ban size={18} /></div>
+            <h2 className="font-headline font-bold text-lg">Utilisateurs bloqués</h2>
+          </div>
+          {blocked.length === 0 ? (
+            <p className="text-sm text-muted-foreground">Vous n'avez bloqué aucun utilisateur.</p>
+          ) : (
+            <ul className="divide-y">
+              {blocked.map((b) => (
+                <li key={b.id} className="flex items-center justify-between py-3">
+                  <span className="text-sm font-medium">{b.name}</span>
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    className="rounded-full"
+                    onClick={() => setConfirmUnblock({ id: b.id, name: b.name })}
+                  >
+                    Débloquer
+                  </Button>
+                </li>
+              ))}
+            </ul>
+          )}
+        </section>
+
+        <AlertDialog open={!!confirmUnblock} onOpenChange={(o) => !o && setConfirmUnblock(null)}>
+          <AlertDialogContent>
+            <AlertDialogHeader>
+              <AlertDialogTitle>Débloquer {confirmUnblock?.name} ?</AlertDialogTitle>
+              <AlertDialogDescription>
+                Cet utilisateur pourra à nouveau vous envoyer des messages et voir vos annonces.
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter>
+              <AlertDialogCancel>Annuler</AlertDialogCancel>
+              <AlertDialogAction onClick={unblock}>Débloquer</AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
+
         <section className="bg-card border border-destructive/30 rounded-2xl p-6 space-y-4">
           <div className="flex items-center gap-3">
             <div className="p-2 bg-destructive/10 rounded-lg text-destructive"><Trash2 size={18} /></div>
