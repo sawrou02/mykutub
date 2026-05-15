@@ -249,10 +249,11 @@ function ChatDetailPage() {
   };
 
   const handleBlockUser = async () => {
-    if (!user || !otherIdMemo) return;
+    const targetId = chat?.participants.find((p) => p !== user?.id);
+    if (!user || !targetId) return;
     const { error } = await supabase.from("blocked_users").insert({
       blocker_id: user.id,
-      blocked_id: otherIdMemo,
+      blocked_id: targetId,
     });
     setConfirmBlock(false);
     if (error && !error.message.toLowerCase().includes("duplicate")) {
