@@ -41,6 +41,14 @@ function AdminPage() {
   const [openMsgId, setOpenMsgId] = useState<string | null>(null);
   const [reports, setReports] = useState<any[]>([]);
   const [reportBooks, setReportBooks] = useState<Record<string, any>>({});
+  const [sanctionFor, setSanctionFor] = useState<any>(null);
+  const [sancDays, setSancDays] = useState<number>(7);
+  const [sancReason, setSancReason] = useState<string>(SUSPENSION_REASONS[0]);
+  const [banFor, setBanFor] = useState<any>(null);
+  const [banReason, setBanReason] = useState<string>("");
+  const [globalMsg, setGlobalMsg] = useState("");
+  const [globalSending, setGlobalSending] = useState(false);
+  const [userSearch, setUserSearch] = useState("");
 
   useEffect(() => {
     if (!isAdmin) return;
