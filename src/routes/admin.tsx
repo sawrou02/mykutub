@@ -303,6 +303,7 @@ function AdminPage() {
               <Badge className="ml-2 h-5 min-w-5 px-1.5 bg-destructive text-destructive-foreground">{pendingReports}</Badge>
             )}
           </TabsTrigger>
+          <TabsTrigger value="charte">Charte</TabsTrigger>
         </TabsList>
 
         <TabsContent value="books" className="space-y-2">
