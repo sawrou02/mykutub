@@ -48,7 +48,7 @@ function SignupPage() {
     }
     setLoading(true);
     const { firstName, lastName, email, password } = parsed.data;
-    const { error } = await supabase.auth.signUp({
+    const { data, error } = await supabase.auth.signUp({
       email,
       password,
       options: {
@@ -60,6 +60,10 @@ function SignupPage() {
     if (error) {
       toast.error(error.message);
     } else {
+      if (data.user?.id) {
+        const { sendEmail } = await import("@/lib/email");
+        sendEmail("send-welcome-email", { userId: data.user.id });
+      }
       setSentTo(email);
     }
   };
