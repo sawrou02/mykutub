@@ -37,6 +37,32 @@ Deno.serve(async (req) => {
       title = subject;
       body = `<p>Salam <strong>${name}</strong>,</p><p><strong>${b.followerName ?? "Un utilisateur"}</strong> a commencé à vous suivre.</p>`;
       buttons = [{ label: "Voir le profil", url: siteLink(b.followerId ? `/user/${b.followerId}` : "/") }];
+    } else if (b.kind === "warning") {
+      subject = "⚠️ Avertissement de la modération MyKutub";
+      title = subject;
+      body = `<p>Salam <strong>${name}</strong>,</p>
+        <p>Vous avez reçu un avertissement de notre équipe de modération.</p>
+        <p><strong>Raison :</strong> ${b.reason ?? "Non spécifiée"}</p>
+        <p>Merci de vérifier que votre activité respecte les règles de MyKutub.</p>`;
+    } else if (b.kind === "unsuspended") {
+      subject = "✅ Votre compte MyKutub a été réactivé";
+      title = subject;
+      body = `<p>Salam <strong>${name}</strong>,</p>
+        <p>Votre suspension a été levée. Vous pouvez à nouveau utiliser MyKutub normalement.</p>
+        ${b.note ? `<p><em>Note de l'admin : ${b.note}</em></p>` : ""}`;
+    } else if (b.kind === "unbanned") {
+      subject = "✅ Votre compte MyKutub a été réactivé";
+      title = subject;
+      body = `<p>Salam <strong>${name}</strong>,</p>
+        <p>Votre compte a été débanni. Bienvenue à nouveau sur MyKutub.</p>
+        ${b.note ? `<p><em>Note de l'admin : ${b.note}</em></p>` : ""}`;
+    } else if (b.kind === "account_deleted") {
+      subject = "Suppression de votre compte MyKutub";
+      title = subject;
+      body = `<p>Salam <strong>${name}</strong>,</p>
+        <p>Votre compte MyKutub a été supprimé par notre équipe de modération.</p>
+        ${b.note ? `<p><em>Note : ${b.note}</em></p>` : ""}
+        <p>Pour toute question, contactez-nous via notre formulaire de contact.</p>`;
     } else {
       subject = b.title ?? "Notification MyKutub";
       title = subject;
