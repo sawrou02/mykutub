@@ -228,7 +228,7 @@ function AdminPage() {
   const sendGlobal = async () => {
     if (!globalMsg.trim()) return;
     setGlobalSending(true);
-    const { data, error } = await supabase.rpc("send_global_notification", { _message: globalMsg.trim(), _link: null });
+    const { data, error } = await supabase.rpc("send_global_notification", { _message: globalMsg.trim(), _link: undefined });
     setGlobalSending(false);
     if (error) return toast.error(error.message);
     setGlobalMsg("");
