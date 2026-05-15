@@ -483,19 +483,30 @@ function ChatDetailPage() {
                 <MoreVertical size={18} className="text-muted-foreground" />
               </button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className="w-56 rounded-xl">
+            <DropdownMenuContent align="end" className="w-60 rounded-xl">
               <DropdownMenuItem
                 onClick={() => otherId && navigate({ to: "/user/$id", params: { id: otherId }, search: { chatId } })}
                 disabled={!otherId}
-                className="py-3 cursor-pointer"
+                className="py-2.5 cursor-pointer"
               >
                 <User size={16} className="mr-2" /> Voir le profil
               </DropdownMenuItem>
+              <DropdownMenuItem onClick={handleToggleMute} className="py-2.5 cursor-pointer">
+                {isMuted ? <Bell size={16} className="mr-2" /> : <BellOff size={16} className="mr-2" />}
+                {isMuted ? "Réactiver les notifications" : "Désactiver les notifications"}
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={handleToggleArchive} className="py-2.5 cursor-pointer">
+                {isArchived ? <ArchiveRestore size={16} className="mr-2" /> : <Archive size={16} className="mr-2" />}
+                {isArchived ? "Désarchiver" : "Archiver la conversation"}
+              </DropdownMenuItem>
               <DropdownMenuSeparator />
-              <DropdownMenuItem onClick={() => toast.success("Signalement envoyé")} className="py-3 text-amber-600 cursor-pointer">
+              <DropdownMenuItem onClick={() => setReportOpen(true)} className="py-2.5 text-amber-600 focus:text-amber-700 focus:bg-amber-50 cursor-pointer">
                 <Flag size={16} className="mr-2" /> Signaler
               </DropdownMenuItem>
-              <DropdownMenuItem onClick={handleDeleteChat} className="py-3 text-destructive cursor-pointer">
+              <DropdownMenuItem onClick={() => setConfirmBlock(true)} disabled={!otherId} className="py-2.5 text-destructive focus:text-destructive focus:bg-destructive/10 cursor-pointer">
+                <Ban size={16} className="mr-2" /> Bloquer
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => setConfirmDeleteChat(true)} className="py-2.5 text-destructive focus:text-destructive focus:bg-destructive/10 cursor-pointer">
                 <Trash2 size={16} className="mr-2" /> Supprimer
               </DropdownMenuItem>
             </DropdownMenuContent>
