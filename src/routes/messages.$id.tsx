@@ -2,13 +2,14 @@ import { createFileRoute, useNavigate, Link } from "@tanstack/react-router";
 import { useEffect, useMemo, useRef, useState } from "react";
 import {
   ChevronLeft, Send, MoreVertical, User, Flag, Trash2, BookOpen, User as UserIcon,
-  Check, CheckCheck, Smile, Plus, Star, X, Info,
+  Check, CheckCheck, Smile, Plus, Star, X, Info, Trash, UserMinus,
 } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
 import {
   DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { toast } from "sonner";
 import type { Chat, Message, Book } from "@/lib/mykutub";
 import { ContactsSidebar } from "@/components/ContactsSidebar";
