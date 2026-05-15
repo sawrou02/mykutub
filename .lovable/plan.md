@@ -1,66 +1,75 @@
-Three features to add to MyKutub. I'll need DB changes, realtime presence, and UI updates.
+## Objectif
+Donner à l'admin un contrôle complet sur les utilisateurs depuis `/admin` → onglet Utilisateurs : avertir, suspendre, bannir, supprimer, vérifier, messager, débloquer — avec audit, sécurité et emails.
 
-## 1. Online status (presence)
+## 1. Base de données (migration)
 
-**DB (profiles table):**
-- Add `is_online` boolean default false
-- Add `last_seen` timestamp default now()
+**Nouvelle table `admin_actions`** (audit immuable)
+- `admin_id`, `target_user_id`, `action` (warning|suspend|ban|unban|unsuspend|delete|verify|unverify|message), `reason`, `duration_days`, `note`, `created_at`
+- RLS : seuls les admins SELECT/INSERT
 
-**Implementation:**
-- New hook `usePresence()` mounted in `__root.tsx`: when user logs in, update `is_online=true, last_seen=now()`. On `beforeunload` + every 30s heartbeat update `last_seen`. On signOut/visibility hidden after timeout, set `is_online=false`.
-- Realtime subscription on `profiles` to get live status updates.
-- New component `<OnlineDot userId>` showing green/grey dot + "Vu il y a X min" via date-fns.
+**Ajouts à `profiles`**
+- `warning_count integer default 0`
+- `banned_by uuid` (admin)
+- (`ban_reason`, `banned_at`, `suspended_until`, `suspension_reason`, `verified` existent déjà)
 
-**Where shown:**
-- Messages list (`messages.index.tsx`) next to each contact avatar
-- Chat detail header (`messages.$id.tsx`) replacing static "En ligne"
-- User profile page (`user.$id.tsx`)
+**Fonctions SQL `SECURITY DEFINER`** (toute action admin passe par là — garantit audit + protection anti-admin)
+- `admin_warn_user(_target uuid, _reason text)` → notification + warning_count++ + log
+- `admin_suspend_user(_target uuid, _days int, _reason text)` → check pas admin, set suspended_until, log
+- `admin_unsuspend_user(_target uuid, _note text)` → reset, log
+- `admin_ban_user(_target uuid, _reason text)` → check pas admin, set banned_at/by, log
+- `admin_unban_user(_target uuid, _note text)` → reset, log
+- `admin_set_verified(_target uuid, _value bool)` → log
+- `admin_delete_user(_target uuid, _note text)` → check pas admin, supprime books/messages/favorites/reviews/follows/notifications/profile, log (avec target_user_id conservé)
+- `admin_send_message(_target uuid, _text text)` → crée/récupère chat admin↔user, insère message signé "MyKutub Admin", log
+- `get_user_admin_history(_target uuid)` → renvoie sanctions + signalements pour la fiche détaillée
 
-## 2. Book reservation system (GIVV style)
+Toutes : `RAISE EXCEPTION` si caller pas admin, ou si target est admin (sauf warn/message/verify).
 
-**DB changes:**
-- `books`: add `status` text default 'available' (`available|reserved|given`), `reserved_by` uuid, `reserved_at` timestamp
-- New table `book_requests`: id, book_id, requester_id, requester_name, status (`pending|accepted|rejected`), created_at — RLS: requester can insert/view own; book seller can view/update requests on their books
-- New table `notifications`: id, user_id, message, type, is_read, link, created_at — RLS: user can view/update own
-- Realtime enabled on books, book_requests, notifications
+## 2. Frontend — onglet "Utilisateurs" refondu
 
-**UI — book detail (`book.$id.tsx`):**
-- Status badge (green/yellow/red) at top
-- If viewer = seller: list of requesters with "Réserver" button per request, "Marquer comme donné", "Annuler réservation"
-- If viewer ≠ seller: "Demander ce livre" button (creates a row in book_requests + notification to seller). Disabled with "Ce livre est déjà réservé / donné" if status ≠ available.
+**Liste enrichie** (`src/routes/admin.tsx`)
+- Avatar + display_name + ID court + date inscription
+- Compteurs : annonces (count books WHERE seller_id), signalements reçus (count reports WHERE reported_id)
+- Badges statut : 🟢 Actif / 🟡 Suspendu (jusqu'au …) / 🔴 Banni / ✅ Vérifié / ⚠️ N avertissements
+- Recherche (existante) + filtres : Tous / Actifs / Suspendus / Bannis / Vérifiés
+- Tri : date / signalements / activité
+- Bouton **Actions ⋮** (DropdownMenu) par utilisateur
 
-**Notifications:**
-- When seller reserves: notify chosen requester ("Votre réservation est confirmée") + all other pending requesters ("Ce livre a été réservé par quelqu'un d'autre")
-- When given: notify reserved_by
-- Add a bell icon in `SiteHeader.tsx` showing unread count + dropdown with recent notifications (mark as read on click)
+**Menu Actions ⋮** ouvre dialogs ciblés :
+- Avertir → textarea raison
+- Suspendre → select durée (1/3/7/30/90j) + raison (liste + Autre)
+- Bannir → **double confirmation** + raison
+- Supprimer → **triple confirmation** : checkbox irréversible + taper `SUPPRIMER`
+- Envoyer un message → textarea → crée chat admin
+- Vérifier / Retirer vérification → toggle
+- Lever suspension / Débannir → note obligatoire
+- Voir fiche détaillée → ouvre Sheet/Dialog
 
-**Card display:** `BookCard.tsx` shows RÉSERVÉ / DÉJÀ DONNÉ overlay badge when applicable.
+**Fiche détaillée utilisateur** (Sheet latéral)
+- Infos profil complètes
+- Liste annonces (lien vers /book/$id)
+- Signalements reçus
+- Historique sanctions admin (depuis `admin_actions`)
+- Avis reçus / donnés
+- Dernière connexion (`last_seen`)
+- *Note : adresse IP non collectée — afficher "non disponible" pour respecter la vie privée; si vraiment souhaité, à ajouter ultérieurement avec consentement RGPD.*
 
-## 3. Messaging UI revamp
+## 3. Sécurité
+- Toutes les actions passent par RPC SECURITY DEFINER avec check `internal.has_role(auth.uid(), 'admin')`
+- Impossible de bannir/supprimer un autre admin (check via `has_role`)
+- Double confirmation bannissement, triple confirmation suppression côté UI ET RPC requiert un texte de confirmation
+- Tous les appels écrivent dans `admin_actions`
 
-Rewrite `messages.index.tsx` + `messages.$id.tsx` into a single split-pane layout when on `/messages`:
-- Desktop: 280px left sidebar (contacts with avatar, online dot, last message, unread badge) + centered chat area (max 800px)
-- Mobile: sidebar only on `/messages`, full chat on `/messages/$id` (current behavior preserved)
-- Bubbles: received left (muted bg), sent right (teal/primary bg)
-- Read receipts: add `read_at` timestamp on `messages` table, show ✓ (sent) / ✓✓ (read, teal) on sender side
-- Typing indicator: ephemeral via Supabase Realtime broadcast channel (`typing` event), show "X est en train d'écrire…" in chat header
+## 4. Emails (réutilisation existant)
+- `send-suspension-email` couvre déjà suspended/banned
+- Étendre `send-admin-email` (déjà utilisé pour `verified`) pour `warning`, `unsuspended`, `unbanned`, `account_deleted`
+- Notification in-app via `notify_user_action` pour chaque action
 
-**DB additions for messaging:**
-- `messages`: add `read_at` timestamp nullable
-- Mark messages as read when chat opened (update where chat_id = X and sender_id != me and read_at is null)
+## 5. Détails techniques (section technique)
+- Fichier principal modifié : `src/routes/admin.tsx` (extraction du tab Users en composant `<UsersTab />` pour lisibilité)
+- Nouveau composant : `src/components/admin/UserActionsMenu.tsx`, `UserDetailSheet.tsx`
+- Edge function `send-admin-email` : ajouter `kind: 'warning' | 'unsuspended' | 'unbanned' | 'account_deleted'`
+- Stats dérivées calculées côté client à partir des données déjà chargées (books, reports) — pas de N+1
 
-## Order of work
-
-1. Migration: profiles columns, books columns, book_requests table, notifications table, messages.read_at, realtime publication
-2. Presence hook + OnlineDot component, wire into root
-3. Notifications bell in SiteHeader + notifications page integration
-4. Book reservation UI in book.$id.tsx + BookCard badges
-5. Messaging redesign with read receipts + typing
-
-## Technical notes
-
-- Reservation actions are sensitive — wrap in serverFn with `requireSupabaseAuth` to avoid client-side trust on seller_id checks.
-- Presence cleanup uses `navigator.sendBeacon` to a server route `/api/public/presence-offline` (with user token verification) so closing tab reliably marks offline. Fallback: `last_seen` stale > 60s ⇒ treat as offline in UI.
-- All new tables get RLS policies (own-rows pattern). `book_requests` policy lets the book's seller SELECT/UPDATE rows referencing their books.
-
-Confirm and I'll execute the migration first, then code.
+## Hors scope (à confirmer)
+- Adresse IP : non trackée actuellement, je laisse "non disponible" sauf demande explicite.
