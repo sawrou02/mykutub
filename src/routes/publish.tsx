@@ -181,10 +181,23 @@ function PublishPage() {
       seller_name: user.user_metadata?.display_name || user.email?.split("@")[0] || "Utilisateur",
       image_url: pub.publicUrl,
     };
-    const { error } = await supabase.from("books").insert(data);
+    const { data: inserted, error } = await supabase.from("books").insert(data).select("id, title").single();
     setLoading(false);
     if (error) toast.error(error.message);
     else {
+      // Notify followers
+      const { data: followers } = await supabase.from("follows").select("follower_id").eq("following_id", user.id);
+      if (followers && followers.length && inserted) {
+        const sellerName = data.seller_name;
+        await supabase.from("notifications").insert(
+          followers.map(f => ({
+            user_id: f.follower_id,
+            type: "new_book",
+            message: `${sellerName} a publié un nouveau livre : ${inserted.title}`,
+            link: `/livre/${inserted.id}`,
+          }))
+        );
+      }
       toast.success(t("publish.success"));
       navigate({ to: "/" });
     }
