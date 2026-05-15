@@ -57,14 +57,71 @@ function UserProfilePage() {
 
   if (loading) return <div className="p-10 text-center text-sm">Chargement...</div>;
 
+  const handleBlock = async () => {
+    if (!user) return;
+    setBlocking(true);
+    const { error } = await supabase.from("blocked_users").insert({
+      blocker_id: user.id,
+      blocked_id: userId,
+    });
+    setBlocking(false);
+    setConfirmBlock(false);
+    if (error && !error.message.toLowerCase().includes("duplicate")) {
+      toast.error("Impossible de bloquer cet utilisateur");
+    } else {
+      toast.success(`${displayName} a été bloqué`);
+      navigate({ to: "/" });
+    }
+  };
+
   return (
     <div className="bg-muted/20 min-h-screen pb-24">
       <header className="bg-card border-b px-3 py-2.5 flex items-center gap-2 sticky top-0 z-40">
         <button onClick={() => history.back()} className="p-1">
           <ChevronLeft size={22} className="text-primary" />
         </button>
-        <h1 className="font-semibold text-sm">Profil vendeur</h1>
+        <h1 className="font-semibold text-sm flex-1">Profil vendeur</h1>
+        {!isMe && user && (
+          <DropdownMenu>
+            <DropdownMenuTrigger className="p-2 rounded-full hover:bg-muted">
+              <MoreVertical size={18} />
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" className="w-56 shadow-lg animate-in fade-in-0 zoom-in-95">
+              <DropdownMenuItem
+                className="text-destructive focus:text-destructive focus:bg-destructive/10"
+                onSelect={() => setConfirmBlock(true)}
+              >
+                <Ban size={15} className="mr-2" />
+                Bloquer cet utilisateur
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        )}
       </header>
+
+      <AlertDialog open={confirmBlock} onOpenChange={setConfirmBlock}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle className="flex items-center gap-2">
+              <Ban size={18} className="text-destructive" /> Bloquer {displayName} ?
+            </AlertDialogTitle>
+            <AlertDialogDescription>
+              Voulez-vous bloquer {displayName} ? Il ne pourra plus vous envoyer de messages
+              ni voir vos annonces.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel disabled={blocking}>Annuler</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={handleBlock}
+              disabled={blocking}
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+            >
+              Bloquer
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
 
       {/* Compact profile card – leboncoin style */}
       <section className="bg-card border-b">
