@@ -27,7 +27,7 @@ export const Route = createFileRoute("/messages/$id")({
   component: ChatDetailPage,
 });
 
-type ProfileLite = { id: string; display_name: string | null; avatar_url: string | null };
+type ProfileLite = { id: string; display_name: string | null; avatar_url: string | null; verified?: boolean | null };
 
 const SYSTEM_PREFIX = "__system__:";
 const IMAGE_PREFIX = "__image__:";
