@@ -401,6 +401,29 @@ export function ContactsSidebar({ activeChatId }: { activeChatId?: string }) {
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
+
+      <AlertDialog open={!!confirmBlock} onOpenChange={(o) => !o && setConfirmBlock(null)}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle className="flex items-center gap-2">
+              <Ban size={18} className="text-destructive" /> Bloquer {confirmBlock?.name} ?
+            </AlertDialogTitle>
+            <AlertDialogDescription>
+              Voulez-vous bloquer {confirmBlock?.name} ? Il ne pourra plus vous envoyer de messages
+              ni voir vos annonces.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Annuler</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={handleBlock}
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+            >
+              Bloquer
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }
