@@ -219,7 +219,7 @@ const en: typeof fr = {
     delivery: "Delivery available", noDelivery: "Pickup only",
     history: "History", clearHistory: "Clear", recentSearches: "Recent searches",
     seeAll: "See all", apply: "Apply", reset: "Reset", filters: "Filters",
-    allFrance: "All Europe", noResults: "No books found.", explore: "Explore catalog",
+    allFrance: "All France", noResults: "No books found.", explore: "Explore catalog",
     sending: "Sending…", send: "Send message",
     back: "Back", edit: "Edit", confirm: "Confirm",
     yes: "Yes", no: "No", required: "Required",
