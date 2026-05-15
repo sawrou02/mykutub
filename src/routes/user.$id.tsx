@@ -191,6 +191,9 @@ function UserProfilePage() {
               <Users size={12} /> {books.length} annonce{books.length > 1 ? "s" : ""}
             </div>
             <div className="flex items-center gap-1.5">
+              <UserPlus size={12} /> {followersCount} abonné{followersCount > 1 ? "s" : ""}
+            </div>
+            <div className="flex items-center gap-1.5">
               <BadgeCheck size={12} className="text-emerald-600" /> Profil vérifié
             </div>
           </div>
