@@ -32,6 +32,7 @@ function ProfilePage() {
   const { user, loading: authLoading, signOut } = useAuth();
   const [myBooks, setMyBooks] = useState<Book[]>([]);
   const [favorites, setFavorites] = useState<Book[]>([]);
+  const [following, setFollowing] = useState<Array<{ id: string; display_name: string | null; avatar_url: string | null }>>([]);
   const [profile, setProfile] = useState<Profile | null>(null);
   const [saving, setSaving] = useState(false);
   const [uploading, setUploading] = useState(false);
