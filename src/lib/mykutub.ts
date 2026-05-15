@@ -2335,6 +2335,9 @@ export type Chat = {
   last_message: string | null;
   last_message_at: string | null;
   unread_by: string[];
+  deleted_for?: string[];
+  archived_for?: string[];
+  muted_for?: string[];
   created_at: string;
 };
 
