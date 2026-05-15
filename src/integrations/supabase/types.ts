@@ -220,6 +220,30 @@ export type Database = {
         }
         Relationships: []
       }
+      email_throttle: {
+        Row: {
+          context_id: string | null
+          email_type: string
+          id: string
+          sent_at: string
+          user_id: string
+        }
+        Insert: {
+          context_id?: string | null
+          email_type: string
+          id?: string
+          sent_at?: string
+          user_id: string
+        }
+        Update: {
+          context_id?: string | null
+          email_type?: string
+          id?: string
+          sent_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       favorites: {
         Row: {
           book_id: string
@@ -382,14 +406,19 @@ export type Database = {
           is_suspended: boolean
           is_verified: boolean
           last_seen: string
+          notify_admin: boolean
           notify_email: boolean
+          notify_followers: boolean
+          notify_messages: boolean
           notify_push: boolean
+          notify_reservations: boolean
           notify_sms: boolean
           phone: string | null
           phone_visible: boolean
           suspended_until: string | null
           suspension_reason: string | null
           title: string | null
+          unsubscribed_all: boolean
           updated_at: string
           verified: boolean
         }
@@ -408,14 +437,19 @@ export type Database = {
           is_suspended?: boolean
           is_verified?: boolean
           last_seen?: string
+          notify_admin?: boolean
           notify_email?: boolean
+          notify_followers?: boolean
+          notify_messages?: boolean
           notify_push?: boolean
+          notify_reservations?: boolean
           notify_sms?: boolean
           phone?: string | null
           phone_visible?: boolean
           suspended_until?: string | null
           suspension_reason?: string | null
           title?: string | null
+          unsubscribed_all?: boolean
           updated_at?: string
           verified?: boolean
         }
@@ -434,14 +468,19 @@ export type Database = {
           is_suspended?: boolean
           is_verified?: boolean
           last_seen?: string
+          notify_admin?: boolean
           notify_email?: boolean
+          notify_followers?: boolean
+          notify_messages?: boolean
           notify_push?: boolean
+          notify_reservations?: boolean
           notify_sms?: boolean
           phone?: string | null
           phone_visible?: boolean
           suspended_until?: string | null
           suspension_reason?: string | null
           title?: string | null
+          unsubscribed_all?: boolean
           updated_at?: string
           verified?: boolean
         }
