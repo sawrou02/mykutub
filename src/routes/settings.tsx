@@ -59,7 +59,7 @@ function SettingsPage() {
 
   useEffect(() => {
     if (!user) return;
-    supabase.from("profiles").select("notify_email, notify_sms, notify_push, phone_visible").eq("id", user.id).maybeSingle()
+    supabase.from("profiles").select("notify_email, notify_sms, notify_push, phone_visible, notify_reservations, notify_messages, notify_followers, notify_admin").eq("id", user.id).maybeSingle()
       .then(({ data }) => { if (data) setPrefs(data as Prefs); });
     loadBlocked(user.id);
   }, [user]);
