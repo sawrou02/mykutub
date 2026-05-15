@@ -1,12 +1,18 @@
 import { createFileRoute, useNavigate, Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
-import { ChevronLeft, MessageCircle, Star, Calendar, MapPin, Users, BadgeCheck, Smartphone } from "lucide-react";
+import { ChevronLeft, MessageCircle, Star, Calendar, Users, BadgeCheck, MoreVertical, Ban } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { BookCard } from "@/components/BookCard";
 import { SellerReviews } from "@/components/SellerReviews";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import {
+  AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent,
+  AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
+import { toast } from "sonner";
 import type { Book, Review } from "@/lib/mykutub";
 
 export const Route = createFileRoute("/user/$id")({
