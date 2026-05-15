@@ -356,6 +356,8 @@ function ChatDetailPage() {
   }
 
   const otherId = chat.participants.find((p) => p !== user?.id);
+  const isMuted = (chat.muted_for ?? []).includes(user?.id ?? "");
+  const isArchived = (chat.archived_for ?? []).includes(user?.id ?? "");
   const otherName = otherProfile?.display_name
     || messages.find((m) => m.sender_id !== user?.id)?.sender_name
     || "Utilisateur";
