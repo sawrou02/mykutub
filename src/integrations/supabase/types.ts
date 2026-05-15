@@ -14,6 +14,39 @@ export type Database = {
   }
   public: {
     Tables: {
+      admin_actions: {
+        Row: {
+          action: string
+          admin_id: string
+          created_at: string
+          duration_days: number | null
+          id: string
+          note: string | null
+          reason: string | null
+          target_user_id: string
+        }
+        Insert: {
+          action: string
+          admin_id: string
+          created_at?: string
+          duration_days?: number | null
+          id?: string
+          note?: string | null
+          reason?: string | null
+          target_user_id: string
+        }
+        Update: {
+          action?: string
+          admin_id?: string
+          created_at?: string
+          duration_days?: number | null
+          id?: string
+          note?: string | null
+          reason?: string | null
+          target_user_id?: string
+        }
+        Relationships: []
+      }
       blocked_users: {
         Row: {
           blocked_id: string
@@ -395,6 +428,7 @@ export type Database = {
           avatar_url: string | null
           ban_reason: string | null
           banned_at: string | null
+          banned_by: string | null
           birthdate: string | null
           city: string | null
           created_at: string
@@ -421,11 +455,13 @@ export type Database = {
           unsubscribed_all: boolean
           updated_at: string
           verified: boolean
+          warning_count: number
         }
         Insert: {
           avatar_url?: string | null
           ban_reason?: string | null
           banned_at?: string | null
+          banned_by?: string | null
           birthdate?: string | null
           city?: string | null
           created_at?: string
@@ -452,11 +488,13 @@ export type Database = {
           unsubscribed_all?: boolean
           updated_at?: string
           verified?: boolean
+          warning_count?: number
         }
         Update: {
           avatar_url?: string | null
           ban_reason?: string | null
           banned_at?: string | null
+          banned_by?: string | null
           birthdate?: string | null
           city?: string | null
           created_at?: string
@@ -483,6 +521,7 @@ export type Database = {
           unsubscribed_all?: boolean
           updated_at?: string
           verified?: boolean
+          warning_count?: number
         }
         Relationships: []
       }
@@ -605,6 +644,40 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      _is_target_admin: { Args: { _uid: string }; Returns: boolean }
+      _require_admin: { Args: never; Returns: undefined }
+      admin_ban_user: {
+        Args: { _reason: string; _target: string }
+        Returns: undefined
+      }
+      admin_delete_user: {
+        Args: { _confirm: string; _note: string; _target: string }
+        Returns: undefined
+      }
+      admin_send_message: {
+        Args: { _target: string; _text: string }
+        Returns: string
+      }
+      admin_set_verified: {
+        Args: { _target: string; _value: boolean }
+        Returns: undefined
+      }
+      admin_suspend_user: {
+        Args: { _days: number; _reason: string; _target: string }
+        Returns: undefined
+      }
+      admin_unban_user: {
+        Args: { _note: string; _target: string }
+        Returns: undefined
+      }
+      admin_unsuspend_user: {
+        Args: { _note: string; _target: string }
+        Returns: undefined
+      }
+      admin_warn_user: {
+        Args: { _reason: string; _target: string }
+        Returns: undefined
+      }
       is_blocked_by: {
         Args: { _blocked: string; _blocker: string }
         Returns: boolean
