@@ -54,7 +54,7 @@ function Landing() {
               </Button>
             </div>
           </div>
-          <div className="relative aspect-[4/3] md:aspect-[5/4] md:max-h-[55vh] rounded-3xl overflow-hidden shadow-2xl">
+          <div className="relative aspect-[4/3] md:aspect-[4/3] md:min-h-[70vh] rounded-3xl overflow-hidden shadow-2xl">
             <img
               src={heroImage}
               alt="Livres de science islamique empilés dont un Coran vert avec calligraphie arabe"
