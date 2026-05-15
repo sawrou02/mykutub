@@ -105,8 +105,11 @@ function BookDetailPage() {
           setRating({ avg, count: data.length });
         }
       });
-    supabase.from("profiles").select("created_at").eq("id", book.seller_id).single()
-      .then(({ data }) => setSellerJoined((data as any)?.created_at ?? null));
+    supabase.from("profiles").select("created_at, verified").eq("id", book.seller_id).single()
+      .then(({ data }) => {
+        setSellerJoined((data as any)?.created_at ?? null);
+        setSellerVerified(!!(data as any)?.verified);
+      });
   }, [book?.seller_id]);
 
   const handleContactSeller = async () => {
