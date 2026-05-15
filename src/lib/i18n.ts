@@ -19,7 +19,7 @@ const fr = {
     delivery: "Livraison possible", noDelivery: "Retrait uniquement",
     history: "Historique", clearHistory: "Effacer", recentSearches: "Recherches récentes",
     seeAll: "Voir tout", apply: "Appliquer", reset: "Réinitialiser", filters: "Filtres",
-    allFrance: "Toute l'Europe", noResults: "Aucun livre trouvé.", explore: "Explorer le catalogue",
+    allFrance: "Toute la France", noResults: "Aucun livre trouvé.", explore: "Explorer le catalogue",
     sending: "Envoi…", send: "Envoyer le message",
     back: "Retour", edit: "Modifier", confirm: "Confirmer",
     yes: "Oui", no: "Non", required: "Requis",
