@@ -64,7 +64,7 @@ export function AdminUsersTab() {
   // Action state
   const [target, setTarget] = useState<Profile | null>(null);
   const [action, setAction] = useState<null | "warn" | "suspend" | "unsuspend" | "ban" | "unban" | "delete" | "message" | "detail">(null);
-  const [reason, setReason] = useState(REASONS[0]);
+  const [reason, setReason] = useState<string>(REASONS[0]);
   const [reasonOther, setReasonOther] = useState("");
   const [days, setDays] = useState<number>(7);
   const [note, setNote] = useState("");
