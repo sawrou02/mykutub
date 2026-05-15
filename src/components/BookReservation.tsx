@@ -4,6 +4,7 @@ import { Check, X, UserCheck, RotateCcw, Loader2 } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
+import { sendEmail } from "@/lib/email";
 import { OnlineDot } from "@/components/OnlineDot";
 import type { Book, BookRequest } from "@/lib/mykutub";
 import { formatDistanceToNow } from "date-fns";
