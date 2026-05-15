@@ -53,7 +53,7 @@ export function SiteHeader() {
 
           <div className="flex items-center gap-2">
             {user ? (
-              <div className="hidden md:flex items-center gap-2">
+              <div className="hidden sm:flex items-center gap-2">
                 <Button asChild size="sm" className="gap-1.5 bg-primary text-primary-foreground hover:bg-primary/90 font-bold">
                   <Link to="/publish"><PlusCircle size={16} /> <span className="hidden xl:inline">{t("home.publishBtn")}</span><span className="xl:hidden">{t("nav.publishBook")}</span></Link>
                 </Button>
