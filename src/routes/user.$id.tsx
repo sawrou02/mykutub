@@ -1,6 +1,6 @@
 import { createFileRoute, useNavigate, Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
-import { ChevronLeft, MessageCircle, Star, Calendar, Users, BadgeCheck, MoreVertical, Ban } from "lucide-react";
+import { ChevronLeft, MessageCircle, Star, Calendar, Users, BadgeCheck, MoreVertical, Ban, UserPlus, UserMinus } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { BookCard } from "@/components/BookCard";
@@ -33,19 +33,26 @@ function UserProfilePage() {
   const [loading, setLoading] = useState(true);
   const [confirmBlock, setConfirmBlock] = useState(false);
   const [blocking, setBlocking] = useState(false);
+  const [isFollowing, setIsFollowing] = useState(false);
+  const [followersCount, setFollowersCount] = useState(0);
+  const [followBusy, setFollowBusy] = useState(false);
 
   useEffect(() => {
     Promise.all([
       supabase.from("profiles").select("display_name, created_at").eq("id", userId).maybeSingle(),
       supabase.from("books").select("*").eq("seller_id", userId).order("created_at", { ascending: false }),
       supabase.from("reviews").select("*").eq("seller_id", userId),
-    ]).then(([p, b, r]) => {
+      supabase.from("follows").select("id", { count: "exact", head: true }).eq("following_id", userId),
+      user ? supabase.from("follows").select("id").eq("follower_id", user.id).eq("following_id", userId).maybeSingle() : Promise.resolve({ data: null } as any),
+    ]).then(([p, b, r, fc, mf]: any[]) => {
       setProfile((p.data as any) ?? { display_name: null });
       setBooks((b.data as Book[]) ?? []);
       setReviews((r.data as Review[]) ?? []);
+      setFollowersCount(fc.count ?? 0);
+      setIsFollowing(!!mf.data);
       setLoading(false);
     });
-  }, [userId]);
+  }, [userId, user]);
 
   const displayName = profile?.display_name || "Utilisateur";
   const initials = displayName.split(" ").map(s => s[0]).join("").slice(0, 2).toUpperCase();
@@ -72,6 +79,29 @@ function UserProfilePage() {
       toast.success(`${displayName} a été bloqué`);
       navigate({ to: "/" });
     }
+  };
+
+  const toggleFollow = async () => {
+    if (!user) { navigate({ to: "/login" }); return; }
+    setFollowBusy(true);
+    if (isFollowing) {
+      const { error } = await supabase.from("follows").delete().eq("follower_id", user.id).eq("following_id", userId);
+      if (error) toast.error("Erreur lors du désabonnement");
+      else {
+        setIsFollowing(false);
+        setFollowersCount(c => Math.max(0, c - 1));
+        toast.success(`Vous ne suivez plus ${displayName}`);
+      }
+    } else {
+      const { error } = await supabase.from("follows").insert({ follower_id: user.id, following_id: userId });
+      if (error) toast.error("Impossible de suivre cet utilisateur");
+      else {
+        setIsFollowing(true);
+        setFollowersCount(c => c + 1);
+        toast.success(`Vous suivez ${displayName}`);
+      }
+    }
+    setFollowBusy(false);
   };
 
   return (
@@ -139,8 +169,14 @@ function UserProfilePage() {
               </div>
             </div>
             {!isMe && user && (
-              <Button size="sm" variant="outline" className="rounded-full text-xs h-8" asChild>
-                <Link to="/messages">Suivre</Link>
+              <Button
+                size="sm"
+                variant={isFollowing ? "outline" : "default"}
+                className="rounded-full text-xs h-8 gap-1"
+                disabled={followBusy}
+                onClick={toggleFollow}
+              >
+                {isFollowing ? <><UserMinus size={13} /> Se désabonner</> : <><UserPlus size={13} /> Suivre</>}
               </Button>
             )}
           </div>
@@ -153,6 +189,9 @@ function UserProfilePage() {
             )}
             <div className="flex items-center gap-1.5">
               <Users size={12} /> {books.length} annonce{books.length > 1 ? "s" : ""}
+            </div>
+            <div className="flex items-center gap-1.5">
+              <UserPlus size={12} /> {followersCount} abonné{followersCount > 1 ? "s" : ""}
             </div>
             <div className="flex items-center gap-1.5">
               <BadgeCheck size={12} className="text-emerald-600" /> Profil vérifié

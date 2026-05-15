@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
-import { Settings, LogOut, Package, Heart, UserCircle, Trash2, Camera, Loader2, Mail, Phone, MapPin, Save, Pencil } from "lucide-react";
+import { Settings, LogOut, Package, Heart, UserCircle, Trash2, Camera, Loader2, Mail, Phone, MapPin, Save, Pencil, Users, UserMinus } from "lucide-react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { BookCard } from "@/components/BookCard";
 import { useAuth } from "@/hooks/useAuth";
@@ -32,6 +32,7 @@ function ProfilePage() {
   const { user, loading: authLoading, signOut } = useAuth();
   const [myBooks, setMyBooks] = useState<Book[]>([]);
   const [favorites, setFavorites] = useState<Book[]>([]);
+  const [following, setFollowing] = useState<Array<{ id: string; display_name: string | null; avatar_url: string | null }>>([]);
   const [profile, setProfile] = useState<Profile | null>(null);
   const [saving, setSaving] = useState(false);
   const [uploading, setUploading] = useState(false);
@@ -52,7 +53,23 @@ function ProfilePage() {
         const { data: bks } = await supabase.from("books").select("*").in("id", ids);
         setFavorites((bks as Book[]) ?? []);
       });
+
+    supabase.from("follows").select("following_id").eq("follower_id", user.id)
+      .then(async ({ data }) => {
+        const ids = (data ?? []).map((r: any) => r.following_id);
+        if (!ids.length) { setFollowing([]); return; }
+        const { data: profs } = await supabase.from("profiles").select("id, display_name, avatar_url").in("id", ids);
+        setFollowing((profs as any[]) ?? []);
+      });
   }, [user]);
+
+  const handleUnfollow = async (sellerId: string) => {
+    if (!user) return;
+    const { error } = await supabase.from("follows").delete().eq("follower_id", user.id).eq("following_id", sellerId);
+    if (error) { toast.error("Erreur"); return; }
+    setFollowing(prev => prev.filter(f => f.id !== sellerId));
+    toast.success("Désabonné");
+  };
 
   const handleLogout = async () => {
     await signOut();
@@ -237,6 +254,41 @@ function ProfilePage() {
             )}
           </TabsContent>
         </Tabs>
+
+        <section className="mt-8">
+          <div className="bg-card rounded-2xl border p-5">
+            <h2 className="font-headline font-bold text-lg flex items-center gap-2 mb-4">
+              <Users size={18} className="text-primary" /> Mes abonnements
+              <span className="text-xs font-normal text-muted-foreground">({following.length})</span>
+            </h2>
+            {following.length === 0 ? (
+              <p className="text-sm text-muted-foreground text-center py-6">
+                Vous ne suivez aucun vendeur pour le moment.
+              </p>
+            ) : (
+              <ul className="divide-y">
+                {following.map(f => {
+                  const initials = (f.display_name || "U").split(" ").map(s => s[0]).join("").slice(0, 2).toUpperCase();
+                  return (
+                    <li key={f.id} className="flex items-center gap-3 py-3">
+                      <Link to="/user/$id" params={{ id: f.id }} className="flex items-center gap-3 flex-1 min-w-0">
+                        <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center overflow-hidden flex-shrink-0">
+                          {f.avatar_url
+                            ? <img src={f.avatar_url} alt="" className="w-full h-full object-cover" />
+                            : <span className="text-primary font-bold text-sm">{initials}</span>}
+                        </div>
+                        <span className="font-semibold text-sm truncate">{f.display_name || "Utilisateur"}</span>
+                      </Link>
+                      <Button size="sm" variant="outline" className="rounded-full text-xs h-8 gap-1" onClick={() => handleUnfollow(f.id)}>
+                        <UserMinus size={13} /> Se désabonner
+                      </Button>
+                    </li>
+                  );
+                })}
+              </ul>
+            )}
+          </div>
+        </section>
 
         <div className="mt-8 space-y-3">
           <div className="bg-card rounded-2xl overflow-hidden shadow-sm border divide-y">
