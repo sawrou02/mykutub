@@ -210,6 +210,11 @@ function SignupPage() {
           </p>
         </div>
       </div>
+      <CharteModal
+        open={charteOpen}
+        onOpenChange={setCharteOpen}
+        onAccept={() => setCharteAccepted(true)}
+      />
     </div>
   );
 }
