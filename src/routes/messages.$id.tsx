@@ -419,8 +419,9 @@ function ChatDetailPage() {
             );
           }
           const m = item.msg;
-          const isSystem = m.text.startsWith(SYSTEM_PREFIX);
-          const isImage = m.text.startsWith(IMAGE_PREFIX);
+          const isDeleted = !!m.deleted_for_everyone;
+          const isSystem = !isDeleted && m.text.startsWith(SYSTEM_PREFIX);
+          const isImage = !isDeleted && m.text.startsWith(IMAGE_PREFIX);
           const mine = m.sender_id === user?.id;
           const time = new Date(m.created_at).toLocaleTimeString("fr-FR", { hour: "2-digit", minute: "2-digit" });
 
@@ -435,16 +436,37 @@ function ChatDetailPage() {
           }
 
           return (
-            <div key={m.id} className={cn("flex animate-in fade-in slide-in-from-bottom-1 duration-200", mine ? "justify-end" : "justify-start")}>
+            <div key={m.id} className={cn("flex group animate-in fade-in slide-in-from-bottom-1 duration-200", mine ? "justify-end" : "justify-start")}>
               <div
+                onContextMenu={(e) => {
+                  if (mine && !isDeleted) { e.preventDefault(); setActionMsg(m); }
+                }}
+                onTouchStart={() => !isDeleted && startLongPress(m)}
+                onTouchEnd={cancelLongPress}
+                onTouchMove={cancelLongPress}
+                onTouchCancel={cancelLongPress}
                 className={cn(
-                  "max-w-[78%] md:max-w-[65%] rounded-lg text-sm shadow-sm overflow-hidden",
+                  "relative max-w-[78%] md:max-w-[65%] rounded-lg text-sm shadow-sm overflow-hidden select-none",
                   isImage ? "p-1" : "px-3 py-1.5",
-                  mine ? "rounded-tr-sm text-white" : "rounded-tl-sm bg-white text-foreground",
+                  isDeleted
+                    ? "bg-muted text-muted-foreground italic"
+                    : mine ? "rounded-tr-sm text-white" : "rounded-tl-sm bg-white text-foreground",
                 )}
-                style={mine ? { background: "#008069" } : undefined}
+                style={!isDeleted && mine ? { background: "#008069" } : undefined}
               >
-                {isImage ? (
+                {mine && !isDeleted && (
+                  <button
+                    type="button"
+                    onClick={() => setActionMsg(m)}
+                    className="absolute top-0.5 right-0.5 opacity-0 group-hover:opacity-100 transition-opacity p-0.5 rounded-full hover:bg-black/10"
+                    aria-label="Options du message"
+                  >
+                    <MoreVertical size={14} className="text-white/90" />
+                  </button>
+                )}
+                {isDeleted ? (
+                  <p className="whitespace-pre-wrap break-words leading-snug">🚫 Ce message a été supprimé</p>
+                ) : isImage ? (
                   <a href={m.text.slice(IMAGE_PREFIX.length)} target="_blank" rel="noreferrer" className="block">
                     <img
                       src={m.text.slice(IMAGE_PREFIX.length)}
@@ -455,9 +477,9 @@ function ChatDetailPage() {
                 ) : (
                   <p className="whitespace-pre-wrap break-words leading-snug">{m.text}</p>
                 )}
-                <div className={cn("flex items-center gap-1 mt-0.5 px-1 justify-end", mine ? "text-white/80" : "text-muted-foreground")}>
+                <div className={cn("flex items-center gap-1 mt-0.5 px-1 justify-end", isDeleted ? "text-muted-foreground" : mine ? "text-white/80" : "text-muted-foreground")}>
                   <span className="text-[10px]">{time}</span>
-                  {mine && (
+                  {mine && !isDeleted && (
                     m.read_at
                       ? <CheckCheck size={14} className="text-sky-200" />
                       : <Check size={14} />
