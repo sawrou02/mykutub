@@ -127,11 +127,15 @@ export type Database = {
       }
       chats: {
         Row: {
+          archived_by_user1: boolean
+          archived_by_user2: boolean
           archived_for: string[]
           book_id: string | null
           book_image_url: string | null
           book_title: string | null
           created_at: string
+          deleted_by_user1: boolean
+          deleted_by_user2: boolean
           deleted_for: string[]
           id: string
           last_message: string | null
@@ -141,11 +145,15 @@ export type Database = {
           unread_by: string[] | null
         }
         Insert: {
+          archived_by_user1?: boolean
+          archived_by_user2?: boolean
           archived_for?: string[]
           book_id?: string | null
           book_image_url?: string | null
           book_title?: string | null
           created_at?: string
+          deleted_by_user1?: boolean
+          deleted_by_user2?: boolean
           deleted_for?: string[]
           id?: string
           last_message?: string | null
@@ -155,11 +163,15 @@ export type Database = {
           unread_by?: string[] | null
         }
         Update: {
+          archived_by_user1?: boolean
+          archived_by_user2?: boolean
           archived_for?: string[]
           book_id?: string | null
           book_image_url?: string | null
           book_title?: string | null
           created_at?: string
+          deleted_by_user1?: boolean
+          deleted_by_user2?: boolean
           deleted_for?: string[]
           id?: string
           last_message?: string | null
@@ -247,6 +259,30 @@ export type Database = {
           follower_id?: string
           following_id?: string
           id?: string
+        }
+        Relationships: []
+      }
+      global_notifications: {
+        Row: {
+          created_at: string
+          created_by: string
+          id: string
+          message: string
+          titre: string
+        }
+        Insert: {
+          created_at?: string
+          created_by: string
+          id?: string
+          message: string
+          titre: string
+        }
+        Update: {
+          created_at?: string
+          created_by?: string
+          id?: string
+          message?: string
+          titre?: string
         }
         Relationships: []
       }
@@ -339,8 +375,12 @@ export type Database = {
           city: string | null
           created_at: string
           display_name: string | null
+          followers_count: number
           id: string
+          is_banned: boolean
           is_online: boolean
+          is_suspended: boolean
+          is_verified: boolean
           last_seen: string
           notify_email: boolean
           notify_push: boolean
@@ -361,8 +401,12 @@ export type Database = {
           city?: string | null
           created_at?: string
           display_name?: string | null
+          followers_count?: number
           id: string
+          is_banned?: boolean
           is_online?: boolean
+          is_suspended?: boolean
+          is_verified?: boolean
           last_seen?: string
           notify_email?: boolean
           notify_push?: boolean
@@ -383,8 +427,12 @@ export type Database = {
           city?: string | null
           created_at?: string
           display_name?: string | null
+          followers_count?: number
           id?: string
+          is_banned?: boolean
           is_online?: boolean
+          is_suspended?: boolean
+          is_verified?: boolean
           last_seen?: string
           notify_email?: boolean
           notify_push?: boolean
@@ -401,31 +449,37 @@ export type Database = {
       }
       reports: {
         Row: {
-          book_id: string
+          book_id: string | null
+          chat_id: string | null
           created_at: string
           description: string | null
           id: string
           raison: string
+          reported_id: string | null
           reporter_id: string
           statut: string
           updated_at: string
         }
         Insert: {
-          book_id: string
+          book_id?: string | null
+          chat_id?: string | null
           created_at?: string
           description?: string | null
           id?: string
           raison: string
+          reported_id?: string | null
           reporter_id: string
           statut?: string
           updated_at?: string
         }
         Update: {
-          book_id?: string
+          book_id?: string | null
+          chat_id?: string | null
           created_at?: string
           description?: string | null
           id?: string
           raison?: string
+          reported_id?: string | null
           reporter_id?: string
           statut?: string
           updated_at?: string
