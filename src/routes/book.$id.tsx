@@ -318,9 +318,21 @@ function BookDetailPage() {
 
               <div className="mt-4 pt-4 border-t flex items-center gap-4 text-xs text-muted-foreground">
                 <button onClick={() => setReportOpen(true)} className="flex items-center gap-1.5 hover:text-foreground"><Flag size={13} /> Signaler l'annonce</button>
-                <button className="flex items-center gap-1.5 hover:text-foreground"><Info size={13} /> Vos droits</button>
               </div>
               <ReportDialog bookId={bookId} open={reportOpen} onOpenChange={setReportOpen} />
+            </div>
+
+            {/* Vos droits */}
+            <div className="bg-card lg:rounded-xl border px-4 lg:px-6 py-5">
+              <h2 className="font-bold text-lg mb-3 flex items-center gap-2"><Info size={18} className="text-primary" /> Vos droits</h2>
+              <ul className="space-y-2.5 text-sm">
+                <li className="flex items-start gap-2.5"><Search size={16} className="text-primary mt-0.5 shrink-0" /><span>Droit d'<strong>inspecter le livre</strong> avant l'échange</span></li>
+                <li className="flex items-start gap-2.5"><MessageCircle size={16} className="text-primary mt-0.5 shrink-0" /><span>Droit de <strong>contacter le donneur</strong> pour toute question</span></li>
+                <li className="flex items-start gap-2.5"><X size={16} className="text-primary mt-0.5 shrink-0" /><span>Droit d'<strong>annuler une réservation</strong> à tout moment</span></li>
+                <li className="flex items-start gap-2.5"><Flag size={16} className="text-primary mt-0.5 shrink-0" /><span>Droit de <strong>signaler une annonce</strong> non conforme</span></li>
+                <li className="flex items-start gap-2.5"><Star size={16} className="text-primary mt-0.5 shrink-0" /><span>Droit de <strong>laisser un avis</strong> après l'échange</span></li>
+                <li className="flex items-start gap-2.5"><Lock size={16} className="text-primary mt-0.5 shrink-0" /><span><strong>Données personnelles protégées</strong> conformément au RGPD</span></li>
+              </ul>
             </div>
           </div>
 
