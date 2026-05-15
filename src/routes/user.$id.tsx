@@ -31,6 +31,8 @@ function UserProfilePage() {
   const [books, setBooks] = useState<Book[]>([]);
   const [reviews, setReviews] = useState<Review[]>([]);
   const [loading, setLoading] = useState(true);
+  const [confirmBlock, setConfirmBlock] = useState(false);
+  const [blocking, setBlocking] = useState(false);
 
   useEffect(() => {
     Promise.all([
