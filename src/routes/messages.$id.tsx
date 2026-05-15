@@ -722,6 +722,101 @@ function ChatDetailPage() {
           </div>
         </DialogContent>
       </Dialog>
+
+      {/* Report dialog with reasons */}
+      <Dialog open={reportOpen} onOpenChange={(o) => { if (!o) { setReportOpen(false); } }}>
+        <DialogContent className="sm:max-w-md rounded-2xl">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2"><Flag size={18} className="text-amber-600" /> Signaler la conversation</DialogTitle>
+            <DialogDescription>
+              Sélectionnez la ou les raisons de votre signalement. Notre équipe examinera la situation.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-2 max-h-[40vh] overflow-y-auto thin-scroll pr-1">
+            {[
+              "Messages inappropriés",
+              "Arnaque ou fraude",
+              "Spam",
+              "Harcèlement",
+              "Non-respect des règles islamiques",
+              "Fausse identité",
+              "Contenu indécent",
+              "Autre",
+            ].map((reason) => {
+              const checked = reportReasons.has(reason);
+              return (
+                <label key={reason} className="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-muted cursor-pointer">
+                  <Checkbox
+                    checked={checked}
+                    onCheckedChange={(v) => {
+                      setReportReasons((prev) => {
+                        const next = new Set(prev);
+                        if (v) next.add(reason); else next.delete(reason);
+                        return next;
+                      });
+                    }}
+                  />
+                  <span className="text-sm">{reason}</span>
+                </label>
+              );
+            })}
+          </div>
+          <div className="space-y-1.5">
+            <label className="text-xs font-semibold text-muted-foreground">Description (facultative)</label>
+            <textarea
+              value={reportDescription}
+              onChange={(e) => setReportDescription(e.target.value.slice(0, 500))}
+              rows={3}
+              maxLength={500}
+              placeholder="Apportez plus de détails…"
+              className="w-full resize-none rounded-lg border bg-background px-3 py-2 text-sm outline-none focus:ring-1 focus:ring-primary"
+            />
+            <p className="text-[10px] text-right text-muted-foreground">{reportDescription.length}/500</p>
+          </div>
+          <DialogFooter className="gap-2">
+            <Button variant="outline" onClick={() => setReportOpen(false)} disabled={reportSubmitting}>Annuler</Button>
+            <Button onClick={submitReport} disabled={reportSubmitting || reportReasons.size === 0}>
+              {reportSubmitting ? "Envoi…" : "Envoyer le signalement"}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Block confirm */}
+      <AlertDialog open={confirmBlock} onOpenChange={setConfirmBlock}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Bloquer {otherProfile?.display_name ?? "cet utilisateur"} ?</AlertDialogTitle>
+            <AlertDialogDescription>
+              Il ne pourra plus vous envoyer de messages ni voir vos annonces.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Annuler</AlertDialogCancel>
+            <AlertDialogAction onClick={handleBlockUser} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">
+              Bloquer
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
+      {/* Delete chat confirm */}
+      <AlertDialog open={confirmDeleteChat} onOpenChange={setConfirmDeleteChat}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Supprimer la conversation ?</AlertDialogTitle>
+            <AlertDialogDescription>
+              Cette conversation disparaîtra de votre liste. L'autre participant pourra encore la voir.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Annuler</AlertDialogCancel>
+            <AlertDialogAction onClick={handleDeleteChat} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">
+              Supprimer
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }
