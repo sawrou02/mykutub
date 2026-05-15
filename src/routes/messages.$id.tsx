@@ -3,13 +3,20 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import {
   ChevronLeft, Send, MoreVertical, User, Flag, Trash2, BookOpen, User as UserIcon,
   Check, CheckCheck, Smile, Plus, Star, X, Info, Trash, UserMinus,
+  BellOff, Bell, Archive, ArchiveRestore, Ban,
 } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
 import {
   DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog";
+import {
+  AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent,
+  AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import type { Chat, Message, Book } from "@/lib/mykutub";
 import { ContactsSidebar } from "@/components/ContactsSidebar";
@@ -63,6 +70,12 @@ function ChatDetailPage() {
   const [showBookInfo, setShowBookInfo] = useState(false);
   const [uploading, setUploading] = useState(false);
   const [actionMsg, setActionMsg] = useState<Message | null>(null);
+  const [reportOpen, setReportOpen] = useState(false);
+  const [reportReasons, setReportReasons] = useState<Set<string>>(new Set());
+  const [reportDescription, setReportDescription] = useState("");
+  const [reportSubmitting, setReportSubmitting] = useState(false);
+  const [confirmBlock, setConfirmBlock] = useState(false);
+  const [confirmDeleteChat, setConfirmDeleteChat] = useState(false);
   const scrollRef = useRef<HTMLDivElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const lastTypingSent = useRef(0);
@@ -196,11 +209,85 @@ function ChatDetailPage() {
     }
   };
 
+  const updateChatArray = async (column: "deleted_for" | "archived_for" | "muted_for", add: boolean) => {
+    if (!chat || !user) return;
+    const current = (chat[column] ?? []) as string[];
+    const next = add
+      ? Array.from(new Set([...current, user.id]))
+      : current.filter((id) => id !== user.id);
+    setChat({ ...chat, [column]: next } as Chat);
+    const payload: Record<string, string[]> = { [column]: next };
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const { error } = await supabase.from("chats").update(payload as any).eq("id", chatId);
+    if (error) {
+      toast.error("Action impossible");
+      setChat({ ...chat, [column]: current } as Chat);
+      return false;
+    }
+    return true;
+  };
+
   const handleDeleteChat = async () => {
-    if (!confirm("Supprimer la conversation ?")) return;
-    await supabase.from("chats").delete().eq("id", chatId);
-    toast.success("Conversation supprimée");
-    navigate({ to: "/messages" });
+    const ok = await updateChatArray("deleted_for", true);
+    setConfirmDeleteChat(false);
+    if (ok) {
+      toast.success("Conversation supprimée");
+      navigate({ to: "/messages" });
+    }
+  };
+
+  const handleToggleArchive = async () => {
+    const isArchived = (chat?.archived_for ?? []).includes(user?.id ?? "");
+    const ok = await updateChatArray("archived_for", !isArchived);
+    if (ok) toast.success(isArchived ? "Conversation désarchivée" : "Conversation archivée");
+  };
+
+  const handleToggleMute = async () => {
+    const isMuted = (chat?.muted_for ?? []).includes(user?.id ?? "");
+    const ok = await updateChatArray("muted_for", !isMuted);
+    if (ok) toast.success(isMuted ? "Notifications réactivées" : "Notifications désactivées");
+  };
+
+  const handleBlockUser = async () => {
+    const targetId = chat?.participants.find((p) => p !== user?.id);
+    if (!user || !targetId) return;
+    const { error } = await supabase.from("blocked_users").insert({
+      blocker_id: user.id,
+      blocked_id: targetId,
+    });
+    setConfirmBlock(false);
+    if (error && !error.message.toLowerCase().includes("duplicate")) {
+      toast.error("Impossible de bloquer cet utilisateur");
+    } else {
+      toast.success(`${otherProfile?.display_name ?? "Utilisateur"} a été bloqué`);
+      navigate({ to: "/messages" });
+    }
+  };
+
+  const submitReport = async () => {
+    if (!user || reportReasons.size === 0) {
+      toast.error("Sélectionnez au moins une raison");
+      return;
+    }
+    setReportSubmitting(true);
+    const reasons = Array.from(reportReasons).join(", ");
+    const { error } = await supabase.from("reports").insert({
+      reporter_id: user.id,
+      book_id: chat?.book_id ?? chatId,
+      raison: reasons,
+      description: reportDescription.slice(0, 500) || null,
+    });
+    setReportSubmitting(false);
+    if (error) {
+      toast.error("Échec du signalement");
+      return;
+    }
+    setReportOpen(false);
+    setReportReasons(new Set());
+    setReportDescription("");
+    toast.success("JazakAllahu Khayran 🤲", {
+      description: "Votre signalement a bien été transmis à notre équipe.",
+    });
   };
 
   const deleteForEveryone = async (m: Message) => {
@@ -269,6 +356,8 @@ function ChatDetailPage() {
   }
 
   const otherId = chat.participants.find((p) => p !== user?.id);
+  const isMuted = (chat.muted_for ?? []).includes(user?.id ?? "");
+  const isArchived = (chat.archived_for ?? []).includes(user?.id ?? "");
   const otherName = otherProfile?.display_name
     || messages.find((m) => m.sender_id !== user?.id)?.sender_name
     || "Utilisateur";
@@ -396,19 +485,30 @@ function ChatDetailPage() {
                 <MoreVertical size={18} className="text-muted-foreground" />
               </button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className="w-56 rounded-xl">
+            <DropdownMenuContent align="end" className="w-60 rounded-xl">
               <DropdownMenuItem
                 onClick={() => otherId && navigate({ to: "/user/$id", params: { id: otherId }, search: { chatId } })}
                 disabled={!otherId}
-                className="py-3 cursor-pointer"
+                className="py-2.5 cursor-pointer"
               >
                 <User size={16} className="mr-2" /> Voir le profil
               </DropdownMenuItem>
+              <DropdownMenuItem onClick={handleToggleMute} className="py-2.5 cursor-pointer">
+                {isMuted ? <Bell size={16} className="mr-2" /> : <BellOff size={16} className="mr-2" />}
+                {isMuted ? "Réactiver les notifications" : "Désactiver les notifications"}
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={handleToggleArchive} className="py-2.5 cursor-pointer">
+                {isArchived ? <ArchiveRestore size={16} className="mr-2" /> : <Archive size={16} className="mr-2" />}
+                {isArchived ? "Désarchiver" : "Archiver la conversation"}
+              </DropdownMenuItem>
               <DropdownMenuSeparator />
-              <DropdownMenuItem onClick={() => toast.success("Signalement envoyé")} className="py-3 text-amber-600 cursor-pointer">
+              <DropdownMenuItem onClick={() => setReportOpen(true)} className="py-2.5 text-amber-600 focus:text-amber-700 focus:bg-amber-50 cursor-pointer">
                 <Flag size={16} className="mr-2" /> Signaler
               </DropdownMenuItem>
-              <DropdownMenuItem onClick={handleDeleteChat} className="py-3 text-destructive cursor-pointer">
+              <DropdownMenuItem onClick={() => setConfirmBlock(true)} disabled={!otherId} className="py-2.5 text-destructive focus:text-destructive focus:bg-destructive/10 cursor-pointer">
+                <Ban size={16} className="mr-2" /> Bloquer
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => setConfirmDeleteChat(true)} className="py-2.5 text-destructive focus:text-destructive focus:bg-destructive/10 cursor-pointer">
                 <Trash2 size={16} className="mr-2" /> Supprimer
               </DropdownMenuItem>
             </DropdownMenuContent>
@@ -622,6 +722,101 @@ function ChatDetailPage() {
           </div>
         </DialogContent>
       </Dialog>
+
+      {/* Report dialog with reasons */}
+      <Dialog open={reportOpen} onOpenChange={(o) => { if (!o) { setReportOpen(false); } }}>
+        <DialogContent className="sm:max-w-md rounded-2xl">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2"><Flag size={18} className="text-amber-600" /> Signaler la conversation</DialogTitle>
+            <DialogDescription>
+              Sélectionnez la ou les raisons de votre signalement. Notre équipe examinera la situation.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-2 max-h-[40vh] overflow-y-auto thin-scroll pr-1">
+            {[
+              "Messages inappropriés",
+              "Arnaque ou fraude",
+              "Spam",
+              "Harcèlement",
+              "Non-respect des règles islamiques",
+              "Fausse identité",
+              "Contenu indécent",
+              "Autre",
+            ].map((reason) => {
+              const checked = reportReasons.has(reason);
+              return (
+                <label key={reason} className="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-muted cursor-pointer">
+                  <Checkbox
+                    checked={checked}
+                    onCheckedChange={(v) => {
+                      setReportReasons((prev) => {
+                        const next = new Set(prev);
+                        if (v) next.add(reason); else next.delete(reason);
+                        return next;
+                      });
+                    }}
+                  />
+                  <span className="text-sm">{reason}</span>
+                </label>
+              );
+            })}
+          </div>
+          <div className="space-y-1.5">
+            <label className="text-xs font-semibold text-muted-foreground">Description (facultative)</label>
+            <textarea
+              value={reportDescription}
+              onChange={(e) => setReportDescription(e.target.value.slice(0, 500))}
+              rows={3}
+              maxLength={500}
+              placeholder="Apportez plus de détails…"
+              className="w-full resize-none rounded-lg border bg-background px-3 py-2 text-sm outline-none focus:ring-1 focus:ring-primary"
+            />
+            <p className="text-[10px] text-right text-muted-foreground">{reportDescription.length}/500</p>
+          </div>
+          <DialogFooter className="gap-2">
+            <Button variant="outline" onClick={() => setReportOpen(false)} disabled={reportSubmitting}>Annuler</Button>
+            <Button onClick={submitReport} disabled={reportSubmitting || reportReasons.size === 0}>
+              {reportSubmitting ? "Envoi…" : "Envoyer le signalement"}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Block confirm */}
+      <AlertDialog open={confirmBlock} onOpenChange={setConfirmBlock}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Bloquer {otherProfile?.display_name ?? "cet utilisateur"} ?</AlertDialogTitle>
+            <AlertDialogDescription>
+              Il ne pourra plus vous envoyer de messages ni voir vos annonces.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Annuler</AlertDialogCancel>
+            <AlertDialogAction onClick={handleBlockUser} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">
+              Bloquer
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
+      {/* Delete chat confirm */}
+      <AlertDialog open={confirmDeleteChat} onOpenChange={setConfirmDeleteChat}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Supprimer la conversation ?</AlertDialogTitle>
+            <AlertDialogDescription>
+              Cette conversation disparaîtra de votre liste. L'autre participant pourra encore la voir.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Annuler</AlertDialogCancel>
+            <AlertDialogAction onClick={handleDeleteChat} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">
+              Supprimer
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }
