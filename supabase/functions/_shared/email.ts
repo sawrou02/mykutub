@@ -62,8 +62,10 @@ export async function sendResendEmail(to: string, subject: string, html: string)
   });
   if (!res.ok) {
     const err = await res.text();
-    console.error("Resend error", res.status, err);
-    throw new Error(`Resend ${res.status}: ${err}`);
+    console.warn("Resend skipped", res.status, err);
+    // Best-effort: don't fail the calling action (e.g. admin sanction)
+    // when Resend is in sandbox mode (403) or rate-limited (429).
+    return { skipped: true, status: res.status, error: err };
   }
   return await res.json();
 }
