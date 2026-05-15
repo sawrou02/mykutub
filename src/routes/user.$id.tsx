@@ -81,6 +81,29 @@ function UserProfilePage() {
     }
   };
 
+  const toggleFollow = async () => {
+    if (!user) { navigate({ to: "/login" }); return; }
+    setFollowBusy(true);
+    if (isFollowing) {
+      const { error } = await supabase.from("follows").delete().eq("follower_id", user.id).eq("following_id", userId);
+      if (error) toast.error("Erreur lors du désabonnement");
+      else {
+        setIsFollowing(false);
+        setFollowersCount(c => Math.max(0, c - 1));
+        toast.success(`Vous ne suivez plus ${displayName}`);
+      }
+    } else {
+      const { error } = await supabase.from("follows").insert({ follower_id: user.id, following_id: userId });
+      if (error) toast.error("Impossible de suivre cet utilisateur");
+      else {
+        setIsFollowing(true);
+        setFollowersCount(c => c + 1);
+        toast.success(`Vous suivez ${displayName}`);
+      }
+    }
+    setFollowBusy(false);
+  };
+
   return (
     <div className="bg-muted/20 min-h-screen pb-24">
       <header className="bg-card border-b px-3 py-2.5 flex items-center gap-2 sticky top-0 z-40">
