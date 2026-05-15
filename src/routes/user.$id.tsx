@@ -27,7 +27,7 @@ function UserProfilePage() {
   const { chatId } = Route.useSearch();
   const navigate = useNavigate();
   const { user } = useAuth();
-  const [profile, setProfile] = useState<{ display_name: string | null; created_at?: string | null } | null>(null);
+  const [profile, setProfile] = useState<{ display_name: string | null; created_at?: string | null; verified?: boolean | null } | null>(null);
   const [books, setBooks] = useState<Book[]>([]);
   const [reviews, setReviews] = useState<Review[]>([]);
   const [loading, setLoading] = useState(true);
