@@ -102,6 +102,8 @@ export function ContactsSidebar({ activeChatId }: { activeChatId?: string }) {
     if (!user) return [];
     const q = search.trim().toLowerCase();
     return chats.filter((c) => {
+      const otherId = c.participants.find((p) => p !== user.id);
+      if (otherId && blockedIds.has(otherId)) return false;
       const isDeleted = (c.deleted_for ?? []).includes(user.id);
       if (isDeleted) return false;
       const isArchived = (c.archived_for ?? []).includes(user.id);
