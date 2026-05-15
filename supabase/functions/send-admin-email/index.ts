@@ -3,10 +3,12 @@ import { corsHeaders, renderEmail, sendResendEmail, siteLink, shouldSend, logSen
 
 interface Body {
   userId: string;
-  kind: "verified" | "follower" | "global";
+  kind: "verified" | "follower" | "global" | "warning" | "unsuspended" | "unbanned" | "account_deleted";
   recipientName?: string;
   followerName?: string;
   followerId?: string;
+  reason?: string;
+  note?: string;
   // global:
   title?: string;
   message?: string;
