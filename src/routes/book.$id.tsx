@@ -1,7 +1,12 @@
 import { createFileRoute, useNavigate, Link } from "@tanstack/react-router";
 import { useEffect, useMemo, useState } from "react";
 import { Button } from "@/components/ui/button";
-import { ChevronLeft, MapPin, Share2, Heart, MessageCircle, Truck, Package, Star, CalendarDays, Clock, ShieldCheck, BookOpen, Palette, Flag, Info } from "lucide-react";
+import { ChevronLeft, MapPin, Share2, Heart, MessageCircle, Truck, Package, Star, CalendarDays, Clock, ShieldCheck, BookOpen, Palette, Flag, Info, Pencil, Trash2, Search, X, Lock, Mail, Link2, Facebook, Twitter, MessageSquare } from "lucide-react";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import {
+  AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent,
+  AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
@@ -81,6 +86,9 @@ function BookDetailPage() {
   const [rating, setRating] = useState<{ avg: number; count: number } | null>(null);
   const [sellerJoined, setSellerJoined] = useState<string | null>(null);
   const [reportOpen, setReportOpen] = useState(false);
+  const [deleteOpen, setDeleteOpen] = useState(false);
+  const [deleting, setDeleting] = useState(false);
+  const [shareOpen, setShareOpen] = useState(false);
 
   useEffect(() => {
     supabase.from("books").select("*").eq("id", bookId).single()
@@ -138,8 +146,31 @@ function BookDetailPage() {
     if (navigator.share) {
       try { await navigator.share({ title, url }); return; } catch { /* cancelled */ }
     }
-    try { await navigator.clipboard.writeText(url); toast.success("Lien copié !"); }
+    setShareOpen(true);
+  };
+
+  const copyLink = async () => {
+    try { await navigator.clipboard.writeText(window.location.href); toast.success("Lien copié !"); setShareOpen(false); }
     catch { toast.error("Impossible de copier le lien."); }
+  };
+
+  const handleDelete = async () => {
+    if (!book) return;
+    setDeleting(true);
+    const { error } = await supabase.from("books").delete().eq("id", book.id);
+    setDeleting(false);
+    if (error) { toast.error("Suppression impossible."); return; }
+    toast.success("Annonce supprimée.");
+    navigate({ to: "/profile" });
+  };
+
+  const shareUrl = typeof window !== "undefined" ? window.location.href : "";
+  const shareTitle = book?.title ?? "MYKUTUB";
+  const shareLinks = {
+    whatsapp: `https://wa.me/?text=${encodeURIComponent(`${shareTitle} - ${shareUrl}`)}`,
+    facebook: `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(shareUrl)}`,
+    twitter: `https://twitter.com/intent/tweet?text=${encodeURIComponent(shareTitle)}&url=${encodeURIComponent(shareUrl)}`,
+    email: `mailto:?subject=${encodeURIComponent(shareTitle)}&body=${encodeURIComponent(`${shareTitle}\n${shareUrl}`)}`,
   };
 
   const initial = useMemo(() => (book?.seller_name?.[0] ?? "?").toUpperCase(), [book?.seller_name]);
@@ -183,8 +214,20 @@ function BookDetailPage() {
                 <span className="absolute bottom-3 left-3 bg-secondary text-secondary-foreground text-[11px] font-bold uppercase px-2.5 py-1 rounded">Don</span>
               )}
               <div className="absolute top-3 right-3 flex gap-2">
-                <button onClick={handleShare} className="p-2 rounded-full bg-card/95 shadow"><Share2 size={16} /></button>
-                <button className="p-2 rounded-full bg-card/95 shadow"><Heart size={16} /></button>
+                <Popover open={shareOpen} onOpenChange={setShareOpen}>
+                  <PopoverTrigger asChild>
+                    <button onClick={handleShare} className="p-2 rounded-full bg-card/95 shadow" aria-label="Partager"><Share2 size={16} /></button>
+                  </PopoverTrigger>
+                  <PopoverContent align="end" className="w-56 p-2">
+                    <p className="px-2 py-1.5 text-xs font-semibold text-muted-foreground">Partager via</p>
+                    <a href={shareLinks.whatsapp} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 px-2 py-2 rounded-md hover:bg-accent text-sm"><MessageSquare size={16} className="text-emerald-600" /> WhatsApp</a>
+                    <a href={shareLinks.facebook} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 px-2 py-2 rounded-md hover:bg-accent text-sm"><Facebook size={16} className="text-blue-600" /> Facebook</a>
+                    <a href={shareLinks.twitter} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 px-2 py-2 rounded-md hover:bg-accent text-sm"><Twitter size={16} /> X (Twitter)</a>
+                    <a href={shareLinks.email} className="flex items-center gap-2 px-2 py-2 rounded-md hover:bg-accent text-sm"><Mail size={16} /> Email</a>
+                    <button onClick={copyLink} className="w-full flex items-center gap-2 px-2 py-2 rounded-md hover:bg-accent text-sm text-left"><Link2 size={16} /> Copier le lien</button>
+                  </PopoverContent>
+                </Popover>
+                <button className="p-2 rounded-full bg-card/95 shadow" aria-label="Favori"><Heart size={16} /></button>
               </div>
             </div>
 
@@ -275,9 +318,21 @@ function BookDetailPage() {
 
               <div className="mt-4 pt-4 border-t flex items-center gap-4 text-xs text-muted-foreground">
                 <button onClick={() => setReportOpen(true)} className="flex items-center gap-1.5 hover:text-foreground"><Flag size={13} /> Signaler l'annonce</button>
-                <button className="flex items-center gap-1.5 hover:text-foreground"><Info size={13} /> Vos droits</button>
               </div>
               <ReportDialog bookId={bookId} open={reportOpen} onOpenChange={setReportOpen} />
+            </div>
+
+            {/* Vos droits */}
+            <div className="bg-card lg:rounded-xl border px-4 lg:px-6 py-5">
+              <h2 className="font-bold text-lg mb-3 flex items-center gap-2"><Info size={18} className="text-primary" /> Vos droits</h2>
+              <ul className="space-y-2.5 text-sm">
+                <li className="flex items-start gap-2.5"><Search size={16} className="text-primary mt-0.5 shrink-0" /><span>Droit d'<strong>inspecter le livre</strong> avant l'échange</span></li>
+                <li className="flex items-start gap-2.5"><MessageCircle size={16} className="text-primary mt-0.5 shrink-0" /><span>Droit de <strong>contacter le donneur</strong> pour toute question</span></li>
+                <li className="flex items-start gap-2.5"><X size={16} className="text-primary mt-0.5 shrink-0" /><span>Droit d'<strong>annuler une réservation</strong> à tout moment</span></li>
+                <li className="flex items-start gap-2.5"><Flag size={16} className="text-primary mt-0.5 shrink-0" /><span>Droit de <strong>signaler une annonce</strong> non conforme</span></li>
+                <li className="flex items-start gap-2.5"><Star size={16} className="text-primary mt-0.5 shrink-0" /><span>Droit de <strong>laisser un avis</strong> après l'échange</span></li>
+                <li className="flex items-start gap-2.5"><Lock size={16} className="text-primary mt-0.5 shrink-0" /><span><strong>Données personnelles protégées</strong> conformément au RGPD</span></li>
+              </ul>
             </div>
           </div>
 
@@ -316,7 +371,15 @@ function BookDetailPage() {
                   </div>
                 )}
                 {isOwner && (
-                  <p className="mt-4 text-xs text-center text-muted-foreground">Ceci est votre annonce</p>
+                  <div className="mt-4 space-y-2">
+                    <p className="text-xs text-center text-muted-foreground">Ceci est votre annonce</p>
+                    <Button asChild variant="outline" className="w-full h-10 rounded-full font-semibold">
+                      <Link to="/modifier/$id" params={{ id: bookId }}><Pencil size={16} className="mr-1.5" /> Modifier</Link>
+                    </Button>
+                    <Button onClick={() => setDeleteOpen(true)} variant="destructive" className="w-full h-10 rounded-full font-semibold">
+                      <Trash2 size={16} className="mr-1.5" /> Supprimer
+                    </Button>
+                  </div>
                 )}
               </div>
             </div>
@@ -333,6 +396,33 @@ function BookDetailPage() {
           </Button>
         </div>
       )}
+      {isOwner && (
+        <div className="lg:hidden fixed bottom-0 left-0 right-0 p-3 bg-card/95 backdrop-blur-xl border-t z-50 flex gap-2">
+          <Button asChild variant="outline" className="flex-1 h-11 rounded-full font-semibold">
+            <Link to="/modifier/$id" params={{ id: bookId }}><Pencil size={16} className="mr-1.5" /> Modifier</Link>
+          </Button>
+          <Button onClick={() => setDeleteOpen(true)} variant="destructive" className="flex-1 h-11 rounded-full font-semibold">
+            <Trash2 size={16} className="mr-1.5" /> Supprimer
+          </Button>
+        </div>
+      )}
+
+      <AlertDialog open={deleteOpen} onOpenChange={setDeleteOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Supprimer cette annonce ?</AlertDialogTitle>
+            <AlertDialogDescription>
+              Cette action est irréversible. L'annonce « {book.title} » sera définitivement supprimée.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel disabled={deleting}>Annuler</AlertDialogCancel>
+            <AlertDialogAction onClick={handleDelete} disabled={deleting} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">
+              {deleting ? "Suppression..." : "Supprimer"}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }
