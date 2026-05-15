@@ -1,7 +1,14 @@
 export const CATEGORIES = [
   "Tout",
-  "Études supérieures",
+  "Coran",
+  "Hadith",
+  "Fiqh",
+  "Aqida",
+  "Tafsir",
+  "Sira / Biographies",
+  "Langue Arabe",
   "Livres Enfants",
+  "Études supérieures",
   "Moutoun",
 ];
 
