@@ -23,6 +23,10 @@ type Prefs = {
   notify_sms: boolean;
   notify_push: boolean;
   phone_visible: boolean;
+  notify_reservations: boolean;
+  notify_messages: boolean;
+  notify_followers: boolean;
+  notify_admin: boolean;
 };
 
 function SettingsPage() {
