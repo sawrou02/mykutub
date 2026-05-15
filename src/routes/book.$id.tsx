@@ -214,8 +214,20 @@ function BookDetailPage() {
                 <span className="absolute bottom-3 left-3 bg-secondary text-secondary-foreground text-[11px] font-bold uppercase px-2.5 py-1 rounded">Don</span>
               )}
               <div className="absolute top-3 right-3 flex gap-2">
-                <button onClick={handleShare} className="p-2 rounded-full bg-card/95 shadow"><Share2 size={16} /></button>
-                <button className="p-2 rounded-full bg-card/95 shadow"><Heart size={16} /></button>
+                <Popover open={shareOpen} onOpenChange={setShareOpen}>
+                  <PopoverTrigger asChild>
+                    <button onClick={handleShare} className="p-2 rounded-full bg-card/95 shadow" aria-label="Partager"><Share2 size={16} /></button>
+                  </PopoverTrigger>
+                  <PopoverContent align="end" className="w-56 p-2">
+                    <p className="px-2 py-1.5 text-xs font-semibold text-muted-foreground">Partager via</p>
+                    <a href={shareLinks.whatsapp} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 px-2 py-2 rounded-md hover:bg-accent text-sm"><MessageSquare size={16} className="text-emerald-600" /> WhatsApp</a>
+                    <a href={shareLinks.facebook} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 px-2 py-2 rounded-md hover:bg-accent text-sm"><Facebook size={16} className="text-blue-600" /> Facebook</a>
+                    <a href={shareLinks.twitter} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 px-2 py-2 rounded-md hover:bg-accent text-sm"><Twitter size={16} /> X (Twitter)</a>
+                    <a href={shareLinks.email} className="flex items-center gap-2 px-2 py-2 rounded-md hover:bg-accent text-sm"><Mail size={16} /> Email</a>
+                    <button onClick={copyLink} className="w-full flex items-center gap-2 px-2 py-2 rounded-md hover:bg-accent text-sm text-left"><Link2 size={16} /> Copier le lien</button>
+                  </PopoverContent>
+                </Popover>
+                <button className="p-2 rounded-full bg-card/95 shadow" aria-label="Favori"><Heart size={16} /></button>
               </div>
             </div>
 
