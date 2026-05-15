@@ -153,6 +153,10 @@ function SettingsPage() {
               { key: "notify_email" as const, label: t("settings.notifEmail"), desc: t("settings.notifEmailDesc") },
               { key: "notify_sms" as const, label: t("settings.notifSms"), desc: t("settings.notifSmsDesc") },
               { key: "notify_push" as const, label: t("settings.notifPush"), desc: t("settings.notifPushDesc") },
+              { key: "notify_reservations" as const, label: "Emails réservations", desc: "Demandes, confirmations et annulations" },
+              { key: "notify_messages" as const, label: "Emails messages", desc: "Nouveau message (max 1 / 30 min)" },
+              { key: "notify_followers" as const, label: "Emails abonnés", desc: "Quand quelqu'un vous suit" },
+              { key: "notify_admin" as const, label: "Emails admin", desc: "Vérification, annonces officielles" },
             ].map(opt => (
               <div key={opt.key} className="flex items-center justify-between p-3 rounded-lg bg-muted/50">
                 <div>
