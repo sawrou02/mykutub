@@ -109,6 +109,7 @@ function RootComponent() {
           {!hideFooter && <SiteFooter />}
         </div>
         {!hideBottomNav && <BottomNav />}
+        <CharteGate />
         <Toaster />
       </I18nProvider>
     </AuthProvider>
