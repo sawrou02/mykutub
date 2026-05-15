@@ -133,7 +133,9 @@ export function ContactsSidebar({ activeChatId }: { activeChatId?: string }) {
       : current.filter((id) => id !== user.id);
     // optimistic
     setChats((prev) => prev.map((c) => (c.id === chat.id ? { ...c, [column]: next } : c)));
-    const { error } = await supabase.from("chats").update({ [column]: next }).eq("id", chat.id);
+    const payload: Record<string, string[]> = { [column]: next };
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const { error } = await supabase.from("chats").update(payload as any).eq("id", chat.id);
     if (error) {
       toast.error("Action impossible");
       setChats((prev) => prev.map((c) => (c.id === chat.id ? { ...c, [column]: current } : c)));
