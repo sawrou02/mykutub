@@ -85,6 +85,7 @@ function BookDetailPage() {
   const [creating, setCreating] = useState(false);
   const [rating, setRating] = useState<{ avg: number; count: number } | null>(null);
   const [sellerJoined, setSellerJoined] = useState<string | null>(null);
+  const [sellerVerified, setSellerVerified] = useState(false);
   const [reportOpen, setReportOpen] = useState(false);
   const [deleteOpen, setDeleteOpen] = useState(false);
   const [deleting, setDeleting] = useState(false);
