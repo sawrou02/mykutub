@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
-import { Settings, LogOut, Package, Heart, UserCircle, Trash2, Camera, Loader2, Mail, Phone, MapPin, Save, Pencil } from "lucide-react";
+import { Settings, LogOut, Package, Heart, UserCircle, Trash2, Camera, Loader2, Mail, Phone, MapPin, Save, Pencil, Users, UserMinus } from "lucide-react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { BookCard } from "@/components/BookCard";
 import { useAuth } from "@/hooks/useAuth";
