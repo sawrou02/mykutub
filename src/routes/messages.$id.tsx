@@ -22,6 +22,7 @@ import type { Chat, Message, Book } from "@/lib/mykutub";
 import { ContactsSidebar } from "@/components/ContactsSidebar";
 import { OnlineDot, OnlineStatusLabel } from "@/components/OnlineDot";
 import { cn } from "@/lib/utils";
+import { VerifiedBadge } from "@/components/VerifiedBadge";
 
 export const Route = createFileRoute("/messages/$id")({
   component: ChatDetailPage,
