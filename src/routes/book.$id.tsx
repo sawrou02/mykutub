@@ -298,7 +298,7 @@ function BookDetailPage() {
                   {initial}
                 </div>
                 <div className="flex-1 min-w-0">
-                  <p className="font-semibold text-base truncate">{book.seller_name}</p>
+                  <p className="font-semibold text-base truncate flex items-center gap-1.5">{book.seller_name}{sellerVerified && <VerifiedBadge size={14} />}</p>
                   <OnlineStatusLabel userId={book.seller_id} />
                   {rating ? (
                     <div className="flex items-center gap-1 text-xs mt-0.5">
