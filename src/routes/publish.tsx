@@ -14,6 +14,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 import { CATEGORIES, CONDITIONS, ALL_CITIES, LANGUAGES } from "@/lib/mykutub";
+import { checkForbidden } from "@/lib/moderation";
 
 const LANG_OPTIONS = Array.from(new Set([...LANGUAGES, "Autre"]));
 
@@ -117,6 +118,10 @@ function PublishPage() {
   const [city, setCity] = useState("");
   const [language, setLanguage] = useState("");
   const [price, setPrice] = useState("");
+  const [checkIslamic, setCheckIslamic] = useState(false);
+  const [checkPrice, setCheckPrice] = useState(false);
+  const [checkPhoto, setCheckPhoto] = useState(false);
+  const checklistOk = checkIslamic && checkPrice && checkPhoto;
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -140,6 +145,15 @@ function PublishPage() {
     }
     if (!imageFile) {
       toast.error(t("publish.addPhotoFirst"));
+      return;
+    }
+    if (!checklistOk) {
+      toast.error("Veuillez cocher les 3 cases de la checklist de validation");
+      return;
+    }
+    const forbidden = checkForbidden(title, description);
+    if (forbidden) {
+      toast.error(`Annonce bloquée : contenu non conforme ("${forbidden}")`);
       return;
     }
     setLoading(true);
