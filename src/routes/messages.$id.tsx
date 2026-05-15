@@ -10,7 +10,7 @@ import {
   DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { toast } from "sonner";
-import type { Chat, Message, Book, Review } from "@/lib/mykutub";
+import type { Chat, Message, Book } from "@/lib/mykutub";
 import { ContactsSidebar } from "@/components/ContactsSidebar";
 import { OnlineDot, OnlineStatusLabel } from "@/components/OnlineDot";
 import { cn } from "@/lib/utils";
