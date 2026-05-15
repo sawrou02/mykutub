@@ -30,6 +30,8 @@ function SignupPage() {
   const [loading, setLoading] = useState(false);
   const [sentTo, setSentTo] = useState<string | null>(null);
   const [errors, setErrors] = useState<Record<string, string>>({});
+  const [charteAccepted, setCharteAccepted] = useState(false);
+  const [charteOpen, setCharteOpen] = useState(false);
 
   const handleSignup = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
