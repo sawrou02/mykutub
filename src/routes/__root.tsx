@@ -7,6 +7,7 @@ import { SiteFooter } from "@/components/SiteFooter";
 import { Toaster } from "@/components/ui/sonner";
 import { I18nProvider } from "@/components/I18nProvider";
 import { usePresence } from "@/hooks/usePresence";
+import { CharteGate } from "@/components/CharteGate";
 import "@/lib/i18n";
 
 function NotFoundComponent() {
