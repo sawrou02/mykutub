@@ -2,13 +2,14 @@ import { createFileRoute, useNavigate, Link } from "@tanstack/react-router";
 import { useEffect, useMemo, useRef, useState } from "react";
 import {
   ChevronLeft, Send, MoreVertical, User, Flag, Trash2, BookOpen, User as UserIcon,
-  Check, CheckCheck, Smile, Plus, Star, X, Info,
+  Check, CheckCheck, Smile, Plus, Star, X, Info, Trash, UserMinus,
 } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
 import {
   DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { toast } from "sonner";
 import type { Chat, Message, Book } from "@/lib/mykutub";
 import { ContactsSidebar } from "@/components/ContactsSidebar";
@@ -61,9 +62,11 @@ function ChatDetailPage() {
   const [otherTyping, setOtherTyping] = useState(false);
   const [showBookInfo, setShowBookInfo] = useState(false);
   const [uploading, setUploading] = useState(false);
+  const [actionMsg, setActionMsg] = useState<Message | null>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const lastTypingSent = useRef(0);
+  const longPressTimer = useRef<number | null>(null);
 
   useEffect(() => {
     supabase.from("chats").select("*").eq("id", chatId).single()
@@ -190,10 +193,52 @@ function ChatDetailPage() {
     navigate({ to: "/messages" });
   };
 
+  const deleteForEveryone = async (m: Message) => {
+    if (!user || m.sender_id !== user.id) return;
+    const ageMs = Date.now() - new Date(m.created_at).getTime();
+    if (ageMs > 24 * 60 * 60 * 1000) {
+      toast.error("Trop tard : la suppression pour tous n'est possible que dans les 24h.");
+      return;
+    }
+    const { error } = await supabase.from("messages").update({
+      deleted_for_everyone: true,
+      deleted_at: new Date().toISOString(),
+      deleted_by: user.id,
+      text: "",
+    }).eq("id", m.id);
+    if (error) toast.error("Échec de la suppression");
+    else setActionMsg(null);
+  };
+
+  const deleteForMe = async (m: Message) => {
+    if (!user) return;
+    const next = Array.from(new Set([...(m.hidden_for ?? []), user.id]));
+    const { error } = await supabase.from("messages").update({ hidden_for: next }).eq("id", m.id);
+    if (error) toast.error("Échec");
+    else {
+      setMessages((prev) => prev.map((x) => x.id === m.id ? { ...x, hidden_for: next } : x));
+      setActionMsg(null);
+    }
+  };
+
+  const startLongPress = (m: Message) => {
+    if (m.sender_id !== user?.id || m.deleted_for_everyone) return;
+    if (longPressTimer.current) window.clearTimeout(longPressTimer.current);
+    longPressTimer.current = window.setTimeout(() => setActionMsg(m), 500);
+  };
+  const cancelLongPress = () => {
+    if (longPressTimer.current) { window.clearTimeout(longPressTimer.current); longPressTimer.current = null; }
+  };
+
+  const visibleMessages = useMemo(
+    () => messages.filter((m) => !(m.hidden_for ?? []).includes(user?.id ?? "")),
+    [messages, user?.id],
+  );
+
   const grouped = useMemo(() => {
     const out: Array<{ type: "date"; label: string; key: string } | { type: "msg"; msg: Message }> = [];
     let lastDay = "";
-    for (const m of messages) {
+    for (const m of visibleMessages) {
       const d = new Date(m.created_at);
       const key = d.toDateString();
       if (key !== lastDay) {
@@ -203,7 +248,7 @@ function ChatDetailPage() {
       out.push({ type: "msg", msg: m });
     }
     return out;
-  }, [messages]);
+  }, [visibleMessages]);
 
   if (!chat) {
     return (
@@ -374,8 +419,9 @@ function ChatDetailPage() {
             );
           }
           const m = item.msg;
-          const isSystem = m.text.startsWith(SYSTEM_PREFIX);
-          const isImage = m.text.startsWith(IMAGE_PREFIX);
+          const isDeleted = !!m.deleted_for_everyone;
+          const isSystem = !isDeleted && m.text.startsWith(SYSTEM_PREFIX);
+          const isImage = !isDeleted && m.text.startsWith(IMAGE_PREFIX);
           const mine = m.sender_id === user?.id;
           const time = new Date(m.created_at).toLocaleTimeString("fr-FR", { hour: "2-digit", minute: "2-digit" });
 
@@ -390,16 +436,37 @@ function ChatDetailPage() {
           }
 
           return (
-            <div key={m.id} className={cn("flex animate-in fade-in slide-in-from-bottom-1 duration-200", mine ? "justify-end" : "justify-start")}>
+            <div key={m.id} className={cn("flex group animate-in fade-in slide-in-from-bottom-1 duration-200", mine ? "justify-end" : "justify-start")}>
               <div
+                onContextMenu={(e) => {
+                  if (mine && !isDeleted) { e.preventDefault(); setActionMsg(m); }
+                }}
+                onTouchStart={() => !isDeleted && startLongPress(m)}
+                onTouchEnd={cancelLongPress}
+                onTouchMove={cancelLongPress}
+                onTouchCancel={cancelLongPress}
                 className={cn(
-                  "max-w-[78%] md:max-w-[65%] rounded-lg text-sm shadow-sm overflow-hidden",
+                  "relative max-w-[78%] md:max-w-[65%] rounded-lg text-sm shadow-sm overflow-hidden select-none",
                   isImage ? "p-1" : "px-3 py-1.5",
-                  mine ? "rounded-tr-sm text-white" : "rounded-tl-sm bg-white text-foreground",
+                  isDeleted
+                    ? "bg-muted text-muted-foreground italic"
+                    : mine ? "rounded-tr-sm text-white" : "rounded-tl-sm bg-white text-foreground",
                 )}
-                style={mine ? { background: "#008069" } : undefined}
+                style={!isDeleted && mine ? { background: "#008069" } : undefined}
               >
-                {isImage ? (
+                {mine && !isDeleted && (
+                  <button
+                    type="button"
+                    onClick={() => setActionMsg(m)}
+                    className="absolute top-0.5 right-0.5 opacity-0 group-hover:opacity-100 transition-opacity p-0.5 rounded-full hover:bg-black/10"
+                    aria-label="Options du message"
+                  >
+                    <MoreVertical size={14} className="text-white/90" />
+                  </button>
+                )}
+                {isDeleted ? (
+                  <p className="whitespace-pre-wrap break-words leading-snug">🚫 Ce message a été supprimé</p>
+                ) : isImage ? (
                   <a href={m.text.slice(IMAGE_PREFIX.length)} target="_blank" rel="noreferrer" className="block">
                     <img
                       src={m.text.slice(IMAGE_PREFIX.length)}
@@ -410,9 +477,9 @@ function ChatDetailPage() {
                 ) : (
                   <p className="whitespace-pre-wrap break-words leading-snug">{m.text}</p>
                 )}
-                <div className={cn("flex items-center gap-1 mt-0.5 px-1 justify-end", mine ? "text-white/80" : "text-muted-foreground")}>
+                <div className={cn("flex items-center gap-1 mt-0.5 px-1 justify-end", isDeleted ? "text-muted-foreground" : mine ? "text-white/80" : "text-muted-foreground")}>
                   <span className="text-[10px]">{time}</span>
-                  {mine && (
+                  {mine && !isDeleted && (
                     m.read_at
                       ? <CheckCheck size={14} className="text-sky-200" />
                       : <Check size={14} />
@@ -512,6 +579,39 @@ function ChatDetailPage() {
           </div>
         </div>
       )}
+
+      <Dialog open={!!actionMsg} onOpenChange={(o) => !o && setActionMsg(null)}>
+        <DialogContent className="sm:max-w-sm rounded-2xl">
+          <DialogHeader>
+            <DialogTitle>Supprimer le message ?</DialogTitle>
+            <DialogDescription>
+              Choisis comment supprimer ce message.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="flex flex-col gap-2 mt-2">
+            {actionMsg && (Date.now() - new Date(actionMsg.created_at).getTime()) < 24 * 60 * 60 * 1000 && (
+              <button
+                onClick={() => actionMsg && deleteForEveryone(actionMsg)}
+                className="flex items-center gap-3 w-full px-4 py-3 rounded-full bg-primary text-primary-foreground font-semibold text-sm hover:bg-primary/90 transition-colors"
+              >
+                <Trash size={18} /> Supprimer pour tout le monde
+              </button>
+            )}
+            <button
+              onClick={() => actionMsg && deleteForMe(actionMsg)}
+              className="flex items-center gap-3 w-full px-4 py-3 rounded-full bg-primary/10 text-primary font-semibold text-sm hover:bg-primary/20 transition-colors"
+            >
+              <UserMinus size={18} /> Supprimer pour moi
+            </button>
+            <button
+              onClick={() => setActionMsg(null)}
+              className="flex items-center gap-3 w-full px-4 py-3 rounded-full bg-muted text-foreground font-semibold text-sm hover:bg-muted/80 transition-colors justify-center"
+            >
+              Annuler
+            </button>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

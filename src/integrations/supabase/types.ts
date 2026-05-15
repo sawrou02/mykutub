@@ -203,6 +203,10 @@ export type Database = {
         Row: {
           chat_id: string
           created_at: string
+          deleted_at: string | null
+          deleted_by: string | null
+          deleted_for_everyone: boolean
+          hidden_for: string[]
           id: string
           read_at: string | null
           sender_id: string
@@ -212,6 +216,10 @@ export type Database = {
         Insert: {
           chat_id: string
           created_at?: string
+          deleted_at?: string | null
+          deleted_by?: string | null
+          deleted_for_everyone?: boolean
+          hidden_for?: string[]
           id?: string
           read_at?: string | null
           sender_id: string
@@ -221,6 +229,10 @@ export type Database = {
         Update: {
           chat_id?: string
           created_at?: string
+          deleted_at?: string | null
+          deleted_by?: string | null
+          deleted_for_everyone?: boolean
+          hidden_for?: string[]
           id?: string
           read_at?: string | null
           sender_id?: string
