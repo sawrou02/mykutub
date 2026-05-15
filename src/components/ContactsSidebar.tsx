@@ -114,13 +114,12 @@ export function ContactsSidebar({ activeChatId }: { activeChatId?: string }) {
         if (filter === "unread" && !c.unread_by?.includes(user.id)) return false;
       }
       if (!q) return true;
-      const otherId = c.participants.find((p) => p !== user.id);
       const name = (otherId && profiles[otherId]?.display_name) || "";
       return name.toLowerCase().includes(q)
         || (c.book_title ?? "").toLowerCase().includes(q)
         || (c.last_message ?? "").toLowerCase().includes(q);
     });
-  }, [chats, profiles, search, user, filter]);
+  }, [chats, profiles, search, user, filter, blockedIds]);
 
   const counts = useMemo(() => {
     if (!user) return { all: 0, unread: 0, archived: 0 };
