@@ -6,9 +6,10 @@ import { useIsAdmin } from "@/hooks/useIsAdmin";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Trash2, Users, BookOpen, MessageSquare, Star, ShieldCheck, Loader2, Mail, Inbox, Flag, Check } from "lucide-react";
+import { Trash2, Users, BookOpen, MessageSquare, Star, ShieldCheck, Loader2, Mail, Inbox, Flag, Check, AlertTriangle, ImageOff, Image as ImageIcon } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
+import { DEFAULT_BOOK_IMAGE } from "@/lib/moderation";
 
 export const Route = createFileRoute("/admin")({ component: AdminPage });
 
@@ -42,7 +43,7 @@ function AdminPage() {
       setReports(rep.data ?? []);
       const ids = Array.from(new Set((rep.data ?? []).map((x: any) => x.book_id)));
       if (ids.length) {
-        const { data: bs } = await supabase.from("books").select("id, title, image_url").in("id", ids);
+        const { data: bs } = await supabase.from("books").select("id, title, image_url, seller_id").in("id", ids);
         const map: Record<string, any> = {};
         (bs ?? []).forEach((bk: any) => { map[bk.id] = bk; });
         setReportBooks(map);
@@ -117,6 +118,34 @@ function AdminPage() {
     if (error) return toast.error(error.message);
     setReports(prev => prev.filter(r => r.id !== id));
   };
+
+  const warnSeller = async (sellerId: string, bookTitle: string) => {
+    const { error } = await supabase.from("notifications").insert({
+      user_id: sellerId,
+      type: "warning",
+      message: `Avertissement de la modération concernant votre annonce "${bookTitle}". Merci de vérifier qu'elle respecte nos règles.`,
+      link: "/profile",
+    });
+    if (error) return toast.error(error.message);
+    toast.success("Vendeur averti");
+  };
+
+  const removeBookPhoto = async (bookId: string) => {
+    if (!confirm("Remplacer la photo par l'image par défaut ?")) return;
+    const { error } = await supabase.from("books").update({ image_url: DEFAULT_BOOK_IMAGE }).eq("id", bookId);
+    if (error) return toast.error(error.message);
+    setBooks(prev => prev.map(b => b.id === bookId ? { ...b, image_url: DEFAULT_BOOK_IMAGE } : b));
+    toast.success("Photo remplacée");
+  };
+
+  // Group reports by book_id
+  const reportsByBook = reports.reduce<Record<string, any[]>>((acc, r) => {
+    (acc[r.book_id] ||= []).push(r);
+    return acc;
+  }, {});
+  const groupedReports = Object.entries(reportsByBook)
+    .map(([bookId, items]) => ({ bookId, items, count: items.length, latest: items[0] }))
+    .sort((a, b) => b.count - a.count);
 
   return (
     <div className="max-w-7xl mx-auto p-4 md:p-8 pb-24 space-y-6">
