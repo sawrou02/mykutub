@@ -100,6 +100,10 @@ function UserProfilePage() {
         setIsFollowing(true);
         setFollowersCount(c => c + 1);
         toast.success(`Vous suivez ${displayName}`);
+        const followerName = user.user_metadata?.display_name || user.email?.split("@")[0] || "Quelqu'un";
+        sendEmail("send-admin-email", {
+          userId, kind: "follower", followerName, followerId: user.id,
+        });
       }
     }
     setFollowBusy(false);
