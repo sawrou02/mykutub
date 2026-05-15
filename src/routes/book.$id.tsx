@@ -146,8 +146,31 @@ function BookDetailPage() {
     if (navigator.share) {
       try { await navigator.share({ title, url }); return; } catch { /* cancelled */ }
     }
-    try { await navigator.clipboard.writeText(url); toast.success("Lien copié !"); }
+    setShareOpen(true);
+  };
+
+  const copyLink = async () => {
+    try { await navigator.clipboard.writeText(window.location.href); toast.success("Lien copié !"); setShareOpen(false); }
     catch { toast.error("Impossible de copier le lien."); }
+  };
+
+  const handleDelete = async () => {
+    if (!book) return;
+    setDeleting(true);
+    const { error } = await supabase.from("books").delete().eq("id", book.id);
+    setDeleting(false);
+    if (error) { toast.error("Suppression impossible."); return; }
+    toast.success("Annonce supprimée.");
+    navigate({ to: "/profile" });
+  };
+
+  const shareUrl = typeof window !== "undefined" ? window.location.href : "";
+  const shareTitle = book?.title ?? "MYKUTUB";
+  const shareLinks = {
+    whatsapp: `https://wa.me/?text=${encodeURIComponent(`${shareTitle} - ${shareUrl}`)}`,
+    facebook: `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(shareUrl)}`,
+    twitter: `https://twitter.com/intent/tweet?text=${encodeURIComponent(shareTitle)}&url=${encodeURIComponent(shareUrl)}`,
+    email: `mailto:?subject=${encodeURIComponent(shareTitle)}&body=${encodeURIComponent(`${shareTitle}\n${shareUrl}`)}`,
   };
 
   const initial = useMemo(() => (book?.seller_name?.[0] ?? "?").toUpperCase(), [book?.seller_name]);
