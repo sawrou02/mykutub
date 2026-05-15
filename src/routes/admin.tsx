@@ -441,6 +441,10 @@ function AdminPage() {
             );
           })}
         </TabsContent>
+
+        <TabsContent value="charte">
+          <AdminCharteTab />
+        </TabsContent>
       </Tabs>
     </div>
   );
