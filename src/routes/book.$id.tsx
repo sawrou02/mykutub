@@ -422,13 +422,37 @@ function BookDetailPage() {
 
       {/* Sticky bottom contact (mobile) */}
       {!isOwner && (
-        <div className="lg:hidden fixed bottom-0 left-0 right-0 p-3 bg-card/95 backdrop-blur-xl border-t z-50">
-          <Button disabled={creating} onClick={handleContactSeller}
-            className="w-full h-11 rounded-full text-sm font-semibold flex items-center justify-center gap-1.5">
-            {creating ? "Ouverture..." : <><MessageCircle size={16} /> Contacter le vendeur</>}
-          </Button>
+        <div className="lg:hidden fixed bottom-0 left-0 right-0 p-3 bg-card/95 backdrop-blur-xl border-t z-50 flex gap-2">
+          {book.is_donation ? (
+            <Button
+              disabled={creating}
+              onClick={() => startChatWithDraft(requestDonationDraft)}
+              className="w-full h-11 rounded-full text-sm font-semibold flex items-center justify-center gap-1.5 bg-secondary text-secondary-foreground hover:bg-secondary/90"
+            >
+              <Heart size={16} /> {creating ? "Ouverture..." : "Demander ce don"}
+            </Button>
+          ) : (
+            <>
+              <Button
+                disabled={creating}
+                onClick={() => startChatWithDraft(makeOfferDraft)}
+                className="flex-1 h-11 rounded-full text-sm font-semibold flex items-center justify-center gap-1.5"
+              >
+                <Star size={16} /> Faire une offre
+              </Button>
+              <Button
+                disabled={creating}
+                onClick={() => startChatWithDraft(contactSellerDraft)}
+                variant="outline"
+                className="flex-1 h-11 rounded-full text-sm font-semibold flex items-center justify-center gap-1.5"
+              >
+                <MessageCircle size={16} /> Contacter
+              </Button>
+            </>
+          )}
         </div>
       )}
+
       {isOwner && (
         <div className="lg:hidden fixed bottom-0 left-0 right-0 p-3 bg-card/95 backdrop-blur-xl border-t z-50 flex gap-2">
           <Button asChild variant="outline" className="flex-1 h-11 rounded-full font-semibold">
