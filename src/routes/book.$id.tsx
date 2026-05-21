@@ -113,7 +113,7 @@ function BookDetailPage() {
       });
   }, [book?.seller_id]);
 
-  const handleContactSeller = async () => {
+  const startChatWithDraft = async (draft: string) => {
     if (!user) { toast.error("Connexion requise."); navigate({ to: "/login" }); return; }
     if (!book) return;
     if (user.id === book.seller_id) { toast.error("Vous ne pouvez pas vous contacter vous-même."); return; }
@@ -137,13 +137,18 @@ function BookDetailPage() {
         if (error) throw error;
         chatId = created!.id;
       }
-      navigate({ to: "/messages/$id", params: { id: chatId } });
+      navigate({ to: "/messages/$id", params: { id: chatId }, search: { draft } });
     } catch {
       toast.error("Impossible de démarrer la conversation.");
     } finally {
       setCreating(false);
     }
   };
+
+  const makeOfferDraft = `Bonjour, je suis intéressé(e) par votre livre « ${book?.title ?? ""} ». Je souhaiterais vous faire une offre. Êtes-vous disponible pour en discuter ?`;
+  const contactSellerDraft = `Bonjour, j'ai vu votre annonce pour « ${book?.title ?? ""} » et je souhaiterais obtenir plus d'informations. Merci.`;
+  const requestDonationDraft = `Bonjour, je suis très intéressé(e) par votre livre offert « ${book?.title ?? ""} ». J'en prendrai grand soin. Merci pour votre générosité.`;
+
 
   const handleShare = async () => {
     const url = window.location.href;
