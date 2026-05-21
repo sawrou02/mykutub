@@ -97,6 +97,15 @@ function ChatDetailPage() {
       .then(({ data }) => setMessages((data as Message[]) ?? []));
   }, [chatId]);
 
+  // Seed input with prefilled draft (only once per navigation)
+  useEffect(() => {
+    if (draft && !draftAppliedRef.current) {
+      setInput(draft);
+      draftAppliedRef.current = true;
+    }
+  }, [draft]);
+
+
   useEffect(() => {
     if (!chat || !user) return;
     const otherId = chat.participants.find((p) => p !== user.id);
