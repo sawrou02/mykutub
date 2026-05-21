@@ -444,6 +444,36 @@ export type Database = {
         }
         Relationships: []
       }
+      phone_verifications: {
+        Row: {
+          attempts: number
+          code: string
+          created_at: string
+          expires_at: string
+          last_sent_at: string
+          phone: string
+          user_id: string
+        }
+        Insert: {
+          attempts?: number
+          code: string
+          created_at?: string
+          expires_at: string
+          last_sent_at?: string
+          phone: string
+          user_id: string
+        }
+        Update: {
+          attempts?: number
+          code?: string
+          created_at?: string
+          expires_at?: string
+          last_sent_at?: string
+          phone?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           avatar_url: string | null
@@ -472,6 +502,7 @@ export type Database = {
           notify_reservations: boolean
           notify_sms: boolean
           phone: string | null
+          phone_verified: boolean
           phone_visible: boolean
           suspended_until: string | null
           suspension_reason: string | null
@@ -508,6 +539,7 @@ export type Database = {
           notify_reservations?: boolean
           notify_sms?: boolean
           phone?: string | null
+          phone_verified?: boolean
           phone_visible?: boolean
           suspended_until?: string | null
           suspension_reason?: string | null
@@ -544,6 +576,7 @@ export type Database = {
           notify_reservations?: boolean
           notify_sms?: boolean
           phone?: string | null
+          phone_verified?: boolean
           phone_visible?: boolean
           suspended_until?: string | null
           suspension_reason?: string | null
@@ -731,6 +764,7 @@ export type Database = {
         Args: { _link?: string; _message: string }
         Returns: number
       }
+      verify_phone_code: { Args: { _code: string }; Returns: boolean }
     }
     Enums: {
       app_role: "admin" | "user"
