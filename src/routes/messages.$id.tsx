@@ -26,8 +26,12 @@ import { cn } from "@/lib/utils";
 import { VerifiedBadge } from "@/components/VerifiedBadge";
 
 export const Route = createFileRoute("/messages/$id")({
+  validateSearch: (search: Record<string, unknown>) => ({
+    draft: typeof search.draft === "string" ? search.draft : undefined,
+  }),
   component: ChatDetailPage,
 });
+
 
 type ProfileLite = { id: string; display_name: string | null; avatar_url: string | null; verified?: boolean | null };
 
