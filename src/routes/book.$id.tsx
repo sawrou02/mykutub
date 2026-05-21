@@ -113,7 +113,7 @@ function BookDetailPage() {
       });
   }, [book?.seller_id]);
 
-  const handleContactSeller = async () => {
+  const startChatWithDraft = async (draft: string) => {
     if (!user) { toast.error("Connexion requise."); navigate({ to: "/login" }); return; }
     if (!book) return;
     if (user.id === book.seller_id) { toast.error("Vous ne pouvez pas vous contacter vous-même."); return; }
@@ -137,13 +137,18 @@ function BookDetailPage() {
         if (error) throw error;
         chatId = created!.id;
       }
-      navigate({ to: "/messages/$id", params: { id: chatId } });
+      navigate({ to: "/messages/$id", params: { id: chatId }, search: { draft } });
     } catch {
       toast.error("Impossible de démarrer la conversation.");
     } finally {
       setCreating(false);
     }
   };
+
+  const makeOfferDraft = `Bonjour, je suis intéressé(e) par votre livre « ${book?.title ?? ""} ». Je souhaiterais vous faire une offre. Êtes-vous disponible pour en discuter ?`;
+  const contactSellerDraft = `Bonjour, j'ai vu votre annonce pour « ${book?.title ?? ""} » et je souhaiterais obtenir plus d'informations. Merci.`;
+  const requestDonationDraft = `Bonjour, je suis très intéressé(e) par votre livre offert « ${book?.title ?? ""} ». J'en prendrai grand soin. Merci pour votre générosité.`;
+
 
   const handleShare = async () => {
     const url = window.location.href;
@@ -365,16 +370,39 @@ function BookDetailPage() {
 
                 {!isOwner && (
                   <div className="mt-4 space-y-2">
-                    <Button
-                      onClick={handleContactSeller}
-                      disabled={creating}
-                      className="w-full h-11 rounded-full font-semibold bg-primary"
-                    >
-                      <MessageCircle size={16} className="mr-1.5" />
-                      {creating ? "Ouverture..." : "Contacter"}
-                    </Button>
+                    {book.is_donation ? (
+                      <Button
+                        onClick={() => startChatWithDraft(requestDonationDraft)}
+                        disabled={creating}
+                        className="w-full h-11 rounded-full font-semibold bg-secondary text-secondary-foreground hover:bg-secondary/90"
+                      >
+                        <Heart size={16} className="mr-1.5" />
+                        {creating ? "Ouverture..." : "Demander ce don"}
+                      </Button>
+                    ) : (
+                      <>
+                        <Button
+                          onClick={() => startChatWithDraft(makeOfferDraft)}
+                          disabled={creating}
+                          className="w-full h-11 rounded-full font-semibold bg-primary"
+                        >
+                          <Star size={16} className="mr-1.5" />
+                          {creating ? "Ouverture..." : "Faire une offre"}
+                        </Button>
+                        <Button
+                          onClick={() => startChatWithDraft(contactSellerDraft)}
+                          disabled={creating}
+                          variant="outline"
+                          className="w-full h-11 rounded-full font-semibold"
+                        >
+                          <MessageCircle size={16} className="mr-1.5" />
+                          Contacter le vendeur
+                        </Button>
+                      </>
+                    )}
                   </div>
                 )}
+
                 {isOwner && (
                   <div className="mt-4 space-y-2">
                     <p className="text-xs text-center text-muted-foreground">Ceci est votre annonce</p>
@@ -394,13 +422,37 @@ function BookDetailPage() {
 
       {/* Sticky bottom contact (mobile) */}
       {!isOwner && (
-        <div className="lg:hidden fixed bottom-0 left-0 right-0 p-3 bg-card/95 backdrop-blur-xl border-t z-50">
-          <Button disabled={creating} onClick={handleContactSeller}
-            className="w-full h-11 rounded-full text-sm font-semibold flex items-center justify-center gap-1.5">
-            {creating ? "Ouverture..." : <><MessageCircle size={16} /> Contacter le vendeur</>}
-          </Button>
+        <div className="lg:hidden fixed bottom-0 left-0 right-0 p-3 bg-card/95 backdrop-blur-xl border-t z-50 flex gap-2">
+          {book.is_donation ? (
+            <Button
+              disabled={creating}
+              onClick={() => startChatWithDraft(requestDonationDraft)}
+              className="w-full h-11 rounded-full text-sm font-semibold flex items-center justify-center gap-1.5 bg-secondary text-secondary-foreground hover:bg-secondary/90"
+            >
+              <Heart size={16} /> {creating ? "Ouverture..." : "Demander ce don"}
+            </Button>
+          ) : (
+            <>
+              <Button
+                disabled={creating}
+                onClick={() => startChatWithDraft(makeOfferDraft)}
+                className="flex-1 h-11 rounded-full text-sm font-semibold flex items-center justify-center gap-1.5"
+              >
+                <Star size={16} /> Faire une offre
+              </Button>
+              <Button
+                disabled={creating}
+                onClick={() => startChatWithDraft(contactSellerDraft)}
+                variant="outline"
+                className="flex-1 h-11 rounded-full text-sm font-semibold flex items-center justify-center gap-1.5"
+              >
+                <MessageCircle size={16} /> Contacter
+              </Button>
+            </>
+          )}
         </div>
       )}
+
       {isOwner && (
         <div className="lg:hidden fixed bottom-0 left-0 right-0 p-3 bg-card/95 backdrop-blur-xl border-t z-50 flex gap-2">
           <Button asChild variant="outline" className="flex-1 h-11 rounded-full font-semibold">

@@ -26,8 +26,12 @@ import { cn } from "@/lib/utils";
 import { VerifiedBadge } from "@/components/VerifiedBadge";
 
 export const Route = createFileRoute("/messages/$id")({
+  validateSearch: (search: Record<string, unknown>) => ({
+    draft: typeof search.draft === "string" ? search.draft : undefined,
+  }),
   component: ChatDetailPage,
 });
+
 
 type ProfileLite = { id: string; display_name: string | null; avatar_url: string | null; verified?: boolean | null };
 
@@ -60,6 +64,7 @@ function relativeTime(iso: string | null | undefined) {
 
 function ChatDetailPage() {
   const { id: chatId } = Route.useParams();
+  const { draft } = Route.useSearch();
   const navigate = useNavigate();
   const { user } = useAuth();
   const [chat, setChat] = useState<Chat | null>(null);
@@ -67,7 +72,9 @@ function ChatDetailPage() {
   const [otherProfile, setOtherProfile] = useState<ProfileLite | null>(null);
   const [book, setBook] = useState<Book | null>(null);
   const [reviewStats, setReviewStats] = useState<{ avg: number; count: number }>({ avg: 0, count: 0 });
-  const [input, setInput] = useState("");
+  const [input, setInput] = useState(draft ?? "");
+  const draftAppliedRef = useRef(false);
+
   const [otherTyping, setOtherTyping] = useState(false);
   const [showBookInfo, setShowBookInfo] = useState(false);
   const [uploading, setUploading] = useState(false);
@@ -89,6 +96,15 @@ function ChatDetailPage() {
     supabase.from("messages").select("*").eq("chat_id", chatId).order("created_at", { ascending: true })
       .then(({ data }) => setMessages((data as Message[]) ?? []));
   }, [chatId]);
+
+  // Seed input with prefilled draft (only once per navigation)
+  useEffect(() => {
+    if (draft && !draftAppliedRef.current) {
+      setInput(draft);
+      draftAppliedRef.current = true;
+    }
+  }, [draft]);
+
 
   useEffect(() => {
     if (!chat || !user) return;
