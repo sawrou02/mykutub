@@ -194,38 +194,15 @@ export function BookReservation({ book, onBookChange }: Props) {
         <StatusBadge status={status} />
       </div>
 
-      {/* Non-owner viewer */}
-      {!isOwner && (
-        <div className="space-y-2">
-          {status === "available" ? (
-            myRequest ? (
-              <div className="space-y-2">
-                <p className="text-sm text-muted-foreground">
-                  ✓ Votre demande a été envoyée. Le donneur vous répondra bientôt.
-                </p>
-                <Button variant="outline" size="sm" onClick={cancelMyRequest} disabled={busy}>
-                  Annuler ma demande
-                </Button>
-              </div>
-            ) : (
-              <Button onClick={askForBook} disabled={busy || !user} className="w-full h-11 rounded-full font-semibold">
-                {busy ? <Loader2 size={16} className="animate-spin" /> : "Demander ce livre"}
-              </Button>
-            )
-          ) : (
-            <>
-              <Button disabled className="w-full h-11 rounded-full font-semibold">
-                {status === "reserved" ? "Déjà réservé" : "Déjà donné"}
-              </Button>
-              <p className="text-xs text-muted-foreground text-center">
-                {status === "reserved"
-                  ? "Ce livre est déjà réservé par un autre utilisateur."
-                  : "Ce livre a déjà été remis à son nouveau propriétaire."}
-              </p>
-            </>
-          )}
-        </div>
+      {/* Non-owner viewer — request action moved to detail page CTAs */}
+      {!isOwner && status !== "available" && (
+        <p className="text-xs text-muted-foreground text-center">
+          {status === "reserved"
+            ? "Ce livre est déjà réservé par un autre utilisateur."
+            : "Ce livre a déjà été remis à son nouveau propriétaire."}
+        </p>
       )}
+
 
       {/* Owner controls */}
       {isOwner && (
