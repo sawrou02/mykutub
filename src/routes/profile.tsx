@@ -24,6 +24,7 @@ type Profile = {
   phone: string | null;
   phone_visible: boolean;
   city: string | null;
+  phone_verified?: boolean | null;
 };
 
 function ProfilePage() {
@@ -154,7 +155,10 @@ function ProfilePage() {
               <input ref={fileRef} type="file" accept="image/*" className="hidden" onChange={handleAvatarUpload} />
             </div>
             <div>
-              <h1 className="font-headline font-bold text-2xl tracking-tight">{displayName}</h1>
+              <div className="flex items-center gap-2 flex-wrap">
+                <h1 className="font-headline font-bold text-2xl tracking-tight">{displayName}</h1>
+                {profile?.phone_verified && <VerifiedPhoneBadge />}
+              </div>
               <p className="text-sm text-muted-foreground">{user.email}</p>
             </div>
           </div>
