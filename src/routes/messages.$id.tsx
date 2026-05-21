@@ -64,6 +64,7 @@ function relativeTime(iso: string | null | undefined) {
 
 function ChatDetailPage() {
   const { id: chatId } = Route.useParams();
+  const { draft } = Route.useSearch();
   const navigate = useNavigate();
   const { user } = useAuth();
   const [chat, setChat] = useState<Chat | null>(null);
@@ -71,7 +72,9 @@ function ChatDetailPage() {
   const [otherProfile, setOtherProfile] = useState<ProfileLite | null>(null);
   const [book, setBook] = useState<Book | null>(null);
   const [reviewStats, setReviewStats] = useState<{ avg: number; count: number }>({ avg: 0, count: 0 });
-  const [input, setInput] = useState("");
+  const [input, setInput] = useState(draft ?? "");
+  const draftAppliedRef = useRef(false);
+
   const [otherTyping, setOtherTyping] = useState(false);
   const [showBookInfo, setShowBookInfo] = useState(false);
   const [uploading, setUploading] = useState(false);
