@@ -110,6 +110,7 @@ function RootComponent() {
         </div>
         {!hideBottomNav && <BottomNav />}
         <CharteGate />
+        <PhoneVerifyGate />
         <Toaster />
       </I18nProvider>
     </AuthProvider>
