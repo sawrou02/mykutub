@@ -370,16 +370,39 @@ function BookDetailPage() {
 
                 {!isOwner && (
                   <div className="mt-4 space-y-2">
-                    <Button
-                      onClick={handleContactSeller}
-                      disabled={creating}
-                      className="w-full h-11 rounded-full font-semibold bg-primary"
-                    >
-                      <MessageCircle size={16} className="mr-1.5" />
-                      {creating ? "Ouverture..." : "Contacter"}
-                    </Button>
+                    {book.is_donation ? (
+                      <Button
+                        onClick={() => startChatWithDraft(requestDonationDraft)}
+                        disabled={creating}
+                        className="w-full h-11 rounded-full font-semibold bg-secondary text-secondary-foreground hover:bg-secondary/90"
+                      >
+                        <Heart size={16} className="mr-1.5" />
+                        {creating ? "Ouverture..." : "Demander ce don"}
+                      </Button>
+                    ) : (
+                      <>
+                        <Button
+                          onClick={() => startChatWithDraft(makeOfferDraft)}
+                          disabled={creating}
+                          className="w-full h-11 rounded-full font-semibold bg-primary"
+                        >
+                          <Star size={16} className="mr-1.5" />
+                          {creating ? "Ouverture..." : "Faire une offre"}
+                        </Button>
+                        <Button
+                          onClick={() => startChatWithDraft(contactSellerDraft)}
+                          disabled={creating}
+                          variant="outline"
+                          className="w-full h-11 rounded-full font-semibold"
+                        >
+                          <MessageCircle size={16} className="mr-1.5" />
+                          Contacter le vendeur
+                        </Button>
+                      </>
+                    )}
                   </div>
                 )}
+
                 {isOwner && (
                   <div className="mt-4 space-y-2">
                     <p className="text-xs text-center text-muted-foreground">Ceci est votre annonce</p>
