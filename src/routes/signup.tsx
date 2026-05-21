@@ -19,6 +19,7 @@ const schema = z.object({
   firstName: z.string().trim().min(1, "Prénom requis").max(50),
   lastName: z.string().trim().min(1, "Nom requis").max(50),
   email: z.string().trim().email("Email invalide").max(255),
+  phone: z.string().trim().regex(/^[+0-9 ().-]{6,20}$/, "Numéro de téléphone invalide"),
   password: z.string().min(8, "Au moins 8 caractères").max(72),
   confirm: z.string(),
 }).refine((d) => d.password === d.confirm, {
@@ -41,6 +42,7 @@ function SignupPage() {
       firstName: fd.get("firstName"),
       lastName: fd.get("lastName"),
       email: fd.get("email"),
+      phone: fd.get("phone"),
       password: fd.get("password"),
       confirm: fd.get("confirm"),
     });
@@ -55,13 +57,13 @@ function SignupPage() {
       return;
     }
     setLoading(true);
-    const { firstName, lastName, email, password } = parsed.data;
+    const { firstName, lastName, email, phone, password } = parsed.data;
     const { data, error } = await supabase.auth.signUp({
       email,
       password,
       options: {
         emailRedirectTo: `${window.location.origin}/login?verified=1`,
-        data: { display_name: `${firstName} ${lastName}`.trim() },
+        data: { display_name: `${firstName} ${lastName}`.trim(), phone },
       },
     });
     setLoading(false);
@@ -147,6 +149,12 @@ function SignupPage() {
               <Label htmlFor="email" className="text-sm font-medium">Adresse email</Label>
               <Input id="email" name="email" type="email" required placeholder="vous@exemple.com" className="h-11 rounded-xl" />
               {errors.email && <p className="text-xs text-destructive">{errors.email}</p>}
+            </div>
+            <div className="space-y-1.5">
+              <Label htmlFor="phone" className="text-sm font-medium">Numéro de téléphone</Label>
+              <Input id="phone" name="phone" type="tel" inputMode="tel" required placeholder="+33 6 12 34 56 78" className="h-11 rounded-xl" />
+              <p className="text-[11px] text-muted-foreground">Obligatoire — un code de vérification à 6 chiffres vous sera envoyé.</p>
+              {errors.phone && <p className="text-xs text-destructive">{errors.phone}</p>}
             </div>
             <div className="space-y-1.5">
               <Label htmlFor="password" className="text-sm font-medium">Mot de passe</Label>

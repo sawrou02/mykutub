@@ -15,6 +15,7 @@ import {
 import { toast } from "sonner";
 import { sendEmail } from "@/lib/email";
 import type { Book, Review } from "@/lib/mykutub";
+import { VerifiedPhoneBadge } from "@/components/VerifiedPhoneBadge";
 
 export const Route = createFileRoute("/user/$id")({
   validateSearch: (s: Record<string, unknown>) => ({
@@ -28,7 +29,7 @@ function UserProfilePage() {
   const { chatId } = Route.useSearch();
   const navigate = useNavigate();
   const { user } = useAuth();
-  const [profile, setProfile] = useState<{ display_name: string | null; created_at?: string | null; verified?: boolean | null } | null>(null);
+  const [profile, setProfile] = useState<{ display_name: string | null; created_at?: string | null; verified?: boolean | null; phone_verified?: boolean | null } | null>(null);
   const [books, setBooks] = useState<Book[]>([]);
   const [reviews, setReviews] = useState<Review[]>([]);
   const [loading, setLoading] = useState(true);
@@ -40,7 +41,7 @@ function UserProfilePage() {
 
   useEffect(() => {
     Promise.all([
-      supabase.from("profiles").select("display_name, created_at, verified").eq("id", userId).maybeSingle(),
+      supabase.from("profiles").select("display_name, created_at, verified, phone_verified").eq("id", userId).maybeSingle(),
       supabase.from("books").select("*").eq("seller_id", userId).order("created_at", { ascending: false }),
       supabase.from("reviews").select("*").eq("seller_id", userId),
       supabase.from("follows").select("id", { count: "exact", head: true }).eq("following_id", userId),
@@ -166,7 +167,10 @@ function UserProfilePage() {
               {initials || "U"}
             </div>
             <div className="flex-1 min-w-0">
-              <h2 className="font-bold text-base truncate">{displayName}</h2>
+              <div className="flex items-center gap-2 flex-wrap">
+                <h2 className="font-bold text-base truncate">{displayName}</h2>
+                {profile?.phone_verified && <VerifiedPhoneBadge />}
+              </div>
               <div className="flex items-center gap-1 mt-0.5 text-xs">
                 <Star size={12} className="fill-amber-500 text-amber-500" />
                 <span className="font-semibold">{reviews.length ? avg.toFixed(1) : "—"}</span>
