@@ -37,7 +37,9 @@ export function InstallPWAButton({ className }: { className?: string }) {
         setInstalled(true);
         return;
       }
-    } catch {}
+    } catch {
+      // localStorage may be unavailable (private mode, disabled), ignore
+    }
 
     // iOS detection (no beforeinstallprompt support)
     const ua = window.navigator.userAgent;
@@ -71,7 +73,9 @@ export function InstallPWAButton({ className }: { className?: string }) {
       if (outcome === "dismissed") {
         try {
           localStorage.setItem(DISMISS_KEY, String(Date.now()));
-        } catch {}
+        } catch {
+          // localStorage may be unavailable, ignore
+        }
       }
       setDeferred(null);
     } else if (isIOS) {
@@ -95,8 +99,7 @@ export function InstallPWAButton({ className }: { className?: string }) {
       {showIOSHint && (
         <div className="absolute right-4 mt-2 max-w-xs rounded-lg border bg-card p-3 text-xs shadow-lg z-50">
           {t("common.iosInstallHint", {
-            defaultValue:
-              "Sur iPhone : appuyez sur Partager puis « Sur l'écran d'accueil ».",
+            defaultValue: "Sur iPhone : appuyez sur Partager puis « Sur l'écran d'accueil ».",
           })}
         </div>
       )}
