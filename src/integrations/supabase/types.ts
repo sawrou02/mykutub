@@ -746,6 +746,8 @@ export type Database = {
         Args: { _reason: string; _target: string }
         Returns: undefined
       }
+      get_my_phone: { Args: never; Returns: string }
+      get_user_phone: { Args: { _user_id: string }; Returns: string }
       is_blocked_by: {
         Args: { _blocked: string; _blocker: string }
         Returns: boolean
