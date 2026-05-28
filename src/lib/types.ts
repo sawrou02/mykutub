@@ -75,3 +75,19 @@ export type Message = {
   deleted_by?: string | null;
   hidden_for?: string[];
 };
+
+export type PriceOfferStatus = "pending" | "accepted" | "rejected" | "withdrawn";
+
+export type PriceOffer = {
+  id: string;
+  book_id: string;
+  chat_id: string | null;
+  buyer_id: string;
+  seller_id: string;
+  original_price: number;
+  proposed_price: number;
+  message: string | null;
+  status: PriceOfferStatus;
+  created_at: string;
+  updated_at: string;
+};
