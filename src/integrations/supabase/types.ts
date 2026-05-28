@@ -765,6 +765,15 @@ export type Database = {
         Returns: undefined
       }
       check_forbidden_text: { Args: { _text: string }; Returns: string }
+      email_throttle_try_log: {
+        Args: {
+          _context_id?: string
+          _email_type: string
+          _per_context_window_minutes?: number
+          _user_id: string
+        }
+        Returns: boolean
+      }
       get_my_phone: { Args: never; Returns: string }
       get_user_phone: { Args: { _user_id: string }; Returns: string }
       is_blocked_by: {
