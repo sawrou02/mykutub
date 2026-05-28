@@ -18,9 +18,10 @@ export function useUserPresence(userId?: string | null) {
       .maybeSingle()
       .then(({ data }) => {
         if (cancelled || !data) return;
+        const row = data as { is_online: boolean | null; last_seen: string | null };
         setPresence({
-          is_online: !!(data as any).is_online,
-          last_seen: (data as any).last_seen ?? null,
+          is_online: !!row.is_online,
+          last_seen: row.last_seen ?? null,
         });
       });
 
@@ -30,7 +31,7 @@ export function useUserPresence(userId?: string | null) {
         "postgres_changes",
         { event: "UPDATE", schema: "public", table: "profiles", filter: `id=eq.${userId}` },
         (payload) => {
-          const n = payload.new as any;
+          const n = payload.new as { is_online: boolean | null; last_seen: string | null };
           setPresence({ is_online: !!n.is_online, last_seen: n.last_seen ?? null });
         },
       )
@@ -43,7 +44,6 @@ export function useUserPresence(userId?: string | null) {
   }, [userId]);
 
   // Treat as offline if last_seen older than 90s
-  const stale =
-    presence.last_seen && Date.now() - new Date(presence.last_seen).getTime() > 90_000;
+  const stale = presence.last_seen && Date.now() - new Date(presence.last_seen).getTime() > 90_000;
   return { is_online: presence.is_online && !stale, last_seen: presence.last_seen };
 }
