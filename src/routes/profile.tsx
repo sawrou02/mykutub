@@ -21,7 +21,9 @@ import {
   Pencil,
   Users,
   UserMinus,
+  Tag,
 } from "lucide-react";
+import { MyOffersList } from "@/components/MyOffersList";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { BookCard } from "@/components/BookCard";
 import { useAuth } from "@/hooks/useAuth";
@@ -312,6 +314,13 @@ function ProfilePage() {
             >
               {t("profile.tabFavs")}
             </TabsTrigger>
+            <TabsTrigger
+              value="offers"
+              className="flex-1 rounded-none border-b-2 border-transparent data-[state=active]:border-primary font-bold"
+            >
+              <Tag size={14} className="mr-1.5" />
+              Propositions
+            </TabsTrigger>
           </TabsList>
 
           <TabsContent value="info">
@@ -416,6 +425,10 @@ function ProfilePage() {
                 </span>
               </Link>
             </div>
+          </TabsContent>
+
+          <TabsContent value="offers">
+            <MyOffersList />
           </TabsContent>
 
           <TabsContent value="likes">

@@ -27,7 +27,9 @@ import {
   Facebook,
   Twitter,
   MessageSquare,
+  Tag,
 } from "lucide-react";
+import { PriceOfferModal } from "@/components/PriceOfferModal";
 import { VerifiedBadge } from "@/components/VerifiedBadge";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import {
@@ -132,6 +134,7 @@ function BookDetailPage() {
   const [deleteOpen, setDeleteOpen] = useState(false);
   const [deleting, setDeleting] = useState(false);
   const [shareOpen, setShareOpen] = useState(false);
+  const [offerOpen, setOfferOpen] = useState(false);
 
   useEffect(() => {
     supabase
@@ -585,9 +588,18 @@ function BookDetailPage() {
                     ) : (
                       <>
                         <Button
-                          onClick={() => startChatWithDraft(makeOfferDraft)}
+                          onClick={() => setOfferOpen(true)}
                           disabled={creating}
                           className="w-full h-11 rounded-full font-semibold bg-primary"
+                        >
+                          <Tag size={16} className="mr-1.5" />
+                          Proposer un prix
+                        </Button>
+                        <Button
+                          onClick={() => startChatWithDraft(makeOfferDraft)}
+                          disabled={creating}
+                          variant="outline"
+                          className="w-full h-11 rounded-full font-semibold"
                         >
                           <Star size={16} className="mr-1.5" />
                           {creating ? "Ouverture..." : "Faire une offre"}
@@ -650,10 +662,10 @@ function BookDetailPage() {
             <>
               <Button
                 disabled={creating}
-                onClick={() => startChatWithDraft(makeOfferDraft)}
+                onClick={() => setOfferOpen(true)}
                 className="flex-1 h-11 rounded-full text-sm font-semibold flex items-center justify-center gap-1.5"
               >
-                <Star size={16} /> Faire une offre
+                <Tag size={16} /> Proposer un prix
               </Button>
               <Button
                 disabled={creating}
@@ -683,6 +695,19 @@ function BookDetailPage() {
             <Trash2 size={16} className="mr-1.5" /> Supprimer
           </Button>
         </div>
+      )}
+
+      {!isOwner && !book.is_donation && (
+        <PriceOfferModal
+          open={offerOpen}
+          onOpenChange={setOfferOpen}
+          book={{
+            id: book.id,
+            title: book.title,
+            price: book.price,
+            image_url: book.image_url,
+          }}
+        />
       )}
 
       <AlertDialog open={deleteOpen} onOpenChange={setDeleteOpen}>

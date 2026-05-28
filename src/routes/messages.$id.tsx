@@ -56,6 +56,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import type { Chat, Message, Book } from "@/lib/mykutub";
+import { OfferMessageCard } from "@/components/OfferMessageCard";
 import { ContactsSidebar } from "@/components/ContactsSidebar";
 import { OnlineDot, OnlineStatusLabel } from "@/components/OnlineDot";
 import { cn } from "@/lib/utils";
@@ -77,6 +78,7 @@ type ProfileLite = {
 
 const SYSTEM_PREFIX = "__system__:";
 const IMAGE_PREFIX = "__image__:";
+const OFFER_PREFIX = "__offer__:";
 
 const CHAT_BG =
   "url(\"data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='80' height='80' viewBox='0 0 80 80'><g fill='%23128C7E' fill-opacity='0.04'><circle cx='10' cy='10' r='2'/><circle cx='40' cy='30' r='1.5'/><circle cx='70' cy='15' r='2'/><circle cx='25' cy='55' r='1.5'/><circle cx='60' cy='65' r='2'/></g></svg>\")";
@@ -740,6 +742,7 @@ function ChatDetailPage() {
           const isDeleted = !!m.deleted_for_everyone;
           const isSystem = !isDeleted && m.text.startsWith(SYSTEM_PREFIX);
           const isImage = !isDeleted && m.text.startsWith(IMAGE_PREFIX);
+          const isOffer = !isDeleted && m.text.startsWith(OFFER_PREFIX);
           const mine = m.sender_id === user?.id;
           const time = new Date(m.created_at).toLocaleTimeString("fr-FR", {
             hour: "2-digit",
@@ -752,6 +755,15 @@ function ChatDetailPage() {
                 <p className="text-[11px] italic text-muted-foreground bg-white/70 px-3 py-1 rounded-md shadow-sm max-w-[80%] text-center">
                   {m.text.slice(SYSTEM_PREFIX.length).trim()}
                 </p>
+              </div>
+            );
+          }
+
+          if (isOffer) {
+            const offerId = m.text.slice(OFFER_PREFIX.length).trim();
+            return (
+              <div key={m.id} className={cn("flex my-2", mine ? "justify-end" : "justify-start")}>
+                <OfferMessageCard offerId={offerId} mine={mine} />
               </div>
             );
           }
