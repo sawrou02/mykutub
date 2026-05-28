@@ -1,0 +1,1 @@
+DROP POLICY IF EXISTS "Users upload own book images" ON storage.objects;
