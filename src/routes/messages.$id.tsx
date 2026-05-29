@@ -76,9 +76,36 @@ type ProfileLite = {
   verified?: boolean | null;
 };
 
+// Legacy prefixes — only used as a fallback for any row not backfilled
+// by migration 20260529184206. New rows use kind + metadata directly.
 const SYSTEM_PREFIX = "__system__:";
 const IMAGE_PREFIX = "__image__:";
 const OFFER_PREFIX = "__offer__:";
+
+type MessageContent = {
+  kind: "text" | "image" | "system" | "offer";
+  text?: string;
+  url?: string;
+  offerId?: string;
+};
+
+function parseMessage(m: Message): MessageContent {
+  // Prefer the structured columns when present.
+  if (m.kind && m.kind !== "text") {
+    const meta = m.metadata as Record<string, unknown> | null | undefined;
+    if (m.kind === "system") return { kind: "system", text: String(meta?.text ?? "") };
+    if (m.kind === "image") return { kind: "image", url: String(meta?.url ?? "") };
+    if (m.kind === "offer") return { kind: "offer", offerId: String(meta?.offer_id ?? "") };
+  }
+  // Fallback to legacy prefix parsing.
+  const t = m.text ?? "";
+  if (t.startsWith(SYSTEM_PREFIX))
+    return { kind: "system", text: t.slice(SYSTEM_PREFIX.length).trim() };
+  if (t.startsWith(IMAGE_PREFIX)) return { kind: "image", url: t.slice(IMAGE_PREFIX.length) };
+  if (t.startsWith(OFFER_PREFIX))
+    return { kind: "offer", offerId: t.slice(OFFER_PREFIX.length).trim() };
+  return { kind: "text", text: t };
+}
 
 const CHAT_BG =
   "url(\"data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='80' height='80' viewBox='0 0 80 80'><g fill='%23128C7E' fill-opacity='0.04'><circle cx='10' cy='10' r='2'/><circle cx='40' cy='30' r='1.5'/><circle cx='70' cy='15' r='2'/><circle cx='25' cy='55' r='1.5'/><circle cx='60' cy='65' r='2'/></g></svg>\")";
@@ -263,17 +290,21 @@ function ChatDetailPage() {
     });
   };
 
-  const sendRaw = async (text: string) => {
+  const sendRaw = async (text: string, imageUrl?: string) => {
     if (!user || !chat) return;
     const recipientId = chat.participants.find((p) => p !== user.id);
     const senderName =
       user.user_metadata?.display_name || user.email?.split("@")[0] || "Utilisateur";
-    const { error } = await supabase.from("messages").insert({
+    const isImage = !!imageUrl;
+    const row = {
       chat_id: chatId,
       sender_id: user.id,
       sender_name: senderName,
-      text,
-    });
+      text: isImage ? "" : text,
+      kind: isImage ? "image" : "text",
+      metadata: isImage ? { url: imageUrl } : null,
+    };
+    const { error } = await supabase.from("messages").insert(row as never);
     if (error) {
       // RLS block from blocked_users restrictive policy returns a 42501 / row-level error
       const msg = (error.message || "").toLowerCase();
@@ -284,7 +315,7 @@ function ChatDetailPage() {
       }
       throw error;
     }
-    const preview = text.startsWith(IMAGE_PREFIX) ? "📷 Photo" : text;
+    const preview = isImage ? "📷 Photo" : text;
     await supabase
       .from("chats")
       .update({
@@ -333,7 +364,7 @@ function ChatDetailPage() {
       if (invErr || payload?.error || !payload?.publicUrl) {
         throw new Error(payload?.error || invErr?.message || "Upload refusé");
       }
-      await sendRaw(`${IMAGE_PREFIX}${payload.publicUrl}`);
+      await sendRaw("", payload.publicUrl);
     } catch (err) {
       toast.error(err instanceof Error ? err.message : "Échec de l'envoi");
     } finally {
@@ -742,9 +773,10 @@ function ChatDetailPage() {
           }
           const m = item.msg;
           const isDeleted = !!m.deleted_for_everyone;
-          const isSystem = !isDeleted && m.text.startsWith(SYSTEM_PREFIX);
-          const isImage = !isDeleted && m.text.startsWith(IMAGE_PREFIX);
-          const isOffer = !isDeleted && m.text.startsWith(OFFER_PREFIX);
+          const parsed = isDeleted ? { kind: "text" as const } : parseMessage(m);
+          const isSystem = parsed.kind === "system";
+          const isImage = parsed.kind === "image";
+          const isOffer = parsed.kind === "offer";
           const mine = m.sender_id === user?.id;
           const time = new Date(m.created_at).toLocaleTimeString("fr-FR", {
             hour: "2-digit",
@@ -755,17 +787,16 @@ function ChatDetailPage() {
             return (
               <div key={m.id} className="flex justify-center my-2">
                 <p className="text-[11px] italic text-muted-foreground bg-white/70 px-3 py-1 rounded-md shadow-sm max-w-[80%] text-center">
-                  {m.text.slice(SYSTEM_PREFIX.length).trim()}
+                  {parsed.text}
                 </p>
               </div>
             );
           }
 
-          if (isOffer) {
-            const offerId = m.text.slice(OFFER_PREFIX.length).trim();
+          if (isOffer && parsed.offerId) {
             return (
               <div key={m.id} className={cn("flex my-2", mine ? "justify-end" : "justify-start")}>
-                <OfferMessageCard offerId={offerId} mine={mine} />
+                <OfferMessageCard offerId={parsed.offerId} mine={mine} />
               </div>
             );
           }
@@ -814,15 +845,10 @@ function ChatDetailPage() {
                   <p className="whitespace-pre-wrap break-words leading-snug">
                     🚫 Ce message a été supprimé
                   </p>
-                ) : isImage ? (
-                  <a
-                    href={m.text.slice(IMAGE_PREFIX.length)}
-                    target="_blank"
-                    rel="noreferrer"
-                    className="block"
-                  >
+                ) : isImage && parsed.url ? (
+                  <a href={parsed.url} target="_blank" rel="noreferrer" className="block">
                     <img
-                      src={m.text.slice(IMAGE_PREFIX.length)}
+                      src={parsed.url}
                       alt="Pièce jointe"
                       className="rounded max-w-[260px] max-h-[260px] object-cover"
                     />

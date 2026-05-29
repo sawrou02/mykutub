@@ -62,12 +62,16 @@ export type Chat = {
   created_at: string;
 };
 
+export type MessageKind = "text" | "image" | "system" | "offer";
+
 export type Message = {
   id: string;
   chat_id: string;
   sender_id: string;
   sender_name: string;
   text: string;
+  kind?: MessageKind;
+  metadata?: Record<string, unknown> | null;
   created_at: string;
   read_at?: string | null;
   deleted_for_everyone?: boolean;
