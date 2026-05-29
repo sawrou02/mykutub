@@ -10,6 +10,8 @@ import { toast } from "sonner";
 import { useNavigate } from "@tanstack/react-router";
 import { Loader2 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { notifyOfferEmail } from "@/lib/offers";
+import type { PriceOffer } from "@/lib/types";
 
 type Props = {
   open: boolean;
@@ -112,10 +114,15 @@ export function PriceOfferModal({ open, onOpenChange, book }: Props) {
     if (offerId) {
       const { data: offer } = await supabase
         .from("price_offers" as never)
-        .select("chat_id")
+        .select("*")
         .eq("id", offerId)
         .maybeSingle();
-      const chatId = (offer as { chat_id: string | null } | null)?.chat_id;
+      const fullOffer = offer as PriceOffer | null;
+      if (fullOffer && user) {
+        // Best-effort email to the seller
+        void notifyOfferEmail({ offer: fullOffer, user, kind: "received" });
+      }
+      const chatId = fullOffer?.chat_id;
       if (chatId) {
         navigate({ to: "/messages/$id", params: { id: chatId }, search: { draft: undefined } });
       }

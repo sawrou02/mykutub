@@ -6,6 +6,7 @@ type Fn =
   | "send-welcome-email"
   | "send-reservation-email"
   | "send-message-notification-email"
+  | "send-offer-notification-email"
   | "send-admin-email"
   | "send-suspension-email";
 

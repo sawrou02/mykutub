@@ -1,11 +1,12 @@
 import { Link, useLocation } from "@tanstack/react-router";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
-import { Menu, BookOpen, MessageCircle, User, PlusCircle, ShieldCheck } from "lucide-react";
+import { Menu, BookOpen, MessageCircle, User, PlusCircle, ShieldCheck, Tag } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useAuth } from "@/hooks/useAuth";
 import { useIsAdmin } from "@/hooks/useIsAdmin";
 import { useUnreadChats } from "@/hooks/useUnreadChats";
+import { usePendingOffersCount } from "@/hooks/usePendingOffersCount";
 import { useTranslation } from "react-i18next";
 import { LanguageSwitcher } from "./LanguageSwitcher";
 import { NotificationBell } from "./NotificationBell";
@@ -16,6 +17,7 @@ export function SiteHeader() {
   const { user } = useAuth();
   const { isAdmin } = useIsAdmin();
   const unreadCount = useUnreadChats();
+  const pendingOffersCount = usePendingOffersCount();
   const { t } = useTranslation();
 
   const links = [
@@ -77,6 +79,22 @@ export function SiteHeader() {
                   </Button>
                 )}
                 <NotificationBell />
+                <Button
+                  asChild
+                  variant="ghost"
+                  size="icon"
+                  className="relative"
+                  title="Mes propositions"
+                >
+                  <Link to="/offers">
+                    <Tag size={18} />
+                    {pendingOffersCount > 0 && (
+                      <span className="absolute -top-1 -right-1 min-w-[18px] h-[18px] px-1 rounded-full bg-amber-500 text-white text-[10px] font-bold flex items-center justify-center">
+                        {pendingOffersCount > 9 ? "9+" : pendingOffersCount}
+                      </span>
+                    )}
+                  </Link>
+                </Button>
                 <Button asChild variant="ghost" size="icon" className="relative">
                   <Link to="/messages">
                     <MessageCircle size={18} />
