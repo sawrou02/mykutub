@@ -43,6 +43,7 @@ function Landing() {
     supabase
       .from("books")
       .select("*")
+      .eq("status", "available")
       .order("created_at", { ascending: false })
       .limit(8)
       .then(({ data }) => {

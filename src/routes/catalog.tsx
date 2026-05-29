@@ -104,6 +104,7 @@ function Catalog() {
     supabase
       .from("books")
       .select("*")
+      .eq("status", "available")
       .order("created_at", { ascending: false })
       .range(0, SERVER_BATCH - 1)
       .then(({ data }) => {
@@ -124,6 +125,7 @@ function Catalog() {
     const { data } = await supabase
       .from("books")
       .select("*")
+      .eq("status", "available")
       .order("created_at", { ascending: false })
       .range(books.length, books.length + SERVER_BATCH - 1);
     const rows = (data as Book[]) ?? [];
