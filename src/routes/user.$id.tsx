@@ -16,6 +16,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { BookCard } from "@/components/BookCard";
 import { SellerReviews } from "@/components/SellerReviews";
+import { SellerStats } from "@/components/SellerStats";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
 import {
@@ -247,6 +248,9 @@ function UserProfilePage() {
                 <Star size={12} className="fill-amber-500 text-amber-500" />
                 <span className="font-semibold">{reviews.length ? avg.toFixed(1) : "—"}</span>
                 <span className="text-muted-foreground">({reviews.length} avis)</span>
+              </div>
+              <div className="mt-1.5">
+                <SellerStats sellerId={userId} variant="inline" />
               </div>
             </div>
             {!isMe && user && (
