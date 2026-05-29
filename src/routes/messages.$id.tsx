@@ -807,7 +807,7 @@ function ChatDetailPage() {
           if (item.type === "date") {
             return (
               <div key={item.key} className="flex justify-center my-3">
-                <span className="text-[11px] font-medium px-3 py-1 rounded-md bg-white/80 text-muted-foreground shadow-sm">
+                <span className="text-[11px] font-medium px-3 py-1 rounded-md bg-card/80 text-muted-foreground shadow-sm">
                   {item.label}
                 </span>
               </div>
@@ -828,7 +828,7 @@ function ChatDetailPage() {
           if (isSystem) {
             return (
               <div key={m.id} className="flex justify-center my-2">
-                <p className="text-[11px] italic text-muted-foreground bg-white/70 px-3 py-1 rounded-md shadow-sm max-w-[80%] text-center">
+                <p className="text-[11px] italic text-muted-foreground bg-card/70 px-3 py-1 rounded-md shadow-sm max-w-[80%] text-center">
                   {parsed.text}
                 </p>
               </div>
@@ -869,7 +869,7 @@ function ChatDetailPage() {
                     ? "bg-muted text-muted-foreground italic"
                     : mine
                       ? "rounded-tr-sm text-white"
-                      : "rounded-tl-sm bg-white text-foreground",
+                      : "rounded-tl-sm bg-card text-foreground",
                 )}
                 style={!isDeleted && mine ? { background: "#008069" } : undefined}
               >
@@ -923,7 +923,7 @@ function ChatDetailPage() {
         })}
         {otherTyping && (
           <div className="flex justify-start">
-            <div className="bg-white rounded-lg rounded-tl-sm px-3 py-2 shadow-sm">
+            <div className="bg-card rounded-lg rounded-tl-sm px-3 py-2 shadow-sm">
               <div className="flex gap-1">
                 <span className="w-1.5 h-1.5 rounded-full bg-muted-foreground/60 animate-bounce" />
                 <span className="w-1.5 h-1.5 rounded-full bg-muted-foreground/60 animate-bounce [animation-delay:0.15s]" />
@@ -963,7 +963,7 @@ function ChatDetailPage() {
         >
           <Smile size={22} />
         </button>
-        <div className="flex-1 bg-white rounded-lg shadow-sm">
+        <div className="flex-1 bg-card rounded-lg shadow-sm">
           <textarea
             value={input}
             onChange={(e) => {
