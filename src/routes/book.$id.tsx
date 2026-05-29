@@ -49,6 +49,7 @@ import type { Book } from "@/lib/mykutub";
 import { SellerReviews } from "@/components/SellerReviews";
 import { BookReservation } from "@/components/BookReservation";
 import { OnlineStatusLabel } from "@/components/OnlineDot";
+import { SellerStats } from "@/components/SellerStats";
 import { ReportDialog } from "@/components/ReportDialog";
 import { cn } from "@/lib/utils";
 
@@ -563,6 +564,9 @@ function BookDetailPage() {
                       {sellerVerified && <VerifiedBadge size={16} />}
                     </p>
                     <OnlineStatusLabel userId={book.seller_id} />
+                    <div className="mt-1.5">
+                      <SellerStats sellerId={book.seller_id} variant="inline" />
+                    </div>
                     {rating ? (
                       <div className="flex items-center gap-1 text-xs">
                         <Star size={12} className="fill-amber-500 text-amber-500" />
