@@ -586,7 +586,22 @@ function BookDetailPage() {
                   </div>
                 </div>
 
-                {!isOwner && (
+                {!isOwner && book.status && book.status !== "available" && (
+                  <div className="mt-4 p-3 rounded-lg bg-muted text-center text-sm">
+                    <p className="font-semibold">
+                      {book.status === "reserved"
+                        ? "Ce livre est réservé"
+                        : book.is_donation
+                          ? "Ce livre a déjà été donné"
+                          : "Ce livre n'est plus disponible"}
+                    </p>
+                    <p className="text-xs text-muted-foreground mt-1">
+                      Vous ne pouvez plus le réserver ni faire une proposition.
+                    </p>
+                  </div>
+                )}
+
+                {!isOwner && (!book.status || book.status === "available") && (
                   <div className="mt-4 space-y-2">
                     {book.is_donation ? (
                       <Button
@@ -668,7 +683,7 @@ function BookDetailPage() {
       </div>
 
       {/* Sticky bottom contact (mobile) */}
-      {!isOwner && (
+      {!isOwner && (!book.status || book.status === "available") && (
         <div className="lg:hidden fixed bottom-0 left-0 right-0 p-3 bg-card/95 backdrop-blur-xl border-t z-50 flex gap-2">
           {book.is_donation ? (
             <Button
