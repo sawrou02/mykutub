@@ -43,9 +43,9 @@ function EditPage() {
   const [price, setPrice] = useState("");
   const [isDonation, setIsDonation] = useState(false);
   const [canDeliver, setCanDeliver] = useState(false);
-  const [imageUrl, setImageUrl] = useState<string>("");
-  const [imageFile, setImageFile] = useState<File | null>(null);
-  const [imagePreview, setImagePreview] = useState<string | null>(null);
+  type ImageSlot = { type: "existing"; url: string } | { type: "new"; file: File; preview: string };
+  const [images, setImages] = useState<ImageSlot[]>([]);
+  const MAX_IMAGES = 8;
 
   useEffect(() => {
     if (authLoading) return;
@@ -78,23 +78,49 @@ function EditPage() {
         setPrice(String(data.price ?? ""));
         setIsDonation(!!data.is_donation);
         setCanDeliver(!!data.can_deliver);
-        setImageUrl(data.image_url ?? "");
-        setImagePreview(data.image_url ?? null);
+        const rec = data as Record<string, unknown>;
+        const recUrls = Array.isArray(rec.image_urls) ? (rec.image_urls as string[]) : [];
+        const urls: string[] =
+          recUrls.length > 0 ? recUrls : data.image_url ? [data.image_url] : [];
+        setImages(urls.map((url) => ({ type: "existing", url })));
         setLoading(false);
       });
   }, [id, user, authLoading, navigate]);
 
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-    if (file.size > 5 * 1024 * 1024) {
-      toast.error("Image trop volumineuse (max 5 Mo).");
-      return;
+  const handleFilesChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = Array.from(e.target.files ?? []);
+    const accepted: ImageSlot[] = [];
+    for (const file of files) {
+      if (images.length + accepted.length >= MAX_IMAGES) {
+        toast.error(`Maximum ${MAX_IMAGES} photos`);
+        break;
+      }
+      if (file.size > 5 * 1024 * 1024) {
+        toast.error(`${file.name} : image trop volumineuse (max 5 Mo)`);
+        continue;
+      }
+      accepted.push({ type: "new", file, preview: URL.createObjectURL(file) });
     }
-    setImageFile(file);
-    const reader = new FileReader();
-    reader.onloadend = () => setImagePreview(reader.result as string);
-    reader.readAsDataURL(file);
+    if (accepted.length) setImages((prev) => [...prev, ...accepted]);
+    if (fileInputRef.current) fileInputRef.current.value = "";
+  };
+
+  const removeImage = (index: number) => {
+    setImages((prev) => {
+      const slot = prev[index];
+      if (slot && slot.type === "new") URL.revokeObjectURL(slot.preview);
+      return prev.filter((_, i) => i !== index);
+    });
+  };
+
+  const moveImage = (from: number, to: number) => {
+    setImages((prev) => {
+      if (to < 0 || to >= prev.length) return prev;
+      const next = prev.slice();
+      const [moved] = next.splice(from, 1);
+      next.splice(to, 0, moved);
+      return next;
+    });
   };
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
@@ -102,22 +128,39 @@ function EditPage() {
     if (!user) return;
     setSaving(true);
 
-    let finalImageUrl = imageUrl;
-    if (imageFile) {
-      const fd = new FormData();
-      fd.append("file", imageFile);
-      fd.append("kind", "book");
-      fd.append("role", "cover");
-      const { data: out, error: invErr } = await supabase.functions.invoke("validate-book-image", {
-        body: fd,
-      });
-      const payload = out as { ok?: boolean; publicUrl?: string; error?: string } | null;
-      if (invErr || payload?.error || !payload?.publicUrl) {
-        setSaving(false);
-        toast.error(payload?.error || invErr?.message || "Upload refusé");
-        return;
+    if (images.length === 0) {
+      setSaving(false);
+      toast.error("Au moins une photo est requise");
+      return;
+    }
+
+    // Upload any newly-added files, build the final URL list in order.
+    const finalUrls: string[] = [];
+    try {
+      for (let i = 0; i < images.length; i++) {
+        const slot = images[i];
+        if (slot.type === "existing") {
+          finalUrls.push(slot.url);
+          continue;
+        }
+        const fd = new FormData();
+        fd.append("file", slot.file);
+        fd.append("kind", "book");
+        fd.append("role", i === 0 ? "cover" : `interior-${i}`);
+        const { data: out, error: invErr } = await supabase.functions.invoke(
+          "validate-book-image",
+          { body: fd },
+        );
+        const payload = out as { ok?: boolean; publicUrl?: string; error?: string } | null;
+        if (invErr || payload?.error || !payload?.publicUrl) {
+          throw new Error(payload?.error || invErr?.message || "Upload refusé");
+        }
+        finalUrls.push(payload.publicUrl);
       }
-      finalImageUrl = payload.publicUrl;
+    } catch (err) {
+      setSaving(false);
+      toast.error(err instanceof Error ? err.message : "Erreur lors de l'envoi des photos");
+      return;
     }
 
     const { error } = await supabase
@@ -132,8 +175,10 @@ function EditPage() {
         price: isDonation ? 0 : Number(price),
         is_donation: isDonation,
         can_deliver: canDeliver,
-        image_url: finalImageUrl,
-      })
+        image_url: finalUrls[0],
+        // image_urls cast until Lovable regenerates types.ts
+        image_urls: finalUrls,
+      } as never)
       .eq("id", id);
 
     setSaving(false);
@@ -168,52 +213,80 @@ function EditPage() {
 
       <form onSubmit={handleSubmit} className="max-w-2xl mx-auto p-4 space-y-6">
         <div>
-          <Label className="text-xs font-bold uppercase tracking-widest mb-2 block">Photo</Label>
+          <Label className="text-xs font-bold uppercase tracking-widest mb-2 block">
+            Photos ({images.length}/{MAX_IMAGES})
+          </Label>
+          <p className="text-xs text-muted-foreground mb-3">
+            La 1ère photo est la couverture. Glissez-déposez ou utilisez les flèches pour
+            réorganiser.
+          </p>
           <input
             ref={fileInputRef}
             type="file"
             accept="image/*"
-            onChange={handleFileChange}
+            multiple
+            onChange={handleFilesChange}
             className="hidden"
           />
-          {imagePreview ? (
-            <div className="relative aspect-[3/4] w-full max-w-xs mx-auto rounded-2xl overflow-hidden bg-muted">
-              <img
-                src={imagePreview}
-                alt="aperçu"
-                className="absolute inset-0 w-full h-full object-cover"
-              />
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
+            {images.map((slot, idx) => (
+              <div
+                key={slot.type === "existing" ? slot.url : slot.preview}
+                className="relative aspect-[3/4] rounded-xl overflow-hidden bg-muted border"
+              >
+                <img
+                  src={slot.type === "existing" ? slot.url : slot.preview}
+                  alt={`Photo ${idx + 1}`}
+                  className="absolute inset-0 w-full h-full object-cover"
+                />
+                {idx === 0 && (
+                  <span className="absolute top-1 left-1 px-1.5 py-0.5 rounded bg-primary text-primary-foreground text-[9px] font-bold uppercase">
+                    Couverture
+                  </span>
+                )}
+                <button
+                  type="button"
+                  onClick={() => removeImage(idx)}
+                  className="absolute top-1 right-1 p-1 bg-destructive text-destructive-foreground rounded-full"
+                  aria-label="Supprimer"
+                >
+                  <X size={12} />
+                </button>
+                <div className="absolute bottom-1 right-1 flex gap-0.5">
+                  {idx > 0 && (
+                    <button
+                      type="button"
+                      onClick={() => moveImage(idx, idx - 1)}
+                      className="px-1.5 py-0.5 bg-card/90 rounded text-[10px] font-bold"
+                      aria-label="Avancer"
+                    >
+                      ←
+                    </button>
+                  )}
+                  {idx < images.length - 1 && (
+                    <button
+                      type="button"
+                      onClick={() => moveImage(idx, idx + 1)}
+                      className="px-1.5 py-0.5 bg-card/90 rounded text-[10px] font-bold"
+                      aria-label="Reculer"
+                    >
+                      →
+                    </button>
+                  )}
+                </div>
+              </div>
+            ))}
+            {images.length < MAX_IMAGES && (
               <button
                 type="button"
                 onClick={() => fileInputRef.current?.click()}
-                className="absolute bottom-2 right-2 px-3 py-1.5 bg-primary text-primary-foreground rounded-full text-xs font-bold"
+                className="aspect-[3/4] border-2 border-dashed border-primary/30 rounded-xl flex flex-col items-center justify-center gap-2 text-primary/60 hover:bg-primary/5"
               >
-                Changer
+                <Camera size={24} />
+                <span className="font-bold text-[10px] uppercase tracking-wider">Ajouter</span>
               </button>
-              {imageFile && (
-                <button
-                  type="button"
-                  onClick={() => {
-                    setImageFile(null);
-                    setImagePreview(imageUrl);
-                    if (fileInputRef.current) fileInputRef.current.value = "";
-                  }}
-                  className="absolute top-2 right-2 p-2 bg-destructive text-destructive-foreground rounded-full"
-                >
-                  <X size={16} />
-                </button>
-              )}
-            </div>
-          ) : (
-            <button
-              type="button"
-              onClick={() => fileInputRef.current?.click()}
-              className="aspect-[3/4] w-full max-w-xs mx-auto border-2 border-dashed border-primary/30 rounded-2xl flex flex-col items-center justify-center gap-3 text-primary/60 hover:bg-primary/5"
-            >
-              <Camera size={40} />
-              <span className="font-bold text-xs uppercase tracking-wider">Ajouter une photo</span>
-            </button>
-          )}
+            )}
+          </div>
         </div>
 
         <div className="space-y-1.5">

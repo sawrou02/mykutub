@@ -279,8 +279,9 @@ function PublishPage() {
     }
     setLoading(true);
 
-    // Upload all photos; first becomes the cover persisted to books.image_url
-    let coverUrl = "";
+    // Upload all photos. The first becomes the cover (image_url is kept
+    // synced to image_urls[0] by a DB trigger).
+    const uploadedUrls: string[] = [];
     try {
       for (let i = 0; i < photos.length; i++) {
         const ph = photos[i];
@@ -297,7 +298,7 @@ function PublishPage() {
         if (invErr || payload?.error || !payload?.publicUrl) {
           throw new Error(payload?.error || invErr?.message || "Upload refusé");
         }
-        if (i === 0) coverUrl = payload.publicUrl;
+        uploadedUrls.push(payload.publicUrl);
       }
     } catch (err: unknown) {
       setLoading(false);
@@ -317,9 +318,11 @@ function PublishPage() {
       can_deliver: canDeliver,
       seller_id: user.id,
       seller_name: user.user_metadata?.display_name || user.email?.split("@")[0] || "Utilisateur",
-      image_url: coverUrl,
+      image_url: uploadedUrls[0] ?? "",
+      // image_urls cast as never until Lovable regenerates types.ts
+      image_urls: uploadedUrls,
     };
-    const { error } = await supabase.from("books").insert(data);
+    const { error } = await supabase.from("books").insert(data as never);
     setLoading(false);
     if (error) toast.error(error.message);
     else {

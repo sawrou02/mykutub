@@ -8,6 +8,7 @@ export type Book = {
   price: number;
   is_donation: boolean;
   image_url: string;
+  image_urls?: string[];
   seller_id: string;
   seller_name: string;
   can_deliver?: boolean;

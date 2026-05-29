@@ -30,6 +30,7 @@ import {
   Tag,
 } from "lucide-react";
 import { PriceOfferModal } from "@/components/PriceOfferModal";
+import { BookGallery } from "@/components/BookGallery";
 import { VerifiedBadge } from "@/components/VerifiedBadge";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import {
@@ -323,13 +324,18 @@ function BookDetailPage() {
         <div className="lg:grid lg:grid-cols-[1fr_360px] lg:gap-6">
           {/* LEFT column */}
           <div className="space-y-4">
-            {/* Image */}
-            <div className="relative aspect-[4/3] sm:aspect-[16/10] w-full bg-muted lg:rounded-xl overflow-hidden">
-              <img
-                src={book.image_url}
-                alt={book.title}
-                className="absolute inset-0 w-full h-full object-cover"
-              />
+            {/* Image gallery */}
+            <BookGallery
+              urls={
+                book.image_urls && book.image_urls.length > 0
+                  ? book.image_urls
+                  : book.image_url
+                    ? [book.image_url]
+                    : []
+              }
+              title={book.title}
+              isDonation={book.is_donation}
+            >
               {book.is_donation && (
                 <span className="absolute bottom-3 left-3 bg-secondary text-secondary-foreground text-[11px] font-bold uppercase px-2.5 py-1 rounded">
                   Don
@@ -392,7 +398,7 @@ function BookDetailPage() {
                   <Heart size={16} />
                 </button>
               </div>
-            </div>
+            </BookGallery>
 
             {/* Title + price card */}
             <div className="bg-card lg:rounded-xl border px-4 lg:px-6 py-4 space-y-2">
