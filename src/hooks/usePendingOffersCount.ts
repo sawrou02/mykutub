@@ -36,10 +36,12 @@ export function usePendingOffersCount(): number {
       setCount((recv.count ?? 0) + (sent.count ?? 0));
     };
     refresh();
-    const channel = supabase
-      .channel(`pending_offers_${user.id}`)
-      .on("postgres_changes", { event: "*", schema: "public", table: "price_offers" }, () =>
-        refresh(),
+    const channel = supabase.channel(`pending_offers_${user.id}_${Math.random().toString(36).slice(2)}`);
+    channel
+      .on(
+        "postgres_changes" as never,
+        { event: "*", schema: "public", table: "price_offers" },
+        () => refresh(),
       )
       .subscribe();
     return () => {
