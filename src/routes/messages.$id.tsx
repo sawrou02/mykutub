@@ -291,6 +291,8 @@ function ChatDetailPage() {
         last_message: preview,
         last_message_at: new Date().toISOString(),
         unread_by: recipientId ? [recipientId] : [],
+        // Resurface the chat for any party that previously deleted it.
+        deleted_for: [],
       })
       .eq("id", chatId);
     if (recipientId) {
