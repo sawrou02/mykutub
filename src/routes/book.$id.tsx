@@ -562,6 +562,7 @@ function BookDetailPage() {
                       {book.seller_name}
                       {sellerVerified && <VerifiedBadge size={16} />}
                     </p>
+                    <OnlineStatusLabel userId={book.seller_id} />
                     {rating ? (
                       <div className="flex items-center gap-1 text-xs">
                         <Star size={12} className="fill-amber-500 text-amber-500" />
