@@ -76,7 +76,7 @@ export type Message = {
   hidden_for?: string[];
 };
 
-export type PriceOfferStatus = "pending" | "accepted" | "rejected" | "withdrawn";
+export type PriceOfferStatus = "pending" | "countered" | "accepted" | "rejected" | "withdrawn";
 
 export type PriceOffer = {
   id: string;
@@ -87,6 +87,8 @@ export type PriceOffer = {
   original_price: number;
   proposed_price: number;
   message: string | null;
+  counter_price: number | null;
+  counter_message: string | null;
   status: PriceOfferStatus;
   created_at: string;
   updated_at: string;

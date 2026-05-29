@@ -15,6 +15,7 @@ type OfferRow = PriceOffer & {
 
 const STATUS_LABEL: Record<PriceOffer["status"], string> = {
   pending: "En attente",
+  countered: "Contre-proposée",
   accepted: "Acceptée",
   rejected: "Refusée",
   withdrawn: "Retirée",
@@ -22,6 +23,7 @@ const STATUS_LABEL: Record<PriceOffer["status"], string> = {
 
 const STATUS_COLOR: Record<PriceOffer["status"], string> = {
   pending: "bg-amber-100 text-amber-800",
+  countered: "bg-blue-100 text-blue-800",
   accepted: "bg-green-100 text-green-800",
   rejected: "bg-red-100 text-red-800",
   withdrawn: "bg-gray-100 text-gray-700",
@@ -70,14 +72,24 @@ export function MyOffersList() {
   }, [user?.id]);
 
   const act = async (
-    action: "accept_price_offer" | "reject_price_offer" | "withdraw_price_offer",
+    action:
+      | "accept_price_offer"
+      | "reject_price_offer"
+      | "withdraw_price_offer"
+      | "accept_counter_offer"
+      | "reject_counter_offer",
     offerId: string,
   ) => {
     setBusy(offerId);
     const { error } = await supabase.rpc(action as never, { _offer_id: offerId } as never);
     setBusy(null);
     if (error) {
-      toast.error(error.message ?? "Erreur");
+      const msg = error.message ?? "Erreur";
+      if (msg.includes("already reserved by another buyer")) {
+        toast.error("Ce livre est déjà réservé par un autre acheteur");
+      } else {
+        toast.error(msg);
+      }
       return;
     }
     toast.success("Mise à jour");
@@ -153,19 +165,45 @@ export function MyOffersList() {
         <OfferList
           offers={sent}
           emptyText="Vous n'avez envoyé aucune proposition."
-          renderActions={(o) =>
-            o.status === "pending" ? (
-              <Button
-                size="sm"
-                variant="outline"
-                onClick={() => act("withdraw_price_offer", o.id)}
-                disabled={busy !== null}
-                className="flex-1 h-9 rounded-full"
-              >
-                <Undo2 size={14} className="mr-1" /> Retirer
-              </Button>
-            ) : null
-          }
+          renderActions={(o) => {
+            if (o.status === "pending") {
+              return (
+                <Button
+                  size="sm"
+                  variant="outline"
+                  onClick={() => act("withdraw_price_offer", o.id)}
+                  disabled={busy !== null}
+                  className="flex-1 h-9 rounded-full"
+                >
+                  <Undo2 size={14} className="mr-1" /> Retirer
+                </Button>
+              );
+            }
+            if (o.status === "countered") {
+              return (
+                <>
+                  <Button
+                    size="sm"
+                    onClick={() => act("accept_counter_offer", o.id)}
+                    disabled={busy !== null}
+                    className="flex-1 h-9 rounded-full bg-green-600 hover:bg-green-700"
+                  >
+                    <Check size={14} className="mr-1" /> Accepter la contre-prop.
+                  </Button>
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    onClick={() => act("reject_counter_offer", o.id)}
+                    disabled={busy !== null}
+                    className="flex-1 h-9 rounded-full"
+                  >
+                    <X size={14} className="mr-1" /> Refuser
+                  </Button>
+                </>
+              );
+            }
+            return null;
+          }}
         />
       </TabsContent>
     </Tabs>
@@ -194,8 +232,10 @@ function OfferList({
   return (
     <ul className="space-y-3">
       {offers.map((o) => {
+        const activePrice =
+          o.status === "countered" && o.counter_price ? o.counter_price : o.proposed_price;
         const discount = o.original_price
-          ? Math.round((1 - o.proposed_price / o.original_price) * 100)
+          ? Math.round((1 - activePrice / o.original_price) * 100)
           : 0;
         return (
           <li key={o.id} className="bg-card rounded-2xl border p-3 flex gap-3">
@@ -219,7 +259,7 @@ function OfferList({
                 {o.book?.title ?? "Livre supprimé"}
               </Link>
               <div className="flex items-baseline gap-2 mt-0.5">
-                <span className="text-lg font-bold">{o.proposed_price.toFixed(2)} €</span>
+                <span className="text-lg font-bold">{activePrice.toFixed(2)} €</span>
                 <span className="text-xs text-muted-foreground line-through">
                   {o.original_price.toFixed(2)} €
                 </span>
@@ -227,6 +267,11 @@ function OfferList({
                   <span className="text-xs text-green-700 font-semibold">−{discount}%</span>
                 )}
               </div>
+              {o.status === "countered" && (
+                <p className="text-[11px] text-blue-700 font-medium">
+                  Contre-proposition (offre initiale {o.proposed_price.toFixed(2)} €)
+                </p>
+              )}
               <div className="flex items-center gap-2 mt-1">
                 <span
                   className={cn(
