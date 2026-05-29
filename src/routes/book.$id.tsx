@@ -31,6 +31,7 @@ import {
 } from "lucide-react";
 import { PriceOfferModal } from "@/components/PriceOfferModal";
 import { BookGallery } from "@/components/BookGallery";
+import { BookSuggestions } from "@/components/BookSuggestions";
 import { VerifiedBadge } from "@/components/VerifiedBadge";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import {
@@ -655,6 +656,14 @@ function BookDetailPage() {
               </div>
             </div>
           </aside>
+        </div>
+
+        {/* Recommendations */}
+        <div className="px-4 lg:px-0 mt-6 space-y-6 pb-8 lg:pb-12">
+          <BookSuggestions kind="similar" bookId={book.id} />
+          {user && user.id !== book.seller_id && (
+            <BookSuggestions kind="recommended" userId={user.id} title="Recommandé pour vous" />
+          )}
         </div>
       </div>
 
