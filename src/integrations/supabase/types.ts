@@ -373,6 +373,8 @@ export type Database = {
           deleted_for_everyone: boolean
           hidden_for: string[]
           id: string
+          kind: string
+          metadata: Json | null
           read_at: string | null
           sender_id: string
           sender_name: string
@@ -386,6 +388,8 @@ export type Database = {
           deleted_for_everyone?: boolean
           hidden_for?: string[]
           id?: string
+          kind?: string
+          metadata?: Json | null
           read_at?: string | null
           sender_id: string
           sender_name: string
@@ -399,6 +403,8 @@ export type Database = {
           deleted_for_everyone?: boolean
           hidden_for?: string[]
           id?: string
+          kind?: string
+          metadata?: Json | null
           read_at?: string | null
           sender_id?: string
           sender_name?: string
