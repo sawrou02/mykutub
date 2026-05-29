@@ -93,11 +93,16 @@ export const Route = createRootRoute({
   notFoundComponent: NotFoundComponent,
 });
 
+// Inline script executed before React hydration to apply the saved
+// theme synchronously and avoid the flash-of-light on first paint.
+const NO_FLASH_THEME_SCRIPT = `(function(){try{var t=localStorage.getItem('mykutub.theme');var d=t==='dark'||((!t||t==='system')&&window.matchMedia('(prefers-color-scheme: dark)').matches);document.documentElement.classList.toggle('dark',d);}catch(e){}})();`;
+
 function RootShell({ children }: { children: React.ReactNode }) {
   return (
     <html lang="fr">
       <head>
         <HeadContent />
+        <script dangerouslySetInnerHTML={{ __html: NO_FLASH_THEME_SCRIPT }} />
       </head>
       <body>
         {children}

@@ -82,7 +82,7 @@ export function OfferMessageCard({ offerId, mine }: Props) {
 
   if (loading) {
     return (
-      <div className="rounded-xl border bg-white px-3 py-2 text-sm text-muted-foreground shadow-sm">
+      <div className="rounded-xl border bg-card px-3 py-2 text-sm text-muted-foreground shadow-sm">
         <Loader2 size={14} className="inline animate-spin mr-1.5" />
         Chargement de la proposition…
       </div>
@@ -91,7 +91,7 @@ export function OfferMessageCard({ offerId, mine }: Props) {
 
   if (!offer) {
     return (
-      <div className="rounded-xl border bg-white px-3 py-2 text-xs text-muted-foreground italic shadow-sm">
+      <div className="rounded-xl border bg-card px-3 py-2 text-xs text-muted-foreground italic shadow-sm">
         Proposition introuvable
       </div>
     );
@@ -150,7 +150,7 @@ export function OfferMessageCard({ offerId, mine }: Props) {
     <>
       <div
         className={cn(
-          "rounded-2xl border bg-white shadow-sm max-w-[85%] md:max-w-[420px] overflow-hidden",
+          "rounded-2xl border bg-card shadow-sm max-w-[85%] md:max-w-[420px] overflow-hidden",
           mine ? "border-primary/30" : "border-border",
         )}
       >

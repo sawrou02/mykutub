@@ -11,6 +11,7 @@ import { useTranslation } from "react-i18next";
 import { LanguageSwitcher } from "./LanguageSwitcher";
 import { NotificationBell } from "./NotificationBell";
 import { InstallPWAButton } from "./InstallPWAButton";
+import { ThemeToggle } from "./ThemeToggle";
 
 export function SiteHeader() {
   const { pathname } = useLocation();
@@ -78,6 +79,7 @@ export function SiteHeader() {
                     </Link>
                   </Button>
                 )}
+                <ThemeToggle />
                 <NotificationBell />
                 <Button
                   asChild
