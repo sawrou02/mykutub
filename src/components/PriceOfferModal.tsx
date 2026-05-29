@@ -88,8 +88,10 @@ export function PriceOfferModal({ open, onOpenChange, book }: Props) {
 
     if (error) {
       const msg = error.message ?? "Erreur lors de l'envoi de la proposition";
-      if (msg.includes("duplicate") || msg.includes("price_offers_one_pending")) {
-        toast.error("Vous avez déjà une proposition en attente pour ce livre.");
+      if (msg.includes("Rate limit") || msg.includes("trop de propositions")) {
+        toast.error("Trop de propositions envoyées récemment. Réessayez dans 1h.");
+      } else if (msg.includes("duplicate") || msg.includes("price_offers_one")) {
+        toast.error("Vous avez déjà une proposition en cours pour ce livre.");
       } else if (msg.includes("exceed listed price")) {
         toast.error("Le prix proposé ne peut pas dépasser le prix affiché.");
       } else if (msg.includes("not available")) {
