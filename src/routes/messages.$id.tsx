@@ -168,6 +168,9 @@ function ChatDetailPage() {
   const lastTypingSent = useRef(0);
   const longPressTimer = useRef<number | null>(null);
 
+  const [hasMoreOlder, setHasMoreOlder] = useState(false);
+  const [loadingOlder, setLoadingOlder] = useState(false);
+
   useEffect(() => {
     supabase
       .from("chats")
@@ -175,13 +178,39 @@ function ChatDetailPage() {
       .eq("id", chatId)
       .single()
       .then(({ data }) => setChat(data as Chat | null));
+    // Load only the most recent PAGE_SIZE messages initially, ascending order
+    // for display. Older ones fetched on demand via "Load older".
+    const PAGE_SIZE = 50;
     supabase
       .from("messages")
       .select("*")
       .eq("chat_id", chatId)
-      .order("created_at", { ascending: true })
-      .then(({ data }) => setMessages((data as Message[]) ?? []));
+      .order("created_at", { ascending: false })
+      .limit(PAGE_SIZE)
+      .then(({ data }) => {
+        const arr = ((data as Message[]) ?? []).slice().reverse();
+        setMessages(arr);
+        setHasMoreOlder(arr.length === PAGE_SIZE);
+      });
   }, [chatId]);
+
+  const loadOlderMessages = async () => {
+    if (loadingOlder || !hasMoreOlder || messages.length === 0) return;
+    setLoadingOlder(true);
+    const oldest = messages[0];
+    const PAGE_SIZE = 50;
+    const { data } = await supabase
+      .from("messages")
+      .select("*")
+      .eq("chat_id", chatId)
+      .lt("created_at", oldest.created_at)
+      .order("created_at", { ascending: false })
+      .limit(PAGE_SIZE);
+    const older = ((data as Message[]) ?? []).slice().reverse();
+    setMessages((prev) => [...older, ...prev]);
+    setHasMoreOlder(older.length === PAGE_SIZE);
+    setLoadingOlder(false);
+  };
 
   // Seed input with prefilled draft (only once per navigation)
   useEffect(() => {
@@ -761,6 +790,19 @@ function ChatDetailPage() {
         ref={scrollRef}
         className="flex-1 overflow-y-auto thin-scroll px-3 md:px-6 py-4 space-y-1.5"
       >
+        {hasMoreOlder && (
+          <div className="flex justify-center my-2">
+            <Button
+              size="sm"
+              variant="outline"
+              onClick={loadOlderMessages}
+              disabled={loadingOlder}
+              className="rounded-full text-xs h-8"
+            >
+              {loadingOlder ? "Chargement..." : "Charger les messages plus anciens"}
+            </Button>
+          </div>
+        )}
         {grouped.map((item) => {
           if (item.type === "date") {
             return (
