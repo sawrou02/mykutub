@@ -77,14 +77,11 @@ export function PriceOfferModal({ open, onOpenChange, book }: Props) {
     if (!canSubmit) return;
 
     setSubmitting(true);
-    const { data, error } = await supabase.rpc(
-      "create_price_offer" as never,
-      {
-        _book_id: book.id,
-        _proposed_price: effectivePrice,
-        _message: message.trim() || null,
-      } as never,
-    );
+    const { data, error } = await supabase.rpc("create_price_offer", {
+      _book_id: book.id,
+      _proposed_price: effectivePrice,
+      _message: message.trim() || undefined,
+    });
 
     setSubmitting(false);
 
@@ -113,7 +110,7 @@ export function PriceOfferModal({ open, onOpenChange, book }: Props) {
     const offerId = data as string | null;
     if (offerId) {
       const { data: offer } = await supabase
-        .from("price_offers" as never)
+        .from("price_offers")
         .select("*")
         .eq("id", offerId)
         .maybeSingle();

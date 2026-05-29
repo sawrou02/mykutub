@@ -43,14 +43,11 @@ export function CounterOfferModal({ open, onOpenChange, offerId, buyerOffer, lis
   const handleSubmit = async () => {
     if (!canSubmit) return;
     setSubmitting(true);
-    const { error } = await supabase.rpc(
-      "counter_price_offer" as never,
-      {
-        _offer_id: offerId,
-        _counter_price: parsed,
-        _counter_message: message.trim() || null,
-      } as never,
-    );
+    const { error } = await supabase.rpc("counter_price_offer", {
+      _offer_id: offerId,
+      _counter_price: parsed,
+      _counter_message: message.trim() || undefined,
+    });
     setSubmitting(false);
     if (error) {
       const msg = error.message ?? "Erreur";
@@ -71,7 +68,7 @@ export function CounterOfferModal({ open, onOpenChange, offerId, buyerOffer, lis
     // Best-effort email to the buyer
     if (user) {
       const { data } = await supabase
-        .from("price_offers" as never)
+        .from("price_offers")
         .select("*")
         .eq("id", offerId)
         .maybeSingle();

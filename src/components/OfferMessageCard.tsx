@@ -34,13 +34,13 @@ const STATUS_COLOR: Record<PriceOffer["status"], string> = {
 
 type Action = "accept" | "reject" | "withdraw" | "accept_counter" | "reject_counter";
 
-const RPC_FOR_ACTION: Record<Action, string> = {
+const RPC_FOR_ACTION = {
   accept: "accept_price_offer",
   reject: "reject_price_offer",
   withdraw: "withdraw_price_offer",
   accept_counter: "accept_counter_offer",
   reject_counter: "reject_counter_offer",
-};
+} as const satisfies Record<Action, string>;
 
 export function OfferMessageCard({ offerId, mine }: Props) {
   const { user } = useAuth();
@@ -51,7 +51,7 @@ export function OfferMessageCard({ offerId, mine }: Props) {
 
   const fetchOffer = async () => {
     const { data } = await supabase
-      .from("price_offers" as never)
+      .from("price_offers")
       .select("*")
       .eq("id", offerId)
       .maybeSingle();
@@ -112,12 +112,9 @@ export function OfferMessageCard({ offerId, mine }: Props) {
 
   const doAction = async (action: Action) => {
     setBusy(action);
-    const { error } = await supabase.rpc(
-      RPC_FOR_ACTION[action] as never,
-      {
-        _offer_id: offerId,
-      } as never,
-    );
+    const { error } = await supabase.rpc(RPC_FOR_ACTION[action], {
+      _offer_id: offerId,
+    });
     setBusy(null);
     if (error) {
       const msg = error.message ?? "Erreur";
