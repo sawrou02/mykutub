@@ -492,6 +492,72 @@ export type Database = {
         }
         Relationships: []
       }
+      price_offers: {
+        Row: {
+          book_id: string
+          buyer_id: string
+          chat_id: string | null
+          counter_message: string | null
+          counter_price: number | null
+          created_at: string
+          expires_at: string
+          id: string
+          message: string | null
+          original_price: number
+          proposed_price: number
+          seller_id: string
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          book_id: string
+          buyer_id: string
+          chat_id?: string | null
+          counter_message?: string | null
+          counter_price?: number | null
+          created_at?: string
+          expires_at?: string
+          id?: string
+          message?: string | null
+          original_price: number
+          proposed_price: number
+          seller_id: string
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          book_id?: string
+          buyer_id?: string
+          chat_id?: string | null
+          counter_message?: string | null
+          counter_price?: number | null
+          created_at?: string
+          expires_at?: string
+          id?: string
+          message?: string | null
+          original_price?: number
+          proposed_price?: number
+          seller_id?: string
+          status?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "price_offers_book_id_fkey"
+            columns: ["book_id"]
+            isOneToOne: false
+            referencedRelation: "books"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "price_offers_chat_id_fkey"
+            columns: ["chat_id"]
+            isOneToOne: false
+            referencedRelation: "chats"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       profiles: {
         Row: {
           avatar_url: string | null
@@ -728,6 +794,8 @@ export type Database = {
       _is_target_admin: { Args: { _uid: string }; Returns: boolean }
       _require_admin: { Args: never; Returns: undefined }
       accept_charte: { Args: never; Returns: undefined }
+      accept_counter_offer: { Args: { _offer_id: string }; Returns: undefined }
+      accept_price_offer: { Args: { _offer_id: string }; Returns: undefined }
       admin_ban_user: {
         Args: { _reason: string; _target: string }
         Returns: undefined
@@ -765,6 +833,18 @@ export type Database = {
         Returns: undefined
       }
       check_forbidden_text: { Args: { _text: string }; Returns: string }
+      counter_price_offer: {
+        Args: {
+          _counter_message?: string
+          _counter_price: number
+          _offer_id: string
+        }
+        Returns: undefined
+      }
+      create_price_offer: {
+        Args: { _book_id: string; _message?: string; _proposed_price: number }
+        Returns: string
+      }
       email_throttle_try_log: {
         Args: {
           _context_id?: string
@@ -774,6 +854,7 @@ export type Database = {
         }
         Returns: boolean
       }
+      expire_old_price_offers: { Args: never; Returns: number }
       get_my_phone: { Args: never; Returns: string }
       get_user_phone: { Args: { _user_id: string }; Returns: string }
       is_blocked_by: {
@@ -790,11 +871,32 @@ export type Database = {
         }
         Returns: undefined
       }
+      price_offers_reject_others_on_book: {
+        Args: { _book_id: string; _winner_offer_id: string }
+        Returns: undefined
+      }
+      price_offers_reserve_book: {
+        Args: { _book_id: string; _buyer_id: string }
+        Returns: undefined
+      }
+      price_offers_transition: {
+        Args: {
+          _chat_system_text: string
+          _expected_actor: string
+          _new_status: string
+          _notify_other_text: string
+          _offer_id: string
+        }
+        Returns: undefined
+      }
+      reject_counter_offer: { Args: { _offer_id: string }; Returns: undefined }
+      reject_price_offer: { Args: { _offer_id: string }; Returns: undefined }
       send_global_notification: {
         Args: { _link?: string; _message: string }
         Returns: number
       }
       verify_phone_code: { Args: { _code: string }; Returns: boolean }
+      withdraw_price_offer: { Args: { _offer_id: string }; Returns: undefined }
     }
     Enums: {
       app_role: "admin" | "user"
