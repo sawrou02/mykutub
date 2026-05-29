@@ -333,7 +333,7 @@ function ChatDetailPage() {
       kind: isImage ? "image" : "text",
       metadata: isImage ? { url: imageUrl } : null,
     };
-    const { error } = await supabase.from("messages").insert(row as never);
+    const { error } = await supabase.from("messages").insert(row);
     if (error) {
       // RLS block from blocked_users restrictive policy returns a 42501 / row-level error
       const msg = (error.message || "").toLowerCase();

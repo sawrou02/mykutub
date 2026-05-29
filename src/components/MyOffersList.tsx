@@ -44,12 +44,12 @@ export function MyOffersList() {
     setLoading(true);
     const [{ data: recv }, { data: snt }] = await Promise.all([
       supabase
-        .from("price_offers" as never)
+        .from("price_offers")
         .select("*, book:books(id, title, image_url)")
         .eq("seller_id", user.id)
         .order("created_at", { ascending: false }),
       supabase
-        .from("price_offers" as never)
+        .from("price_offers")
         .select("*, book:books(id, title, image_url)")
         .eq("buyer_id", user.id)
         .order("created_at", { ascending: false }),
@@ -92,7 +92,7 @@ export function MyOffersList() {
     offer: OfferRow,
   ) => {
     setBusy(offer.id);
-    const { error } = await supabase.rpc(action as never, { _offer_id: offer.id } as never);
+    const { error } = await supabase.rpc(action, { _offer_id: offer.id });
     setBusy(null);
     if (error) {
       const msg = error.message ?? "Erreur";

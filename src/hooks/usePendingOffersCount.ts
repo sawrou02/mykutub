@@ -22,12 +22,12 @@ export function usePendingOffersCount(): number {
     const refresh = async () => {
       const [recv, sent] = await Promise.all([
         supabase
-          .from("price_offers" as never)
+          .from("price_offers")
           .select("id", { count: "exact", head: true })
           .eq("seller_id", user.id)
           .eq("status", "pending"),
         supabase
-          .from("price_offers" as never)
+          .from("price_offers")
           .select("id", { count: "exact", head: true })
           .eq("buyer_id", user.id)
           .eq("status", "countered"),
@@ -40,10 +40,8 @@ export function usePendingOffersCount(): number {
       `pending_offers_${user.id}_${Math.random().toString(36).slice(2)}`,
     );
     channel
-      .on(
-        "postgres_changes" as never,
-        { event: "*", schema: "public", table: "price_offers" },
-        () => refresh(),
+      .on("postgres_changes", { event: "*", schema: "public", table: "price_offers" }, () =>
+        refresh(),
       )
       .subscribe();
     return () => {
