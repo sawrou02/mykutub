@@ -8,6 +8,7 @@ import { toast } from "sonner";
 import { Tag, Inbox, Send, Check, X, Undo2, MessageCircle, Loader2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import type { PriceOffer } from "@/lib/types";
+import { notifyOfferEmail, type OfferEmailKind } from "@/lib/offers";
 
 type OfferRow = PriceOffer & {
   book?: { id: string; title: string; image_url: string | null } | null;
@@ -73,6 +74,14 @@ export function MyOffersList() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user?.id]);
 
+  const EMAIL_KIND_FOR_RPC: Record<string, OfferEmailKind> = {
+    accept_price_offer: "accepted",
+    reject_price_offer: "rejected",
+    withdraw_price_offer: "withdrawn",
+    accept_counter_offer: "counter_accepted",
+    reject_counter_offer: "counter_rejected",
+  };
+
   const act = async (
     action:
       | "accept_price_offer"
@@ -80,10 +89,10 @@ export function MyOffersList() {
       | "withdraw_price_offer"
       | "accept_counter_offer"
       | "reject_counter_offer",
-    offerId: string,
+    offer: OfferRow,
   ) => {
-    setBusy(offerId);
-    const { error } = await supabase.rpc(action as never, { _offer_id: offerId } as never);
+    setBusy(offer.id);
+    const { error } = await supabase.rpc(action as never, { _offer_id: offer.id } as never);
     setBusy(null);
     if (error) {
       const msg = error.message ?? "Erreur";
@@ -95,6 +104,9 @@ export function MyOffersList() {
       return;
     }
     toast.success("Mise à jour");
+    if (user) {
+      void notifyOfferEmail({ offer, user, kind: EMAIL_KIND_FOR_RPC[action] });
+    }
     fetchAll();
   };
 
@@ -136,7 +148,7 @@ export function MyOffersList() {
               <>
                 <Button
                   size="sm"
-                  onClick={() => act("accept_price_offer", o.id)}
+                  onClick={() => act("accept_price_offer", o)}
                   disabled={busy !== null}
                   className="flex-1 h-9 rounded-full bg-green-600 hover:bg-green-700"
                 >
@@ -151,7 +163,7 @@ export function MyOffersList() {
                 <Button
                   size="sm"
                   variant="outline"
-                  onClick={() => act("reject_price_offer", o.id)}
+                  onClick={() => act("reject_price_offer", o)}
                   disabled={busy !== null}
                   className="flex-1 h-9 rounded-full"
                 >
@@ -173,7 +185,7 @@ export function MyOffersList() {
                 <Button
                   size="sm"
                   variant="outline"
-                  onClick={() => act("withdraw_price_offer", o.id)}
+                  onClick={() => act("withdraw_price_offer", o)}
                   disabled={busy !== null}
                   className="flex-1 h-9 rounded-full"
                 >
@@ -186,7 +198,7 @@ export function MyOffersList() {
                 <>
                   <Button
                     size="sm"
-                    onClick={() => act("accept_counter_offer", o.id)}
+                    onClick={() => act("accept_counter_offer", o)}
                     disabled={busy !== null}
                     className="flex-1 h-9 rounded-full bg-green-600 hover:bg-green-700"
                   >
@@ -195,7 +207,7 @@ export function MyOffersList() {
                   <Button
                     size="sm"
                     variant="outline"
-                    onClick={() => act("reject_counter_offer", o.id)}
+                    onClick={() => act("reject_counter_offer", o)}
                     disabled={busy !== null}
                     className="flex-1 h-9 rounded-full"
                   >

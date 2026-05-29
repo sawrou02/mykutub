@@ -3,11 +3,13 @@ import { Home, PlusCircle, MessageCircle, User, BookOpen } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useTranslation } from "react-i18next";
 import { useUnreadChats } from "@/hooks/useUnreadChats";
+import { usePendingOffersCount } from "@/hooks/usePendingOffersCount";
 
 export function BottomNav() {
   const { pathname } = useLocation();
   const { t } = useTranslation();
   const unreadCount = useUnreadChats();
+  const pendingOffersCount = usePendingOffersCount();
   const navItems = [
     { label: t("nav.home"), to: "/", icon: Home },
     { label: t("nav.catalog"), to: "/catalog", icon: BookOpen },
@@ -35,6 +37,11 @@ export function BottomNav() {
               {item.to === "/messages" && unreadCount > 0 && (
                 <span className="absolute -top-1.5 -right-2 min-w-[16px] h-[16px] px-1 rounded-full bg-red-500 text-white text-[9px] font-bold flex items-center justify-center">
                   {unreadCount > 9 ? "9+" : unreadCount}
+                </span>
+              )}
+              {item.to === "/profile" && pendingOffersCount > 0 && (
+                <span className="absolute -top-1.5 -right-2 min-w-[16px] h-[16px] px-1 rounded-full bg-amber-500 text-white text-[9px] font-bold flex items-center justify-center">
+                  {pendingOffersCount > 9 ? "9+" : pendingOffersCount}
                 </span>
               )}
             </div>

@@ -5,8 +5,11 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Input } from "@/components/ui/input";
 import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/hooks/useAuth";
 import { toast } from "sonner";
 import { Loader2 } from "lucide-react";
+import { notifyOfferEmail } from "@/lib/offers";
+import type { PriceOffer } from "@/lib/types";
 
 type Props = {
   open: boolean;
@@ -19,6 +22,7 @@ type Props = {
 const MAX_MESSAGE = 2500;
 
 export function CounterOfferModal({ open, onOpenChange, offerId, buyerOffer, listedPrice }: Props) {
+  const { user } = useAuth();
   const [price, setPrice] = useState("");
   const [message, setMessage] = useState("");
   const [submitting, setSubmitting] = useState(false);
@@ -63,6 +67,19 @@ export function CounterOfferModal({ open, onOpenChange, offerId, buyerOffer, lis
     }
     toast.success("Contre-proposition envoyée");
     onOpenChange(false);
+
+    // Best-effort email to the buyer
+    if (user) {
+      const { data } = await supabase
+        .from("price_offers" as never)
+        .select("*")
+        .eq("id", offerId)
+        .maybeSingle();
+      const offer = data as PriceOffer | null;
+      if (offer) {
+        void notifyOfferEmail({ offer, user, kind: "countered" });
+      }
+    }
   };
 
   return (

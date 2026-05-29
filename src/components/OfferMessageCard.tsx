@@ -7,6 +7,7 @@ import { Loader2, Tag, Check, X, Undo2, ArrowRightLeft } from "lucide-react";
 import { cn } from "@/lib/utils";
 import type { PriceOffer } from "@/lib/types";
 import { CounterOfferModal } from "@/components/CounterOfferModal";
+import { notifyOfferEmail, type OfferEmailKind } from "@/lib/offers";
 
 type Props = {
   offerId: string;
@@ -101,6 +102,14 @@ export function OfferMessageCard({ offerId, mine }: Props) {
   const isPending = offer.status === "pending";
   const isCountered = offer.status === "countered";
 
+  const EMAIL_KIND_FOR_ACTION: Record<Action, OfferEmailKind> = {
+    accept: "accepted",
+    reject: "rejected",
+    withdraw: "withdrawn",
+    accept_counter: "counter_accepted",
+    reject_counter: "counter_rejected",
+  };
+
   const doAction = async (action: Action) => {
     setBusy(action);
     const { error } = await supabase.rpc(
@@ -127,6 +136,9 @@ export function OfferMessageCard({ offerId, mine }: Props) {
       reject_counter: "Contre-proposition refusée",
     };
     toast.success(successMsg[action]);
+    if (offer && user) {
+      void notifyOfferEmail({ offer, user, kind: EMAIL_KIND_FOR_ACTION[action] });
+    }
     fetchOffer();
   };
 
