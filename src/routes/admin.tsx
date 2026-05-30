@@ -53,6 +53,7 @@ import { Input } from "@/components/ui/input";
 import { useAuth } from "@/hooks/useAuth";
 import { AdminUsersTab } from "@/components/admin/AdminUsersTab";
 import { AdminCharteTab } from "@/components/admin/AdminCharteTab";
+import { AdminDigitalLibraryTab } from "@/components/admin/AdminDigitalLibraryTab";
 
 type AdminBook = {
   id: string;
@@ -469,6 +470,7 @@ function AdminPage() {
             )}
           </TabsTrigger>
           <TabsTrigger value="charte">Charte</TabsTrigger>
+          <TabsTrigger value="library">Bibliothèque</TabsTrigger>
         </TabsList>
 
         <TabsContent value="books" className="space-y-2">
@@ -730,6 +732,10 @@ function AdminPage() {
 
         <TabsContent value="charte">
           <AdminCharteTab />
+        </TabsContent>
+
+        <TabsContent value="library">
+          <AdminDigitalLibraryTab />
         </TabsContent>
       </Tabs>
     </div>
