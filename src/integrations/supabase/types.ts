@@ -105,6 +105,7 @@ export type Database = {
           description: string | null
           id: string
           image_url: string
+          image_urls: string[]
           is_donation: boolean
           language: string
           price: number
@@ -125,6 +126,7 @@ export type Database = {
           description?: string | null
           id?: string
           image_url: string
+          image_urls?: string[]
           is_donation?: boolean
           language?: string
           price?: number
@@ -145,6 +147,7 @@ export type Database = {
           description?: string | null
           id?: string
           image_url?: string
+          image_urls?: string[]
           is_donation?: boolean
           language?: string
           price?: number
@@ -862,6 +865,80 @@ export type Database = {
       }
       expire_old_price_offers: { Args: never; Returns: number }
       get_my_phone: { Args: never; Returns: string }
+      get_recommended_books: {
+        Args: { _limit?: number; _user_id: string }
+        Returns: {
+          can_deliver: boolean
+          category: string
+          city: string
+          condition: string
+          created_at: string
+          description: string | null
+          id: string
+          image_url: string
+          image_urls: string[]
+          is_donation: boolean
+          language: string
+          price: number
+          reserved_at: string | null
+          reserved_by: string | null
+          seller_id: string
+          seller_name: string
+          status: string
+          title: string
+          updated_at: string
+        }[]
+        SetofOptions: {
+          from: "*"
+          to: "books"
+          isOneToOne: false
+          isSetofReturn: true
+        }
+      }
+      get_seller_stats: {
+        Args: { _seller_id: string }
+        Returns: {
+          acceptance_rate: number
+          accepted_count: number
+          avg_response_seconds: number
+          countered_count: number
+          expired_count: number
+          pending_count: number
+          rejected_count: number
+          total_received: number
+          withdrawn_count: number
+        }[]
+      }
+      get_similar_books: {
+        Args: { _book_id: string; _limit?: number }
+        Returns: {
+          can_deliver: boolean
+          category: string
+          city: string
+          condition: string
+          created_at: string
+          description: string | null
+          id: string
+          image_url: string
+          image_urls: string[]
+          is_donation: boolean
+          language: string
+          price: number
+          reserved_at: string | null
+          reserved_by: string | null
+          seller_id: string
+          seller_name: string
+          status: string
+          title: string
+          updated_at: string
+        }[]
+        SetofOptions: {
+          from: "*"
+          to: "books"
+          isOneToOne: false
+          isSetofReturn: true
+        }
+      }
       get_user_phone: { Args: { _user_id: string }; Returns: string }
       is_blocked_by: {
         Args: { _blocked: string; _blocker: string }
