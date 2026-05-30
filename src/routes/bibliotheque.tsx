@@ -47,16 +47,19 @@ function BibliothequePage() {
     };
   }, [query]);
 
-  const handleDownload = async (book: DigitalBook) => {
-    // Best-effort counter increment
-    void supabase.rpc(
-      "increment_digital_book_download" as never,
-      {
-        _book_id: book.id,
-      } as never,
-    );
-    const url = book.external_url || book.file_url;
-    window.open(url, "_blank", "noopener,noreferrer");
+  const handleDownload = (book: DigitalBook) => {
+    // Route through the download-digital-book edge function so the response
+    // carries Content-Disposition: attachment and the download_count is
+    // incremented server-side. The function falls back to a 302 redirect
+    // when upstream is an HTML page (e.g. archive.org details page).
+    const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
+    if (!supabaseUrl) {
+      // Local fallback : open the raw URL.
+      window.open(book.external_url || book.file_url, "_blank", "noopener,noreferrer");
+      return;
+    }
+    const proxyUrl = `${supabaseUrl}/functions/v1/download-digital-book?id=${encodeURIComponent(book.id)}`;
+    window.open(proxyUrl, "_blank", "noopener,noreferrer");
   };
 
   return (
