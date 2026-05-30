@@ -24,6 +24,7 @@ export function SiteHeader() {
   const links = [
     { to: "/", label: t("nav.home") },
     { to: "/catalog", label: t("nav.catalog") },
+    { to: "/bibliotheque", label: "Bibliothèque" },
     { to: "/how-it-works", label: t("nav.howItWorks") },
   ] as const;
 
