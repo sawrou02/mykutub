@@ -460,19 +460,25 @@ function BookDetailPage() {
             <div className="bg-card lg:rounded-xl border px-4 lg:px-6 py-5">
               <h2 className="font-bold text-lg mb-3">Vendu par</h2>
               <div className="flex items-center gap-3">
-                <div
+                <Link
+                  to="/user/$id"
+                  params={{ id: book.seller_id }}
                   className={cn(
-                    "w-12 h-12 rounded-full flex items-center justify-center text-white font-bold",
+                    "w-12 h-12 rounded-full flex items-center justify-center text-white font-bold hover:opacity-90",
                     colorFor(book.seller_id),
                   )}
                 >
                   {initial}
-                </div>
+                </Link>
                 <div className="flex-1 min-w-0">
-                  <p className="font-semibold text-base truncate flex items-center gap-1.5">
+                  <Link
+                    to="/user/$id"
+                    params={{ id: book.seller_id }}
+                    className="font-semibold text-base truncate flex items-center gap-1.5 hover:underline"
+                  >
                     {book.seller_name}
                     {sellerVerified && <VerifiedBadge size={14} />}
-                  </p>
+                  </Link>
                   <OnlineStatusLabel userId={book.seller_id} />
                   {rating ? (
                     <div className="flex items-center gap-1 text-xs mt-0.5">
@@ -557,19 +563,25 @@ function BookDetailPage() {
             <div className="sticky top-4 space-y-3">
               <div className="bg-card rounded-xl border p-5">
                 <div className="flex items-center gap-3">
-                  <div
+                  <Link
+                    to="/user/$id"
+                    params={{ id: book.seller_id }}
                     className={cn(
-                      "w-14 h-14 rounded-full flex items-center justify-center text-white font-bold text-lg",
+                      "w-14 h-14 rounded-full flex items-center justify-center text-white font-bold text-lg hover:opacity-90",
                       colorFor(book.seller_id),
                     )}
                   >
                     {initial}
-                  </div>
+                  </Link>
                   <div className="flex-1 min-w-0">
-                    <p className="font-bold text-lg truncate flex items-center gap-1.5">
+                    <Link
+                      to="/user/$id"
+                      params={{ id: book.seller_id }}
+                      className="font-bold text-lg truncate flex items-center gap-1.5 hover:underline"
+                    >
                       {book.seller_name}
                       {sellerVerified && <VerifiedBadge size={16} />}
-                    </p>
+                    </Link>
                     <OnlineStatusLabel userId={book.seller_id} />
                     <div className="mt-1.5">
                       <SellerStats sellerId={book.seller_id} variant="inline" />
@@ -633,15 +645,6 @@ function BookDetailPage() {
                         >
                           <Tag size={16} className="mr-1.5" />
                           Proposer un prix
-                        </Button>
-                        <Button
-                          onClick={() => startChatWithDraft(makeOfferDraft)}
-                          disabled={creating}
-                          variant="outline"
-                          className="w-full h-11 rounded-full font-semibold"
-                        >
-                          <Star size={16} className="mr-1.5" />
-                          {creating ? "Ouverture..." : "Faire une offre"}
                         </Button>
                         <Button
                           onClick={() => startChatWithDraft(contactSellerDraft)}
