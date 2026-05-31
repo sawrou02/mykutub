@@ -14,7 +14,7 @@ export const CATEGORIES = [
 
 export const CONDITIONS = ["Très bon", "Bon", "Correct"];
 
-export const COUNTRIES = ["France", "Belgique"] as const;
+export const COUNTRIES = ["France"] as const;
 
 export const BELGIUM_CITIES = [
   "Anvers",
