@@ -635,15 +635,6 @@ function BookDetailPage() {
                           Proposer un prix
                         </Button>
                         <Button
-                          onClick={() => startChatWithDraft(makeOfferDraft)}
-                          disabled={creating}
-                          variant="outline"
-                          className="w-full h-11 rounded-full font-semibold"
-                        >
-                          <Star size={16} className="mr-1.5" />
-                          {creating ? "Ouverture..." : "Faire une offre"}
-                        </Button>
-                        <Button
                           onClick={() => startChatWithDraft(contactSellerDraft)}
                           disabled={creating}
                           variant="outline"
