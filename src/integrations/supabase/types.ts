@@ -277,6 +277,63 @@ export type Database = {
         }
         Relationships: []
       }
+      digital_books: {
+        Row: {
+          added_by: string | null
+          author: string
+          category: string | null
+          cover_url: string | null
+          created_at: string
+          description: string | null
+          download_count: number
+          external_url: string | null
+          file_size_bytes: number | null
+          file_url: string
+          id: string
+          is_published: boolean
+          language: string
+          page_count: number | null
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          added_by?: string | null
+          author: string
+          category?: string | null
+          cover_url?: string | null
+          created_at?: string
+          description?: string | null
+          download_count?: number
+          external_url?: string | null
+          file_size_bytes?: number | null
+          file_url: string
+          id?: string
+          is_published?: boolean
+          language?: string
+          page_count?: number | null
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          added_by?: string | null
+          author?: string
+          category?: string | null
+          cover_url?: string | null
+          created_at?: string
+          description?: string | null
+          download_count?: number
+          external_url?: string | null
+          file_size_bytes?: number | null
+          file_url?: string
+          id?: string
+          is_published?: boolean
+          language?: string
+          page_count?: number | null
+          title?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       email_throttle: {
         Row: {
           context_id: string | null
@@ -940,6 +997,10 @@ export type Database = {
         }
       }
       get_user_phone: { Args: { _user_id: string }; Returns: string }
+      increment_digital_book_download: {
+        Args: { _book_id: string }
+        Returns: undefined
+      }
       is_blocked_by: {
         Args: { _blocked: string; _blocker: string }
         Returns: boolean
@@ -974,6 +1035,38 @@ export type Database = {
       }
       reject_counter_offer: { Args: { _offer_id: string }; Returns: undefined }
       reject_price_offer: { Args: { _offer_id: string }; Returns: undefined }
+      search_digital_books: {
+        Args: {
+          _category?: string
+          _language?: string
+          _limit?: number
+          _query?: string
+        }
+        Returns: {
+          added_by: string | null
+          author: string
+          category: string | null
+          cover_url: string | null
+          created_at: string
+          description: string | null
+          download_count: number
+          external_url: string | null
+          file_size_bytes: number | null
+          file_url: string
+          id: string
+          is_published: boolean
+          language: string
+          page_count: number | null
+          title: string
+          updated_at: string
+        }[]
+        SetofOptions: {
+          from: "*"
+          to: "digital_books"
+          isOneToOne: false
+          isSetofReturn: true
+        }
+      }
       send_global_notification: {
         Args: { _link?: string; _message: string }
         Returns: number
