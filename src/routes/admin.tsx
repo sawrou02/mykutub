@@ -470,7 +470,6 @@ function AdminPage() {
             )}
           </TabsTrigger>
           <TabsTrigger value="charte">Charte</TabsTrigger>
-          <TabsTrigger value="library">Bibliothèque</TabsTrigger>
         </TabsList>
 
         <TabsContent value="books" className="space-y-2">
