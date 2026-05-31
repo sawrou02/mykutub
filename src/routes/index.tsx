@@ -55,7 +55,7 @@ function Landing() {
     <div>
       {/* Hero compact */}
       <section className="relative overflow-hidden bg-card">
-        <div className="max-w-7xl mx-auto px-4 md:px-8 py-4 md:py-6 grid md:grid-cols-2 gap-4 md:gap-8 items-center w-full md:max-h-[50vh]">
+        <div className="max-w-7xl mx-auto px-4 md:px-8 py-4 md:py-6 grid md:grid-cols-2 gap-4 md:gap-8 items-center w-full">
           <div className="space-y-3 md:space-y-4 z-10">
             <h1 className="font-headline font-black leading-[1.05] tracking-tight text-[2rem] md:text-[3rem]">
               {t("home.h1a")} <span className="text-primary">{t("home.h1b")}</span>
@@ -83,7 +83,7 @@ function Landing() {
               </Button>
             </div>
           </div>
-          <div className="relative aspect-[4/3] md:aspect-[16/10] md:max-h-[42vh] rounded-2xl overflow-hidden shadow-2xl">
+          <div className="relative aspect-[4/3] md:aspect-[16/10] rounded-2xl overflow-hidden shadow-2xl">
             <img
               src={heroImage}
               alt="Livres de science islamique empilés dont un Coran vert avec calligraphie arabe"
