@@ -643,7 +643,7 @@ function PublishPage() {
                 onChange={(e) => setPostalCode(e.target.value.replace(/[^0-9]/g, ""))}
                 inputMode="numeric"
                 maxLength={5}
-                placeholder={country === "Belgique" ? "1000" : "75001"}
+                placeholder="75001"
                 className="h-11"
               />
             </div>
