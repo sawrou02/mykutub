@@ -733,9 +733,6 @@ function AdminPage() {
           <AdminCharteTab />
         </TabsContent>
 
-        <TabsContent value="library">
-          <AdminDigitalLibraryTab />
-        </TabsContent>
       </Tabs>
     </div>
   );
