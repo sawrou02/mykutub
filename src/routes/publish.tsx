@@ -311,7 +311,7 @@ function PublishPage() {
       title: title.trim() || "Sans titre",
       category,
       condition,
-      city: `${city}${postalCode ? ` (${postalCode})` : ""}${country === "Belgique" ? ", Belgique" : ""}`,
+      city: `${city}${postalCode ? ` (${postalCode})` : ""}`,
       language: language || "Français",
       description,
       price: isDonation ? 0 : Number(price),
