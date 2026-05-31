@@ -197,10 +197,12 @@ function PublishPage() {
   const [language, setLanguage] = useState("");
   const [price, setPrice] = useState("");
 
-  const cityOptions = useMemo(
-    () => (country === "Belgique" ? BELGIUM_CITIES : ALL_CITIES),
-    [country],
-  );
+  const [citySearch, setCitySearch] = useState("");
+  const cityOptions = useMemo(() => {
+    const q = citySearch.trim().toLowerCase();
+    if (!q) return ALL_CITIES.slice(0, 200);
+    return ALL_CITIES.filter((c) => c.toLowerCase().includes(q)).slice(0, 200);
+  }, [citySearch]);
 
   async function handleFilesSelected(e: React.ChangeEvent<HTMLInputElement>) {
     const files = Array.from(e.target.files ?? []);
