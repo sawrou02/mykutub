@@ -54,7 +54,6 @@ import { useAuth } from "@/hooks/useAuth";
 import { AdminUsersTab } from "@/components/admin/AdminUsersTab";
 import { AdminCharteTab } from "@/components/admin/AdminCharteTab";
 
-
 type AdminBook = {
   id: string;
   title: string;
@@ -732,7 +731,6 @@ function AdminPage() {
         <TabsContent value="charte">
           <AdminCharteTab />
         </TabsContent>
-
       </Tabs>
     </div>
   );
