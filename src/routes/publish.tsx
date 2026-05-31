@@ -659,7 +659,7 @@ function PublishPage() {
               type="tel"
               value={phone}
               onChange={(e) => setPhone(e.target.value)}
-              placeholder={country === "Belgique" ? "+32 4 ..." : "06 12 34 56 78"}
+              placeholder="06 12 34 56 78"
               className="h-11"
             />
             <p className="text-[11px] text-muted-foreground">
