@@ -199,9 +199,14 @@ function PublishPage() {
 
   const [citySearch, setCitySearch] = useState("");
   const cityOptions = useMemo(() => {
-    const q = citySearch.trim().toLowerCase();
-    if (!q) return ALL_CITIES.slice(0, 200);
-    return ALL_CITIES.filter((c) => c.toLowerCase().includes(q)).slice(0, 200);
+    const norm = (s: string) =>
+      s
+        .toLowerCase()
+        .normalize("NFD")
+        .replace(/[\u0300-\u036f]/g, "");
+    const q = norm(citySearch.trim());
+    if (!q) return ALL_CITIES.slice(0, 300);
+    return ALL_CITIES.filter((c) => norm(c).includes(q)).slice(0, 300);
   }, [citySearch]);
 
   async function handleFilesSelected(e: React.ChangeEvent<HTMLInputElement>) {
