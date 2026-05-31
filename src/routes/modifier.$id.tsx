@@ -17,6 +17,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { CATEGORIES, CONDITIONS, ALL_CITIES, LANGUAGES } from "@/lib/mykutub";
+import { sanitizeText, sanitizeMultiline } from "@/lib/sanitize";
 
 export const Route = createFileRoute("/modifier/$id")({
   component: EditPage,
@@ -166,8 +167,8 @@ function EditPage() {
     const { error } = await supabase
       .from("books")
       .update({
-        title,
-        description,
+        title: sanitizeText(title),
+        description: sanitizeMultiline(description),
         category,
         condition,
         city,

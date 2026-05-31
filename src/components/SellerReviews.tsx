@@ -8,6 +8,7 @@ import { StarRating } from "./StarRating";
 import { toast } from "sonner";
 import { Lock } from "lucide-react";
 import type { Review } from "@/lib/mykutub";
+import { sanitizeText, sanitizeMultiline } from "@/lib/sanitize";
 
 export function SellerReviews({ sellerId, chatId }: { sellerId: string; chatId?: string }) {
   const { user } = useAuth();
@@ -60,10 +61,11 @@ export function SellerReviews({ sellerId, chatId }: { sellerId: string; chatId?:
       .insert({
         seller_id: sellerId,
         reviewer_id: user.id,
-        reviewer_name:
+        reviewer_name: sanitizeText(
           user.user_metadata?.display_name || user.email?.split("@")[0] || "Utilisateur",
+        ),
         rating,
-        comment: comment || null,
+        comment: sanitizeMultiline(comment) || null,
         chat_id: chatId,
       })
       .select()

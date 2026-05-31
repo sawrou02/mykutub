@@ -30,6 +30,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import type { Book } from "@/lib/mykutub";
+import { sanitizeText } from "@/lib/sanitize";
 import { VerifiedPhoneBadge } from "@/components/VerifiedPhoneBadge";
 
 export const Route = createFileRoute("/profile")({
@@ -203,10 +204,10 @@ function ProfilePage() {
     const { error } = await supabase
       .from("profiles")
       .update({
-        display_name: profile.display_name,
+        display_name: sanitizeText(profile.display_name),
         phone: profile.phone,
         phone_visible: profile.phone_visible,
-        city: profile.city,
+        city: sanitizeText(profile.city),
       })
       .eq("id", user.id);
     setSaving(false);

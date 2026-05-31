@@ -49,6 +49,7 @@ import {
   LANGUAGES,
 } from "@/lib/mykutub";
 import { checkForbidden } from "@/lib/moderation";
+import { sanitizeText, sanitizeMultiline } from "@/lib/sanitize";
 
 const LANG_OPTIONS = Array.from(new Set([...LANGUAGES, "Autre"]));
 const MIN_PHOTOS = 3;
@@ -307,17 +308,19 @@ function PublishPage() {
     }
 
     const data = {
-      title: title.trim() || "Sans titre",
+      title: sanitizeText(title) || "Sans titre",
       category,
       condition,
       city: `${city}${postalCode ? ` (${postalCode})` : ""}${country === "Belgique" ? ", Belgique" : ""}`,
       language: language || "Français",
-      description,
+      description: sanitizeMultiline(description),
       price: isDonation ? 0 : Number(price),
       is_donation: isDonation,
       can_deliver: canDeliver,
       seller_id: user.id,
-      seller_name: user.user_metadata?.display_name || user.email?.split("@")[0] || "Utilisateur",
+      seller_name: sanitizeText(
+        user.user_metadata?.display_name || user.email?.split("@")[0] || "Utilisateur",
+      ),
       image_url: uploadedUrls[0] ?? "",
       // image_urls cast as never until Lovable regenerates types.ts
       image_urls: uploadedUrls,

@@ -1,6 +1,7 @@
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 import { supabaseAdmin } from "@/integrations/supabase/client.server";
+import { sanitizeText, sanitizeMultiline } from "@/lib/sanitize";
 
 const ADMIN_EMAIL = "ousmanebarry073@gmail.com";
 
@@ -15,10 +16,10 @@ export const submitContactMessage = createServerFn({ method: "POST" })
   .inputValidator((input) => ContactSchema.parse(input))
   .handler(async ({ data }) => {
     const { error } = await supabaseAdmin.from("contact_messages").insert({
-      name: data.name,
+      name: sanitizeText(data.name),
       email: data.email,
-      subject: data.subject,
-      message: data.message,
+      subject: sanitizeText(data.subject),
+      message: sanitizeMultiline(data.message),
     });
     if (error) throw new Error(error.message);
 

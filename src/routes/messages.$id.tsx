@@ -27,6 +27,7 @@ import {
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
 import { sendEmail } from "@/lib/email";
+import { sanitizeText, sanitizeMultiline } from "@/lib/sanitize";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -322,14 +323,15 @@ function ChatDetailPage() {
   const sendRaw = async (text: string, imageUrl?: string) => {
     if (!user || !chat) return;
     const recipientId = chat.participants.find((p) => p !== user.id);
-    const senderName =
-      user.user_metadata?.display_name || user.email?.split("@")[0] || "Utilisateur";
+    const senderName = sanitizeText(
+      user.user_metadata?.display_name || user.email?.split("@")[0] || "Utilisateur",
+    );
     const isImage = !!imageUrl;
     const row = {
       chat_id: chatId,
       sender_id: user.id,
       sender_name: senderName,
-      text: isImage ? "" : text,
+      text: isImage ? "" : sanitizeMultiline(text),
       kind: isImage ? "image" : "text",
       metadata: isImage ? { url: imageUrl } : null,
     };

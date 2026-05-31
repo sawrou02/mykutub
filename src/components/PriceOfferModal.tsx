@@ -11,6 +11,7 @@ import { useNavigate } from "@tanstack/react-router";
 import { Loader2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { notifyOfferEmail } from "@/lib/offers";
+import { sanitizeMultiline } from "@/lib/sanitize";
 import type { PriceOffer } from "@/lib/types";
 
 type Props = {
@@ -80,7 +81,7 @@ export function PriceOfferModal({ open, onOpenChange, book }: Props) {
     const { data, error } = await supabase.rpc("create_price_offer", {
       _book_id: book.id,
       _proposed_price: effectivePrice,
-      _message: message.trim() || undefined,
+      _message: sanitizeMultiline(message) || undefined,
     });
 
     setSubmitting(false);

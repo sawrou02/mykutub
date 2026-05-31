@@ -7,6 +7,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { BookOpen, Loader2, Trash2, Upload, Edit, Download } from "lucide-react";
 import type { DigitalBook } from "@/lib/types";
+import { sanitizeText, sanitizeMultiline } from "@/lib/sanitize";
 
 const BUCKET = "digital-books";
 
@@ -93,11 +94,11 @@ export function AdminDigitalLibraryTab() {
       }
 
       const { error } = await supabase.from("digital_books" as never).insert({
-        title: title.trim(),
-        author: author.trim(),
-        language: language.trim() || "Arabe",
-        category: category.trim() || null,
-        description: description.trim() || null,
+        title: sanitizeText(title),
+        author: sanitizeText(author),
+        language: sanitizeText(language) || "Arabe",
+        category: sanitizeText(category) || null,
+        description: sanitizeMultiline(description) || null,
         file_url: fileUrl,
         external_url: externalUrl.trim() || null,
         cover_url: coverUrl,

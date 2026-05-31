@@ -9,6 +9,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { toast } from "sonner";
 import { Loader2 } from "lucide-react";
 import { notifyOfferEmail } from "@/lib/offers";
+import { sanitizeMultiline } from "@/lib/sanitize";
 import type { PriceOffer } from "@/lib/types";
 
 type Props = {
@@ -46,7 +47,7 @@ export function CounterOfferModal({ open, onOpenChange, offerId, buyerOffer, lis
     const { error } = await supabase.rpc("counter_price_offer", {
       _offer_id: offerId,
       _counter_price: parsed,
-      _counter_message: message.trim() || undefined,
+      _counter_message: sanitizeMultiline(message) || undefined,
     });
     setSubmitting(false);
     if (error) {
