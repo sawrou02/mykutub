@@ -53,7 +53,7 @@ import { Input } from "@/components/ui/input";
 import { useAuth } from "@/hooks/useAuth";
 import { AdminUsersTab } from "@/components/admin/AdminUsersTab";
 import { AdminCharteTab } from "@/components/admin/AdminCharteTab";
-import { AdminDigitalLibraryTab } from "@/components/admin/AdminDigitalLibraryTab";
+
 
 type AdminBook = {
   id: string;
