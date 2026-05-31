@@ -98,7 +98,7 @@ function Landing() {
       </section>
 
       {/* Featured catalog */}
-      <section className="max-w-7xl mx-auto px-4 md:px-8 pt-3 md:pt-4 pb-16 md:pb-24">
+      <section className="max-w-7xl mx-auto px-4 md:px-8 pt-2 md:pt-2 pb-16 md:pb-24">
         <div className="flex items-end justify-between mb-6">
           <div>
             <h2 className="font-headline text-3xl md:text-4xl font-black">{t("home.latest")}</h2>
