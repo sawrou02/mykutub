@@ -43,7 +43,6 @@ import {
   CATEGORIES,
   CONDITIONS,
   ALL_CITIES,
-  BELGIUM_CITIES,
   COUNTRIES,
   CITY_POSTAL_CODES,
   LANGUAGES,
@@ -198,10 +197,12 @@ function PublishPage() {
   const [language, setLanguage] = useState("");
   const [price, setPrice] = useState("");
 
-  const cityOptions = useMemo(
-    () => (country === "Belgique" ? BELGIUM_CITIES : ALL_CITIES),
-    [country],
-  );
+  const [citySearch, setCitySearch] = useState("");
+  const cityOptions = useMemo(() => {
+    const q = citySearch.trim().toLowerCase();
+    if (!q) return ALL_CITIES.slice(0, 200);
+    return ALL_CITIES.filter((c) => c.toLowerCase().includes(q)).slice(0, 200);
+  }, [citySearch]);
 
   async function handleFilesSelected(e: React.ChangeEvent<HTMLInputElement>) {
     const files = Array.from(e.target.files ?? []);
@@ -310,7 +311,7 @@ function PublishPage() {
       title: title.trim() || "Sans titre",
       category,
       condition,
-      city: `${city}${postalCode ? ` (${postalCode})` : ""}${country === "Belgique" ? ", Belgique" : ""}`,
+      city: `${city}${postalCode ? ` (${postalCode})` : ""}`,
       language: language || "Français",
       description,
       price: isDonation ? 0 : Number(price),
@@ -601,12 +602,16 @@ function PublishPage() {
                   className="p-0 w-[--radix-popover-trigger-width] max-w-[420px]"
                   align="start"
                 >
-                  <Command>
-                    <CommandInput placeholder="Tapez le nom de la ville…" />
+                  <Command shouldFilter={false}>
+                    <CommandInput
+                      placeholder="Tapez le nom de la ville…"
+                      value={citySearch}
+                      onValueChange={setCitySearch}
+                    />
                     <CommandList>
                       <CommandEmpty>Aucune ville trouvée.</CommandEmpty>
                       <CommandGroup>
-                        {cityOptions.slice(0, 200).map((c) => (
+                        {cityOptions.map((c) => (
                           <CommandItem key={c} value={c} onSelect={() => handleCitySelect(c)}>
                             <Check
                               className={cn(
@@ -638,7 +643,7 @@ function PublishPage() {
                 onChange={(e) => setPostalCode(e.target.value.replace(/[^0-9]/g, ""))}
                 inputMode="numeric"
                 maxLength={5}
-                placeholder={country === "Belgique" ? "1000" : "75001"}
+                placeholder="75001"
                 className="h-11"
               />
             </div>
@@ -654,7 +659,7 @@ function PublishPage() {
               type="tel"
               value={phone}
               onChange={(e) => setPhone(e.target.value)}
-              placeholder={country === "Belgique" ? "+32 4 ..." : "06 12 34 56 78"}
+              placeholder="06 12 34 56 78"
               className="h-11"
             />
             <p className="text-[11px] text-muted-foreground">
