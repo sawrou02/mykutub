@@ -325,22 +325,36 @@ function ChatDetailPage() {
     const senderName =
       user.user_metadata?.display_name || user.email?.split("@")[0] || "Utilisateur";
     const isImage = !!imageUrl;
-    const row = {
-      chat_id: chatId,
-      sender_id: user.id,
-      sender_name: senderName,
-      text: isImage ? "" : text,
-      kind: isImage ? "image" : "text",
-      metadata: isImage ? { url: imageUrl } : null,
-    };
-    const { error } = await supabase.from("messages").insert(row);
+    // For text messages, we omit kind/metadata: the DB default 'text' is
+    // applied and the insert works even on schemas where the kind column
+    // hasn't been migrated yet. For images we must set kind so the
+    // restrictive RLS policy accepts the row.
+    const row = isImage
+      ? {
+          chat_id: chatId,
+          sender_id: user.id,
+          sender_name: senderName,
+          text: "",
+          kind: "image",
+          metadata: { url: imageUrl },
+        }
+      : {
+          chat_id: chatId,
+          sender_id: user.id,
+          sender_name: senderName,
+          text,
+        };
+    const { error } = await supabase.from("messages").insert(row as never);
     if (error) {
-      // RLS block from blocked_users restrictive policy returns a 42501 / row-level error
       const msg = (error.message || "").toLowerCase();
       if (msg.includes("row-level") || msg.includes("policy") || error.code === "42501") {
         toast.error("Vous ne pouvez pas contacter cet utilisateur");
+      } else if (msg.includes("rate limit") || msg.includes("too many")) {
+        toast.error("Trop de messages envoyés. Réessayez dans quelques secondes.");
       } else {
-        toast.error("Échec de l'envoi");
+        // Surface the real error so we can diagnose silent failures
+        toast.error(`Échec de l'envoi : ${error.message}`);
+        console.error("[sendRaw] insert messages failed", error);
       }
       throw error;
     }

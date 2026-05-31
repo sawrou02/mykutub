@@ -462,6 +462,7 @@ function BookDetailPage() {
               <div className="flex items-center gap-3">
                 <Link
                   to="/user/$id"
+                  search={{ chatId: undefined }}
                   params={{ id: book.seller_id }}
                   className={cn(
                     "w-12 h-12 rounded-full flex items-center justify-center text-white font-bold hover:opacity-90",
@@ -473,6 +474,7 @@ function BookDetailPage() {
                 <div className="flex-1 min-w-0">
                   <Link
                     to="/user/$id"
+                    search={{ chatId: undefined }}
                     params={{ id: book.seller_id }}
                     className="font-semibold text-base truncate flex items-center gap-1.5 hover:underline"
                   >
@@ -565,6 +567,7 @@ function BookDetailPage() {
                 <div className="flex items-center gap-3">
                   <Link
                     to="/user/$id"
+                    search={{ chatId: undefined }}
                     params={{ id: book.seller_id }}
                     className={cn(
                       "w-14 h-14 rounded-full flex items-center justify-center text-white font-bold text-lg hover:opacity-90",
@@ -576,6 +579,7 @@ function BookDetailPage() {
                   <div className="flex-1 min-w-0">
                     <Link
                       to="/user/$id"
+                      search={{ chatId: undefined }}
                       params={{ id: book.seller_id }}
                       className="font-bold text-lg truncate flex items-center gap-1.5 hover:underline"
                     >
