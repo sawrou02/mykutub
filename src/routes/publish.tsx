@@ -602,12 +602,16 @@ function PublishPage() {
                   className="p-0 w-[--radix-popover-trigger-width] max-w-[420px]"
                   align="start"
                 >
-                  <Command>
-                    <CommandInput placeholder="Tapez le nom de la ville…" />
+                  <Command shouldFilter={false}>
+                    <CommandInput
+                      placeholder="Tapez le nom de la ville…"
+                      value={citySearch}
+                      onValueChange={setCitySearch}
+                    />
                     <CommandList>
                       <CommandEmpty>Aucune ville trouvée.</CommandEmpty>
                       <CommandGroup>
-                        {cityOptions.slice(0, 200).map((c) => (
+                        {cityOptions.map((c) => (
                           <CommandItem key={c} value={c} onSelect={() => handleCitySelect(c)}>
                             <Check
                               className={cn(
