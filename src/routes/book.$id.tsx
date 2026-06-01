@@ -221,7 +221,7 @@ function BookDetailPage() {
   };
 
   const makeOfferDraft = `Bonjour, je suis intéressé(e) par votre livre « ${book?.title ?? ""} ». Je souhaiterais vous faire une offre. Êtes-vous disponible pour en discuter ?`;
-  const contactSellerDraft = `Bonjour, j'ai vu votre annonce pour « ${book?.title ?? ""} » et je souhaiterais obtenir plus d'informations. Merci.`;
+  const contactSellerDraft = `Bonjour, cet article « ${book?.title ?? ""} » est-il toujours disponible ?`;
   const requestDonationDraft = `Bonjour, je suis très intéressé(e) par votre livre offert « ${book?.title ?? ""} ». J'en prendrai grand soin. Merci pour votre générosité.`;
 
   const handleShare = async () => {
