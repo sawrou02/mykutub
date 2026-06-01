@@ -612,20 +612,30 @@ function PublishPage() {
                       onValueChange={setCitySearch}
                     />
                     <CommandList>
-                      <CommandEmpty>Aucune ville trouvée.</CommandEmpty>
+                      <CommandEmpty>
+                        {communesLoading
+                          ? "Recherche…"
+                          : citySearch.trim().length < 2
+                            ? "Tapez au moins 2 lettres."
+                            : "Aucune ville trouvée."}
+                      </CommandEmpty>
                       <CommandGroup>
-                        {cityOptions.map((c) => (
-                          <CommandItem key={c} value={c} onSelect={() => handleCitySelect(c)}>
+                        {communeOptions.map((c) => (
+                          <CommandItem
+                            key={c.code}
+                            value={c.code}
+                            onSelect={() => handleCitySelect(c.nom, c.codePostal)}
+                          >
                             <Check
                               className={cn(
                                 "mr-2 h-4 w-4",
-                                city === c ? "opacity-100" : "opacity-0",
+                                city === c.nom ? "opacity-100" : "opacity-0",
                               )}
                             />
-                            {c}
-                            {CITY_POSTAL_CODES[c] && (
+                            {c.nom}
+                            {c.codePostal && (
                               <span className="ml-auto text-xs text-muted-foreground">
-                                {CITY_POSTAL_CODES[c]}
+                                {c.codePostal}
                               </span>
                             )}
                           </CommandItem>
