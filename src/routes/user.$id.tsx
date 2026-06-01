@@ -309,7 +309,7 @@ function UserProfilePage() {
       <div className="max-w-3xl mx-auto px-3 pt-3">
         {(() => {
           const activeBooks = books.filter((b) => b.status === "available" || b.status === "reserved");
-          const soldBooks = books.filter((b) => b.status === "sold" || b.status === "given");
+          const soldBooks = books.filter((b) => b.status === "given" || (b.status as string) === "sold");
           return (
             <Tabs defaultValue="annonces" className="w-full">
               <TabsList className="w-full bg-transparent border-b rounded-none h-auto p-0 justify-start gap-4">
