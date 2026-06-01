@@ -284,7 +284,8 @@ export function BookReservation({ book, onBookChange }: Props) {
               </p>
               <div className="flex flex-col sm:flex-row gap-2">
                 <Button onClick={markGiven} disabled={busy} className="flex-1 rounded-full">
-                  <Check size={14} className="mr-1" /> Marquer comme donné
+                  <Check size={14} className="mr-1" />{" "}
+                  {book.is_donation ? "Marquer comme donné" : "Marquer comme vendu"}
                 </Button>
                 <Button
                   onClick={cancelReservation}
@@ -298,10 +299,11 @@ export function BookReservation({ book, onBookChange }: Props) {
             </div>
           )}
 
-          {status === "given" && (
+          {(status === "given" || status === "sold") && (
             <div className="space-y-2">
               <p className="text-sm text-muted-foreground">
-                Ce livre a été marqué comme donné. Jazak Allahu khayran !
+                Ce livre a été marqué comme {status === "sold" ? "vendu" : "donné"}. Jazak Allahu
+                khayran !
               </p>
               <Button onClick={reopen} disabled={busy} variant="outline" className="rounded-full">
                 <RotateCcw size={14} className="mr-1" /> Remettre en disponible
