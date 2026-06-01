@@ -108,6 +108,7 @@ export function BookCard({
         <Link
           to="/user/$id"
           params={{ id: book.seller_id }}
+          search={{ chatId: undefined }}
           className="flex items-center gap-1.5 min-w-0 hover:underline"
         >
           <div
