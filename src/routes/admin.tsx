@@ -623,10 +623,7 @@ function AdminPage() {
                 className="gap-1.5 text-destructive"
                 onClick={async () => {
                   if (!confirm("Effacer tout l'historique des signalements ?")) return;
-                  const { error } = await supabase
-                    .from("reports")
-                    .delete()
-                    .not("id", "is", null);
+                  const { error } = await supabase.from("reports").delete().not("id", "is", null);
                   if (error) toast.error(error.message);
                   else {
                     toast.success("Historique des signalements effacé");
