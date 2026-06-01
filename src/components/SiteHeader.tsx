@@ -216,7 +216,11 @@ export function SiteHeader() {
                     </>
                   ) : (
                     <>
-                      <Link to="/login" onClick={closeMobile} className="px-4 py-3 rounded-lg font-medium hover:bg-muted">
+                      <Link
+                        to="/login"
+                        onClick={closeMobile}
+                        className="px-4 py-3 rounded-lg font-medium hover:bg-muted"
+                      >
                         {t("nav.login")}
                       </Link>
                       <Link

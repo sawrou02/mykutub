@@ -271,7 +271,9 @@ function PublishPage() {
       return;
     }
     if (photos.length < MIN_PHOTOS) {
-      toast.error(`Minimum ${MIN_PHOTOS} photos requises : Couverture + Dernière couverture + Photo intérieure.`);
+      toast.error(
+        `Minimum ${MIN_PHOTOS} photos requises : Couverture + Dernière couverture + Photo intérieure.`,
+      );
       return;
     }
     if (!checklistOk) {
@@ -336,8 +338,7 @@ function PublishPage() {
       } else {
         toast.error(error.message);
       }
-    }
-    else {
+    } else {
       // Best-effort: persist phone on profile for future contacts
       if (phone.trim()) {
         await supabase.from("profiles").update({ phone: phone.trim() }).eq("id", user.id);
@@ -472,7 +473,8 @@ function PublishPage() {
             )}
             {photos.length < MIN_PHOTOS && (
               <p className="text-xs text-destructive mt-2 font-medium">
-                ⚠ Ajoutez au moins {MIN_PHOTOS} photos : Couverture + Dernière couverture + Photo intérieure.
+                ⚠ Ajoutez au moins {MIN_PHOTOS} photos : Couverture + Dernière couverture + Photo
+                intérieure.
               </p>
             )}
             <Button

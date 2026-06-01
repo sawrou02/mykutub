@@ -118,7 +118,9 @@ export function BookCard({
           >
             {initial}
           </div>
-          <span className="text-[11px] font-medium text-foreground truncate">{book.seller_name}</span>
+          <span className="text-[11px] font-medium text-foreground truncate">
+            {book.seller_name}
+          </span>
         </Link>
         {rating && (
           <span className="flex items-center gap-0.5 text-[10px] text-muted-foreground flex-shrink-0">
