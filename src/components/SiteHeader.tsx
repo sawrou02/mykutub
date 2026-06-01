@@ -1,4 +1,5 @@
 import { Link, useLocation } from "@tanstack/react-router";
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { Menu, BookOpen, MessageCircle, User, PlusCircle, ShieldCheck, Tag } from "lucide-react";
@@ -20,6 +21,8 @@ export function SiteHeader() {
   const unreadCount = useUnreadChats();
   const pendingOffersCount = usePendingOffersCount();
   const { t } = useTranslation();
+  const [mobileOpen, setMobileOpen] = useState(false);
+  const closeMobile = () => setMobileOpen(false);
 
   const links = [
     { to: "/", label: t("nav.home") },
@@ -145,7 +148,7 @@ export function SiteHeader() {
             )}
             <InstallPWAButton className="relative hidden sm:block" />
             <LanguageSwitcher />
-            <Sheet>
+            <Sheet open={mobileOpen} onOpenChange={setMobileOpen}>
               <SheetTrigger asChild>
                 <Button variant="ghost" size="icon" className="lg:hidden">
                   <Menu size={22} />
@@ -157,6 +160,7 @@ export function SiteHeader() {
                     <Link
                       key={l.to}
                       to={l.to}
+                      onClick={closeMobile}
                       className="px-4 py-3 rounded-lg text-base font-medium hover:bg-muted"
                     >
                       {l.label}
@@ -167,36 +171,57 @@ export function SiteHeader() {
                     <>
                       <Link
                         to="/publish"
+                        onClick={closeMobile}
                         className="px-4 py-3 rounded-lg font-medium hover:bg-muted"
                       >
                         {t("nav.publishBook")}
                       </Link>
                       <Link
                         to="/messages"
+                        onClick={closeMobile}
                         className="px-4 py-3 rounded-lg font-medium hover:bg-muted"
                       >
                         {t("nav.messages")}
                       </Link>
                       <Link
+                        to="/offers"
+                        onClick={closeMobile}
+                        className="px-4 py-3 rounded-lg font-medium hover:bg-muted"
+                      >
+                        Mes propositions
+                      </Link>
+                      <Link
                         to="/profile"
+                        onClick={closeMobile}
                         className="px-4 py-3 rounded-lg font-medium hover:bg-muted"
                       >
                         {t("nav.account")}
                       </Link>
                       <Link
                         to="/settings"
+                        onClick={closeMobile}
                         className="px-4 py-3 rounded-lg font-medium hover:bg-muted"
                       >
                         Paramètres
                       </Link>
+                      {isAdmin && (
+                        <Link
+                          to="/admin"
+                          onClick={closeMobile}
+                          className="px-4 py-3 rounded-lg font-medium hover:bg-muted flex items-center gap-2 text-primary"
+                        >
+                          <ShieldCheck size={18} /> Administration
+                        </Link>
+                      )}
                     </>
                   ) : (
                     <>
-                      <Link to="/login" className="px-4 py-3 rounded-lg font-medium hover:bg-muted">
+                      <Link to="/login" onClick={closeMobile} className="px-4 py-3 rounded-lg font-medium hover:bg-muted">
                         {t("nav.login")}
                       </Link>
                       <Link
                         to="/signup"
+                        onClick={closeMobile}
                         className="px-4 py-3 rounded-lg bg-primary text-primary-foreground font-medium text-center"
                       >
                         {t("nav.signup")}
