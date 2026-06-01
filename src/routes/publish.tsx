@@ -330,7 +330,13 @@ function PublishPage() {
     };
     const { error } = await supabase.from("books").insert(data as never);
     setLoading(false);
-    if (error) toast.error(error.message);
+    if (error) {
+      if (isDonation && /Max 3 donations|row-level security/i.test(error.message)) {
+        toast.error("Limite atteinte : maximum 3 dons par mois.");
+      } else {
+        toast.error(error.message);
+      }
+    }
     else {
       // Best-effort: persist phone on profile for future contacts
       if (phone.trim()) {
