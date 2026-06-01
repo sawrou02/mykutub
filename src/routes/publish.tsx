@@ -42,11 +42,10 @@ import { cn } from "@/lib/utils";
 import {
   CATEGORIES,
   CONDITIONS,
-  ALL_CITIES,
   COUNTRIES,
-  CITY_POSTAL_CODES,
   LANGUAGES,
 } from "@/lib/mykutub";
+import { useCommuneSearch } from "@/hooks/useCommuneSearch";
 import { checkForbidden } from "@/lib/moderation";
 
 const LANG_OPTIONS = Array.from(new Set([...LANGUAGES, "Autre"]));
@@ -198,16 +197,8 @@ function PublishPage() {
   const [price, setPrice] = useState("");
 
   const [citySearch, setCitySearch] = useState("");
-  const cityOptions = useMemo(() => {
-    const norm = (s: string) =>
-      s
-        .toLowerCase()
-        .normalize("NFD")
-        .replace(/[\u0300-\u036f]/g, "");
-    const q = norm(citySearch.trim());
-    if (!q) return ALL_CITIES.slice(0, 300);
-    return ALL_CITIES.filter((c) => norm(c).includes(q)).slice(0, 300);
-  }, [citySearch]);
+  const { options: communeOptions, loading: communesLoading } =
+    useCommuneSearch(citySearch);
 
   async function handleFilesSelected(e: React.ChangeEvent<HTMLInputElement>) {
     const files = Array.from(e.target.files ?? []);
@@ -245,11 +236,10 @@ function PublishPage() {
     });
   }
 
-  function handleCitySelect(value: string) {
-    setCity(value);
+  function handleCitySelect(nom: string, codePostal?: string) {
+    setCity(nom);
     setCityOpen(false);
-    const pc = CITY_POSTAL_CODES[value];
-    if (pc) setPostalCode(pc);
+    if (codePostal) setPostalCode(codePostal);
   }
 
   // Checklist derived from required fields
@@ -622,20 +612,30 @@ function PublishPage() {
                       onValueChange={setCitySearch}
                     />
                     <CommandList>
-                      <CommandEmpty>Aucune ville trouvée.</CommandEmpty>
+                      <CommandEmpty>
+                        {communesLoading
+                          ? "Recherche…"
+                          : citySearch.trim().length < 2
+                            ? "Tapez au moins 2 lettres."
+                            : "Aucune ville trouvée."}
+                      </CommandEmpty>
                       <CommandGroup>
-                        {cityOptions.map((c) => (
-                          <CommandItem key={c} value={c} onSelect={() => handleCitySelect(c)}>
+                        {communeOptions.map((c) => (
+                          <CommandItem
+                            key={c.code}
+                            value={c.code}
+                            onSelect={() => handleCitySelect(c.nom, c.codePostal)}
+                          >
                             <Check
                               className={cn(
                                 "mr-2 h-4 w-4",
-                                city === c ? "opacity-100" : "opacity-0",
+                                city === c.nom ? "opacity-100" : "opacity-0",
                               )}
                             />
-                            {c}
-                            {CITY_POSTAL_CODES[c] && (
+                            {c.nom}
+                            {c.codePostal && (
                               <span className="ml-auto text-xs text-muted-foreground">
-                                {CITY_POSTAL_CODES[c]}
+                                {c.codePostal}
                               </span>
                             )}
                           </CommandItem>
