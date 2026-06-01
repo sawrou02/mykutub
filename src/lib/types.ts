@@ -13,7 +13,7 @@ export type Book = {
   seller_name: string;
   can_deliver?: boolean;
   created_at: string;
-  status?: "available" | "reserved" | "given";
+  status?: "available" | "reserved" | "given" | "sold";
   reserved_by?: string | null;
   reserved_at?: string | null;
   language?: string;
