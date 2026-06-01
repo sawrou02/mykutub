@@ -512,6 +512,29 @@ export function AdminUsersTab() {
                   )}
                   {p.verified ? "Retirer la vérification" : "Vérifier le profil"}
                 </DropdownMenuItem>
+                <DropdownMenuItem
+                  onClick={async () => {
+                    const label = window.prompt(
+                      "Nom du badge (ex: Vendeur réactif, Top donneur) :",
+                    );
+                    if (!label) return;
+                    const { error } = await supabase
+                      .from("user_badges")
+                      .insert({ user_id: p.id, label: label.trim(), awarded_by: admin?.id });
+                    if (error) toast.error(error.message);
+                    else {
+                      toast.success(`Badge "${label}" attribué`);
+                      await supabase.from("notifications").insert({
+                        user_id: p.id,
+                        message: `Vous avez reçu un nouveau badge : ${label}`,
+                        type: "badge",
+                        link: `/user/${p.id}`,
+                      });
+                    }
+                  }}
+                >
+                  <BadgeCheck size={14} className="mr-2" /> Attribuer un badge
+                </DropdownMenuItem>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem onClick={() => open(p, "warn")} disabled={isSelf}>
                   <AlertTriangle size={14} className="mr-2" /> Avertir

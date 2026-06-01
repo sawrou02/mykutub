@@ -831,6 +831,33 @@ export type Database = {
         }
         Relationships: []
       }
+      user_badges: {
+        Row: {
+          awarded_by: string | null
+          color: string
+          created_at: string
+          id: string
+          label: string
+          user_id: string
+        }
+        Insert: {
+          awarded_by?: string | null
+          color?: string
+          created_at?: string
+          id?: string
+          label: string
+          user_id: string
+        }
+        Update: {
+          awarded_by?: string | null
+          color?: string
+          created_at?: string
+          id?: string
+          label?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       user_roles: {
         Row: {
           created_at: string

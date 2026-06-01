@@ -39,6 +39,7 @@ import { toast } from "sonner";
 import { sendEmail } from "@/lib/email";
 import type { Book, Review } from "@/lib/mykutub";
 import { VerifiedPhoneBadge } from "@/components/VerifiedPhoneBadge";
+import { UserBadgesList } from "@/components/UserBadgesList";
 
 export const Route = createFileRoute("/user/$id")({
   validateSearch: (s: Record<string, unknown>) => ({
@@ -243,6 +244,7 @@ function UserProfilePage() {
               <div className="flex items-center gap-2 flex-wrap">
                 <h2 className="font-bold text-base truncate">{displayName}</h2>
                 {profile?.phone_verified && <VerifiedPhoneBadge />}
+                <UserBadgesList userId={userId} />
               </div>
               <div className="flex items-center gap-1 mt-0.5 text-xs">
                 <Star size={12} className="fill-amber-500 text-amber-500" />
