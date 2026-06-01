@@ -51,7 +51,7 @@ import { checkForbidden } from "@/lib/moderation";
 
 const LANG_OPTIONS = Array.from(new Set([...LANGUAGES, "Autre"]));
 const MIN_PHOTOS = 3;
-const PHOTO_LABELS = ["Couverture", "Photo intérieure", "Photo intérieure"];
+const PHOTO_LABELS = ["Couverture", "Dernière couverture", "Photo intérieure"];
 // Tolerance for portrait 3:4 ratio (allow ~5% deviation)
 const TARGET_RATIO = 3 / 4;
 const RATIO_TOLERANCE = 0.05;
@@ -271,7 +271,7 @@ function PublishPage() {
       return;
     }
     if (photos.length < MIN_PHOTOS) {
-      toast.error(`Minimum ${MIN_PHOTOS} photos requises : 1 Couverture + 2 Photos intérieures.`);
+      toast.error(`Minimum ${MIN_PHOTOS} photos requises : Couverture + Dernière couverture + Photo intérieure.`);
       return;
     }
     if (!checklistOk) {
@@ -435,7 +435,7 @@ function PublishPage() {
                         missing ? "text-destructive" : "text-muted-foreground",
                       )}
                     >
-                      {slot === 0 ? "Couverture" : "Intérieur"}
+                      {label}
                     </p>
                   </div>
                 );
@@ -466,7 +466,7 @@ function PublishPage() {
             )}
             {photos.length < MIN_PHOTOS && (
               <p className="text-xs text-destructive mt-2 font-medium">
-                ⚠ Ajoutez au moins {MIN_PHOTOS} photos (1 Couverture + 2 Photos intérieures).
+                ⚠ Ajoutez au moins {MIN_PHOTOS} photos : Couverture + Dernière couverture + Photo intérieure.
               </p>
             )}
             <Button
