@@ -173,14 +173,26 @@ export function BookReservation({ book, onBookChange }: Props) {
 
   const markGiven = async () => {
     setBusy(true);
-    const { error } = await supabase.from("books").update({ status: "given" }).eq("id", book.id);
-    if (!error && book.reserved_by) {
-      await supabase.from("notifications").insert({
-        user_id: book.reserved_by,
-        message: `« ${book.title} » a été marqué comme remis. Jazak Allahu khayran !`,
-        type: "given",
+    const newStatus = book.is_donation ? "given" : "sold";
+    const verb = book.is_donation ? "donné" : "vendu";
+    const { error } = await supabase.from("books").update({ status: newStatus }).eq("id", book.id);
+    if (!error) {
+      const notifs: Array<{ user_id: string; message: string; type: string; link: string }> = [];
+      if (book.reserved_by) {
+        notifs.push({
+          user_id: book.reserved_by,
+          message: `« ${book.title} » a été marqué comme ${verb}. Laissez un avis au vendeur !`,
+          type: "review_request",
+          link: `/user/${book.seller_id}?review=1&book=${book.id}`,
+        });
+      }
+      notifs.push({
+        user_id: book.seller_id,
+        message: `Votre livre « ${book.title} » a bien été marqué comme ${verb}. Jazak Allahu khayran !`,
+        type: newStatus,
         link: `/book/${book.id}`,
       });
+      await supabase.from("notifications").insert(notifs);
     }
     setBusy(false);
   };
