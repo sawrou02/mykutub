@@ -12,11 +12,22 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Checkbox } from "@/components/ui/checkbox";
-import { Camera, ChevronLeft, Loader2, X } from "lucide-react";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import {
+  Command,
+  CommandEmpty,
+  CommandGroup,
+  CommandInput,
+  CommandItem,
+  CommandList,
+} from "@/components/ui/command";
+import { Camera, Check, ChevronLeft, ChevronsUpDown, Loader2, X } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
-import { CATEGORIES, CONDITIONS, ALL_CITIES, LANGUAGES } from "@/lib/mykutub";
+import { cn } from "@/lib/utils";
+import { CATEGORIES, CONDITIONS, LANGUAGES } from "@/lib/mykutub";
+import { useCommuneSearch } from "@/hooks/useCommuneSearch";
 
 export const Route = createFileRoute("/modifier/$id")({
   component: EditPage,
