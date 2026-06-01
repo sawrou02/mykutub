@@ -103,12 +103,11 @@ export function BookCard({
   const initial = (book.seller_name || "?").trim().charAt(0).toUpperCase();
 
   return (
-    <Link to="/book/$id" params={{ id: book.id }} className="block group">
+    <div className="block group">
       <div className="flex items-center gap-1.5 mb-1.5 min-w-0">
         <Link
           to="/user/$id"
           params={{ id: book.seller_id }}
-          onClick={(e) => e.stopPropagation()}
           className="flex items-center gap-1.5 min-w-0 hover:underline"
         >
           <div
@@ -130,64 +129,66 @@ export function BookCard({
         )}
       </div>
 
-      <div className="relative aspect-square overflow-hidden bg-muted rounded-lg">
-        <img
-          src={book.image_url}
-          alt={`${book.title} — livre islamique d'occasion${book.city ? ` à ${book.city}` : ""}`}
-          width={400}
-          height={400}
-          loading="lazy"
-          decoding="async"
-          className="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
-        />
-        <button
-          onClick={toggleFav}
-          disabled={busy}
-          className="absolute top-1.5 right-1.5 p-1.5 rounded-full bg-white/90 text-foreground hover:text-destructive shadow-sm disabled:opacity-50"
-          aria-label="Favori"
-        >
-          <Heart
-            size={12}
-            fill={isLiked ? "currentColor" : "transparent"}
-            className={cn(isLiked && "text-destructive")}
+      <Link to="/book/$id" params={{ id: book.id }} className="block">
+        <div className="relative aspect-square overflow-hidden bg-muted rounded-lg">
+          <img
+            src={book.image_url}
+            alt={`${book.title} — livre islamique d'occasion${book.city ? ` à ${book.city}` : ""}`}
+            width={400}
+            height={400}
+            loading="lazy"
+            decoding="async"
+            className="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
           />
-        </button>
-        {book.is_donation && (
-          <span className="absolute top-1.5 left-1.5 bg-secondary text-secondary-foreground text-[8px] font-bold uppercase px-1.5 py-0.5 rounded">
-            Don
-          </span>
-        )}
-        {book.status === "reserved" && (
-          <div className="absolute inset-0 bg-black/40 flex items-center justify-center">
-            <span className="bg-amber-500 text-white text-[10px] font-bold uppercase px-2 py-1 rounded shadow">
-              Réservé
+          <button
+            onClick={toggleFav}
+            disabled={busy}
+            className="absolute top-1.5 right-1.5 p-1.5 rounded-full bg-white/90 text-foreground hover:text-destructive shadow-sm disabled:opacity-50"
+            aria-label="Favori"
+          >
+            <Heart
+              size={12}
+              fill={isLiked ? "currentColor" : "transparent"}
+              className={cn(isLiked && "text-destructive")}
+            />
+          </button>
+          {book.is_donation && (
+            <span className="absolute top-1.5 left-1.5 bg-secondary text-secondary-foreground text-[8px] font-bold uppercase px-1.5 py-0.5 rounded">
+              Don
             </span>
-          </div>
-        )}
-        {book.status === "given" && (
-          <div className="absolute inset-0 bg-black/55 flex items-center justify-center">
-            <span className="bg-red-600 text-white text-[10px] font-bold uppercase px-2 py-1 rounded shadow">
-              Déjà donné
-            </span>
-          </div>
-        )}
-      </div>
-      <div className="pt-1.5 space-y-0.5">
-        <h3 className="font-semibold text-[13px] leading-tight line-clamp-2 group-hover:text-primary transition-colors">
-          {book.title}
-        </h3>
-        <p className="font-bold text-sm text-foreground">
-          {book.is_donation ? "Don" : `${book.price} €`}
-        </p>
-        {book.can_deliver && (
-          <p className="flex items-center gap-1 text-[10px] text-muted-foreground">
-            <Truck size={10} /> Livraison possible
+          )}
+          {book.status === "reserved" && (
+            <div className="absolute inset-0 bg-black/40 flex items-center justify-center">
+              <span className="bg-amber-500 text-white text-[10px] font-bold uppercase px-2 py-1 rounded shadow">
+                Réservé
+              </span>
+            </div>
+          )}
+          {book.status === "given" && (
+            <div className="absolute inset-0 bg-black/55 flex items-center justify-center">
+              <span className="bg-red-600 text-white text-[10px] font-bold uppercase px-2 py-1 rounded shadow">
+                Déjà donné
+              </span>
+            </div>
+          )}
+        </div>
+        <div className="pt-1.5 space-y-0.5">
+          <h3 className="font-semibold text-[13px] leading-tight line-clamp-2 group-hover:text-primary transition-colors">
+            {book.title}
+          </h3>
+          <p className="font-bold text-sm text-foreground">
+            {book.is_donation ? "Don" : `${book.price} €`}
           </p>
-        )}
-        <p className="text-[10px] text-muted-foreground truncate">
-          {book.city} · {new Date(book.created_at).toLocaleDateString("fr-FR")}
-        </p>
-      </div>
-    </Link>
+          {book.can_deliver && (
+            <p className="flex items-center gap-1 text-[10px] text-muted-foreground">
+              <Truck size={10} /> Livraison possible
+            </p>
+          )}
+          <p className="text-[10px] text-muted-foreground truncate">
+            {book.city} · {new Date(book.created_at).toLocaleDateString("fr-FR")}
+          </p>
+        </div>
+      </Link>
+    </div>
   );
 }
