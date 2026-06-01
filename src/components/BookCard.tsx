@@ -105,15 +105,22 @@ export function BookCard({
   return (
     <Link to="/book/$id" params={{ id: book.id }} className="block group">
       <div className="flex items-center gap-1.5 mb-1.5 min-w-0">
-        <div
-          className={cn(
-            "w-5 h-5 rounded-full flex items-center justify-center text-white text-[10px] font-bold flex-shrink-0",
-            colorFor(book.seller_id),
-          )}
+        <Link
+          to="/user/$id"
+          params={{ id: book.seller_id }}
+          onClick={(e) => e.stopPropagation()}
+          className="flex items-center gap-1.5 min-w-0 hover:underline"
         >
-          {initial}
-        </div>
-        <span className="text-[11px] font-medium text-foreground truncate">{book.seller_name}</span>
+          <div
+            className={cn(
+              "w-5 h-5 rounded-full flex items-center justify-center text-white text-[10px] font-bold flex-shrink-0",
+              colorFor(book.seller_id),
+            )}
+          >
+            {initial}
+          </div>
+          <span className="text-[11px] font-medium text-foreground truncate">{book.seller_name}</span>
+        </Link>
         {rating && (
           <span className="flex items-center gap-0.5 text-[10px] text-muted-foreground flex-shrink-0">
             <Star size={10} className="fill-amber-500 text-amber-500" />
