@@ -678,6 +678,7 @@ function BookListRow({ book }: { book: Book }) {
               <Link
                 to="/user/$id"
                 params={{ id: book.seller_id }}
+                search={{ chatId: undefined }}
                 onClick={(e) => e.stopPropagation()}
                 className="hover:underline hover:text-primary"
               >
