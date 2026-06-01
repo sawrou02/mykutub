@@ -615,6 +615,29 @@ function AdminPage() {
         </TabsContent>
 
         <TabsContent value="reports" className="space-y-2">
+          {reports.length > 0 && (
+            <div className="flex justify-end">
+              <Button
+                size="sm"
+                variant="outline"
+                className="gap-1.5 text-destructive"
+                onClick={async () => {
+                  if (!confirm("Effacer tout l'historique des signalements ?")) return;
+                  const { error } = await supabase
+                    .from("reports")
+                    .delete()
+                    .not("id", "is", null);
+                  if (error) toast.error(error.message);
+                  else {
+                    toast.success("Historique des signalements effacé");
+                    setReports([]);
+                  }
+                }}
+              >
+                <Trash2 size={14} /> Effacer l'historique
+              </Button>
+            </div>
+          )}
           {groupedReports.length === 0 && (
             <p className="text-muted-foreground text-center py-8">{t("admin.noReports")}</p>
           )}
