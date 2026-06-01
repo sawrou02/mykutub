@@ -365,18 +365,68 @@ function EditPage() {
         <div className="grid grid-cols-2 gap-3">
           <div className="space-y-1.5">
             <Label className="text-xs font-bold uppercase tracking-widest">Ville *</Label>
-            <Select value={city} onValueChange={setCity} required>
-              <SelectTrigger className="h-11">
-                <SelectValue placeholder="Choisir" />
-              </SelectTrigger>
-              <SelectContent>
-                {ALL_CITIES.map((c) => (
-                  <SelectItem key={c} value={c}>
-                    {c}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+            <Popover open={cityOpen} onOpenChange={setCityOpen}>
+              <PopoverTrigger asChild>
+                <Button
+                  type="button"
+                  variant="outline"
+                  role="combobox"
+                  aria-expanded={cityOpen}
+                  className="h-11 w-full justify-between font-normal"
+                >
+                  <span className={cn(!city && "text-muted-foreground")}>
+                    {city || "Rechercher une ville…"}
+                  </span>
+                  <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent
+                className="p-0 w-[--radix-popover-trigger-width] max-w-[420px]"
+                align="start"
+              >
+                <Command shouldFilter={false}>
+                  <CommandInput
+                    placeholder="Tapez le nom de la ville…"
+                    value={citySearch}
+                    onValueChange={setCitySearch}
+                  />
+                  <CommandList>
+                    <CommandEmpty>
+                      {communesLoading
+                        ? "Recherche…"
+                        : citySearch.trim().length < 2
+                          ? "Tapez au moins 2 lettres."
+                          : "Aucune ville trouvée."}
+                    </CommandEmpty>
+                    <CommandGroup>
+                      {communeOptions.map((c) => (
+                        <CommandItem
+                          key={c.code}
+                          value={c.code}
+                          onSelect={() => {
+                            setCity(c.nom);
+                            setCityOpen(false);
+                          }}
+                        >
+                          <Check
+                            className={cn(
+                              "mr-2 h-4 w-4",
+                              city === c.nom ? "opacity-100" : "opacity-0",
+                            )}
+                          />
+                          {c.nom}
+                          {c.codePostal && (
+                            <span className="ml-auto text-xs text-muted-foreground">
+                              {c.codePostal}
+                            </span>
+                          )}
+                        </CommandItem>
+                      ))}
+                    </CommandGroup>
+                  </CommandList>
+                </Command>
+              </PopoverContent>
+            </Popover>
           </div>
           <div className="space-y-1.5">
             <Label className="text-xs font-bold uppercase tracking-widest">Langue *</Label>
