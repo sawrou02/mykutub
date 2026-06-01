@@ -673,7 +673,17 @@ function BookListRow({ book }: { book: Book }) {
               <MapPin size={11} />
               {book.city}
             </span>
-            <span>· {book.seller_name}</span>
+            <span>
+              ·{" "}
+              <Link
+                to="/user/$id"
+                params={{ id: book.seller_id }}
+                onClick={(e) => e.stopPropagation()}
+                className="hover:underline hover:text-primary"
+              >
+                {book.seller_name}
+              </Link>
+            </span>
             {book.can_deliver && (
               <span className="flex items-center gap-1 text-emerald-600">
                 <Truck size={11} />

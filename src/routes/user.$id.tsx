@@ -307,42 +307,71 @@ function UserProfilePage() {
 
       {/* Tabs */}
       <div className="max-w-3xl mx-auto px-3 pt-3">
-        <Tabs defaultValue="annonces" className="w-full">
-          <TabsList className="w-full bg-transparent border-b rounded-none h-auto p-0 justify-start gap-4">
-            <TabsTrigger
-              value="annonces"
-              className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:shadow-none px-1 pb-2 text-sm font-semibold"
-            >
-              Annonces ({books.length})
-            </TabsTrigger>
-            <TabsTrigger
-              value="avis"
-              className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:shadow-none px-1 pb-2 text-sm font-semibold"
-            >
-              Avis ({reviews.length})
-            </TabsTrigger>
-          </TabsList>
+        {(() => {
+          const activeBooks = books.filter((b) => b.status === "available" || b.status === "reserved");
+          const soldBooks = books.filter((b) => b.status === "given" || (b.status as string) === "sold");
+          return (
+            <Tabs defaultValue="annonces" className="w-full">
+              <TabsList className="w-full bg-transparent border-b rounded-none h-auto p-0 justify-start gap-4">
+                <TabsTrigger
+                  value="annonces"
+                  className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:shadow-none px-1 pb-2 text-sm font-semibold"
+                >
+                  Annonces ({activeBooks.length})
+                </TabsTrigger>
+                <TabsTrigger
+                  value="historique"
+                  className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:shadow-none px-1 pb-2 text-sm font-semibold"
+                >
+                  Historique ({soldBooks.length})
+                </TabsTrigger>
+                <TabsTrigger
+                  value="avis"
+                  className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:shadow-none px-1 pb-2 text-sm font-semibold"
+                >
+                  Avis ({reviews.length})
+                </TabsTrigger>
+              </TabsList>
 
-          <TabsContent value="annonces" className="mt-4">
-            {books.length === 0 ? (
-              <p className="text-xs text-muted-foreground text-center py-8">
-                Aucune annonce publiée.
-              </p>
-            ) : (
-              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2.5">
-                {books.map((book) => (
-                  <BookCard key={book.id} book={book} />
-                ))}
-              </div>
-            )}
-          </TabsContent>
+              <TabsContent value="annonces" className="mt-4">
+                {activeBooks.length === 0 ? (
+                  <p className="text-xs text-muted-foreground text-center py-8">
+                    Aucune annonce active.
+                  </p>
+                ) : (
+                  <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2.5">
+                    {activeBooks.map((book) => (
+                      <BookCard key={book.id} book={book} />
+                    ))}
+                  </div>
+                )}
+              </TabsContent>
 
-          <TabsContent value="avis" className="mt-4">
-            <div className="bg-card border rounded-xl p-4">
-              <SellerReviews sellerId={userId} chatId={chatId} />
-            </div>
-          </TabsContent>
-        </Tabs>
+              <TabsContent value="historique" className="mt-4">
+                <p className="text-[11px] text-muted-foreground mb-3 italic">
+                  Historique permanent des ventes et dons — non supprimable.
+                </p>
+                {soldBooks.length === 0 ? (
+                  <p className="text-xs text-muted-foreground text-center py-8">
+                    Aucune vente ni don pour le moment.
+                  </p>
+                ) : (
+                  <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2.5">
+                    {soldBooks.map((book) => (
+                      <BookCard key={book.id} book={book} />
+                    ))}
+                  </div>
+                )}
+              </TabsContent>
+
+              <TabsContent value="avis" className="mt-4">
+                <div className="bg-card border rounded-xl p-4">
+                  <SellerReviews sellerId={userId} chatId={chatId} />
+                </div>
+              </TabsContent>
+            </Tabs>
+          );
+        })()}
       </div>
     </div>
   );
