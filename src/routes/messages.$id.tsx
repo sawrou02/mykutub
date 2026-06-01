@@ -347,12 +347,47 @@ function ChatDetailPage() {
     const { error } = await supabase.from("messages").insert(row as never);
     if (error) {
       const msg = (error.message || "").toLowerCase();
-      if (msg.includes("row-level") || msg.includes("policy") || error.code === "42501") {
-        toast.error("Vous ne pouvez pas contacter cet utilisateur");
-      } else if (msg.includes("rate limit") || msg.includes("too many")) {
-        toast.error("Trop de messages envoyés. Réessayez dans quelques secondes.");
+      const isRlsBlock =
+        msg.includes("row-level") || msg.includes("policy") || error.code === "42501";
+
+      if (isRlsBlock) {
+        // The error is generic ("new row violates row-level security policy")
+        // because Postgres doesn't say WHICH restrictive policy failed. Query
+        // the DB to identify the real cause and show a precise toast.
+        let diagnosed = false;
+
+        // (1) Rate limit : > 30 messages in the last minute by this user
+        const since = new Date(Date.now() - 60 * 1000).toISOString();
+        const { count: recentCount } = await supabase
+          .from("messages")
+          .select("id", { count: "exact", head: true })
+          .eq("sender_id", user.id)
+          .gte("created_at", since);
+        if ((recentCount ?? 0) >= 30) {
+          toast.error("Trop de messages envoyés. Réessayez dans 1 minute.");
+          diagnosed = true;
+        }
+
+        // (2) Real block : the other party has blocked the current user
+        if (!diagnosed && recipientId) {
+          const { data: blocks } = await supabase
+            .from("blocked_users")
+            .select("id")
+            .eq("blocker_id", recipientId)
+            .eq("blocked_id", user.id)
+            .limit(1);
+          if (blocks && blocks.length > 0) {
+            toast.error("Cet utilisateur ne peut pas recevoir vos messages");
+            diagnosed = true;
+          }
+        }
+
+        // (3) Generic fallback
+        if (!diagnosed) {
+          toast.error(`Envoi refusé : ${error.message}`);
+          console.error("[sendRaw] RLS block, no specific cause found", error);
+        }
       } else {
-        // Surface the real error so we can diagnose silent failures
         toast.error(`Échec de l'envoi : ${error.message}`);
         console.error("[sendRaw] insert messages failed", error);
       }
