@@ -42,11 +42,10 @@ import { cn } from "@/lib/utils";
 import {
   CATEGORIES,
   CONDITIONS,
-  ALL_CITIES,
   COUNTRIES,
-  CITY_POSTAL_CODES,
   LANGUAGES,
 } from "@/lib/mykutub";
+import { useCommuneSearch } from "@/hooks/useCommuneSearch";
 import { checkForbidden } from "@/lib/moderation";
 
 const LANG_OPTIONS = Array.from(new Set([...LANGUAGES, "Autre"]));
