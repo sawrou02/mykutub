@@ -39,6 +39,7 @@ import { toast } from "sonner";
 import { sendEmail } from "@/lib/email";
 import type { Book, Review } from "@/lib/mykutub";
 import { VerifiedPhoneBadge } from "@/components/VerifiedPhoneBadge";
+import { UserBadgesList } from "@/components/UserBadgesList";
 
 export const Route = createFileRoute("/user/$id")({
   validateSearch: (s: Record<string, unknown>) => ({
