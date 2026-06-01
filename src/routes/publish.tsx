@@ -197,16 +197,8 @@ function PublishPage() {
   const [price, setPrice] = useState("");
 
   const [citySearch, setCitySearch] = useState("");
-  const cityOptions = useMemo(() => {
-    const norm = (s: string) =>
-      s
-        .toLowerCase()
-        .normalize("NFD")
-        .replace(/[\u0300-\u036f]/g, "");
-    const q = norm(citySearch.trim());
-    if (!q) return ALL_CITIES.slice(0, 300);
-    return ALL_CITIES.filter((c) => norm(c).includes(q)).slice(0, 300);
-  }, [citySearch]);
+  const { options: communeOptions, loading: communesLoading } =
+    useCommuneSearch(citySearch);
 
   async function handleFilesSelected(e: React.ChangeEvent<HTMLInputElement>) {
     const files = Array.from(e.target.files ?? []);
