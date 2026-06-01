@@ -271,7 +271,7 @@ function PublishPage() {
       return;
     }
     if (photos.length < MIN_PHOTOS) {
-      toast.error(`Minimum ${MIN_PHOTOS} photos requises : 1 Couverture + 2 Photos intérieures.`);
+      toast.error(`Minimum ${MIN_PHOTOS} photos requises : Couverture + Dernière couverture + Photo intérieure.`);
       return;
     }
     if (!checklistOk) {
