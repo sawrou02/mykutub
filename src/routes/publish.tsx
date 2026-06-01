@@ -236,11 +236,10 @@ function PublishPage() {
     });
   }
 
-  function handleCitySelect(value: string) {
-    setCity(value);
+  function handleCitySelect(nom: string, codePostal?: string) {
+    setCity(nom);
     setCityOpen(false);
-    const pc = CITY_POSTAL_CODES[value];
-    if (pc) setPostalCode(pc);
+    if (codePostal) setPostalCode(codePostal);
   }
 
   // Checklist derived from required fields
