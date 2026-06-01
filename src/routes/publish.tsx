@@ -435,7 +435,7 @@ function PublishPage() {
                         missing ? "text-destructive" : "text-muted-foreground",
                       )}
                     >
-                      {slot === 0 ? "Couverture" : "Intérieur"}
+                      {label}
                     </p>
                   </div>
                 );
