@@ -899,6 +899,10 @@ export type Database = {
         Returns: undefined
       }
       check_forbidden_text: { Args: { _text: string }; Returns: string }
+      count_recent_messages_for_user: {
+        Args: { _since: string; _user_id: string }
+        Returns: number
+      }
       counter_price_offer: {
         Args: {
           _counter_message?: string
