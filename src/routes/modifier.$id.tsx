@@ -50,6 +50,10 @@ function EditPage() {
   const [category, setCategory] = useState("");
   const [condition, setCondition] = useState("");
   const [city, setCity] = useState("");
+  const [cityOpen, setCityOpen] = useState(false);
+  const [citySearch, setCitySearch] = useState("");
+  const { options: communeOptions, loading: communesLoading } =
+    useCommuneSearch(citySearch);
   const [language, setLanguage] = useState("Français");
   const [price, setPrice] = useState("");
   const [isDonation, setIsDonation] = useState(false);
