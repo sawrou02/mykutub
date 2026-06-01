@@ -903,6 +903,14 @@ export type Database = {
         Args: { _since: string; _user_id: string }
         Returns: number
       }
+      count_user_donations_this_month: {
+        Args: { _user_id: string }
+        Returns: number
+      }
+      count_user_requests_this_month: {
+        Args: { _user_id: string }
+        Returns: number
+      }
       counter_price_offer: {
         Args: {
           _counter_message?: string
