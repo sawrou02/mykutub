@@ -51,7 +51,7 @@ import { checkForbidden } from "@/lib/moderation";
 
 const LANG_OPTIONS = Array.from(new Set([...LANGUAGES, "Autre"]));
 const MIN_PHOTOS = 3;
-const PHOTO_LABELS = ["Couverture", "Photo intérieure", "Photo intérieure"];
+const PHOTO_LABELS = ["Couverture", "Dernière couverture", "Photo intérieure"];
 // Tolerance for portrait 3:4 ratio (allow ~5% deviation)
 const TARGET_RATIO = 3 / 4;
 const RATIO_TOLERANCE = 0.05;
