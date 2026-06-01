@@ -466,7 +466,7 @@ function PublishPage() {
             )}
             {photos.length < MIN_PHOTOS && (
               <p className="text-xs text-destructive mt-2 font-medium">
-                ⚠ Ajoutez au moins {MIN_PHOTOS} photos (1 Couverture + 2 Photos intérieures).
+                ⚠ Ajoutez au moins {MIN_PHOTOS} photos : Couverture + Dernière couverture + Photo intérieure.
               </p>
             )}
             <Button
