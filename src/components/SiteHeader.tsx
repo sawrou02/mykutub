@@ -21,6 +21,8 @@ export function SiteHeader() {
   const unreadCount = useUnreadChats();
   const pendingOffersCount = usePendingOffersCount();
   const { t } = useTranslation();
+  const [mobileOpen, setMobileOpen] = useState(false);
+  const closeMobile = () => setMobileOpen(false);
 
   const links = [
     { to: "/", label: t("nav.home") },
