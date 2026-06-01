@@ -71,7 +71,13 @@ export function BookReservation({ book, onBookChange }: Props) {
       status: "pending",
     });
     if (error) {
-      toast.error(error.code === "23505" ? "Vous avez déjà demandé ce livre." : "Erreur");
+      if (error.code === "23505") {
+        toast.error("Vous avez déjà demandé ce livre.");
+      } else if (/Max 2 requests|row-level security/i.test(error.message)) {
+        toast.error("Limite atteinte : maximum 2 réservations par mois.");
+      } else {
+        toast.error("Erreur");
+      }
     } else {
       await supabase.from("notifications").insert({
         user_id: book.seller_id,
