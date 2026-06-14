@@ -140,7 +140,7 @@ export function HistoryList() {
                       ? "Don"
                       : `${Number(b.price).toFixed(2)} €`}
                     {" · "}
-                    {STATUS_LABEL[b.status] ?? b.status}
+                    {(b.status && STATUS_LABEL[b.status]) ?? b.status ?? ""}
                   </p>
                 </div>
               </Link>
