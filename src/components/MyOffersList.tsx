@@ -5,10 +5,25 @@ import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { toast } from "sonner";
-import { Tag, Inbox, Send, Check, X, Undo2, MessageCircle, Loader2 } from "lucide-react";
+import {
+  Tag,
+  Inbox,
+  Send,
+  Check,
+  X,
+  Undo2,
+  MessageCircle,
+  Loader2,
+  Truck,
+  PackageCheck,
+  PackageX,
+  Star,
+} from "lucide-react";
 import { cn } from "@/lib/utils";
 import type { PriceOffer } from "@/lib/types";
 import { notifyOfferEmail, type OfferEmailKind } from "@/lib/offers";
+import { ShippedModal } from "@/components/ShippedModal";
+import { LeaveReviewModal } from "@/components/LeaveReviewModal";
 
 type OfferRow = PriceOffer & {
   book?: { id: string; title: string; image_url: string | null } | null;
