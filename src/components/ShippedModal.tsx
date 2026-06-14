@@ -29,8 +29,8 @@ export function ShippedModal({ open, onOpenChange, offerId, onDone }: Props) {
     setBusy(true);
     const { error } = await supabase.rpc("mark_offer_shipped", {
       _offer_id: offerId,
-      _carrier: carrier || null,
-      _tracking: tracking || null,
+      _carrier: carrier || undefined,
+      _tracking: tracking || undefined,
     });
     setBusy(false);
     if (error) {
