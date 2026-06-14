@@ -101,6 +101,37 @@ function buildContent(b: Body): { subject: string; bodyHtml: string; button: str
           <strong>${priceStr}</strong> pour « ${b.bookTitle} ».</p>`,
         button: "Voir la conversation",
       };
+    case "shipped": {
+      const tracking =
+        b.trackingNumber && b.trackingNumber.length > 0
+          ? `<p>Suivi : <strong>${b.trackingCarrier ? `${b.trackingCarrier} ` : ""}${b.trackingNumber}</strong></p>`
+          : "";
+      return {
+        subject: `📦 Colis expédié — ${b.bookTitle}`,
+        bodyHtml: `<p>Salam <strong>${b.recipientName ?? ""}</strong>,</p>
+          <p><strong>${b.otherName}</strong> a expédié « ${b.bookTitle} ». Dès réception,
+          pensez à confirmer la livraison dans la conversation pour finaliser la transaction.</p>
+          ${tracking}`,
+        button: "Voir l'expédition",
+      };
+    }
+    case "delivered":
+      return {
+        subject: `✅ Colis bien reçu — ${b.bookTitle}`,
+        bodyHtml: `<p>Salam <strong>${b.recipientName ?? ""}</strong>,</p>
+          <p><strong>${b.otherName}</strong> a confirmé la réception du colis pour
+          « ${b.bookTitle} ». La transaction est terminée — bravo !</p>`,
+        button: "Voir la transaction",
+      };
+    case "not_received":
+      return {
+        subject: `⚠️ Colis non encore reçu — ${b.bookTitle}`,
+        bodyHtml: `<p>Salam <strong>${b.recipientName ?? ""}</strong>,</p>
+          <p><strong>${b.otherName}</strong> indique ne pas encore avoir reçu le colis
+          pour « ${b.bookTitle} ». Merci de vérifier le suivi et de rester en contact
+          avec l'acheteur.</p>`,
+        button: "Ouvrir la conversation",
+      };
   }
 }
 
