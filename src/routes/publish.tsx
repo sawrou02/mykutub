@@ -523,8 +523,16 @@ function PublishPage() {
                       type="button"
                       onClick={() => removePhoto(i + 3)}
                       className="absolute top-1 right-1 p-1 bg-destructive text-destructive-foreground rounded-full"
+                      aria-label="Retirer"
                     >
                       <X size={10} />
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => triggerReplace(i + 3)}
+                      className="absolute bottom-1 left-1 right-1 py-0.5 bg-card/90 text-foreground text-[8px] font-semibold uppercase rounded shadow"
+                    >
+                      Reprendre
                     </button>
                   </div>
                 ))}
