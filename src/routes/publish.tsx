@@ -412,6 +412,21 @@ function PublishPage() {
               onChange={handleFilesSelected}
               className="hidden"
             />
+            <input
+              ref={cameraInputRef}
+              type="file"
+              accept="image/*"
+              capture="environment"
+              onChange={handleFilesSelected}
+              className="hidden"
+            />
+            <input
+              ref={replaceInputRef}
+              type="file"
+              accept="image/*"
+              onChange={handleReplaceSelected}
+              className="hidden"
+            />
             <div className="grid grid-cols-3 gap-3">
               {[0, 1, 2].map((slot) => {
                 const photo = photos[slot];
