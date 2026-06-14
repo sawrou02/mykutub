@@ -182,35 +182,70 @@ export function MyOffersList() {
         <OfferList
           offers={received}
           emptyText="Aucune proposition reçue pour le moment."
-          renderActions={(o) =>
-            o.status === "pending" ? (
-              <>
+          renderActions={(o) => {
+            if (o.status === "pending") {
+              return (
+                <>
+                  <Button
+                    size="sm"
+                    onClick={() => act("accept_price_offer", o)}
+                    disabled={busy !== null}
+                    className="flex-1 h-9 rounded-full bg-green-600 hover:bg-green-700"
+                  >
+                    {busy === o.id ? (
+                      <Loader2 size={14} className="animate-spin" />
+                    ) : (
+                      <>
+                        <Check size={14} className="mr-1" /> Accepter
+                      </>
+                    )}
+                  </Button>
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    onClick={() => act("reject_price_offer", o)}
+                    disabled={busy !== null}
+                    className="flex-1 h-9 rounded-full"
+                  >
+                    <X size={14} className="mr-1" /> Refuser
+                  </Button>
+                </>
+              );
+            }
+            if (o.status === "accepted") {
+              return (
                 <Button
                   size="sm"
-                  onClick={() => act("accept_price_offer", o)}
+                  onClick={() => setShippedFor(o)}
                   disabled={busy !== null}
-                  className="flex-1 h-9 rounded-full bg-green-600 hover:bg-green-700"
+                  className="flex-1 h-9 rounded-full bg-indigo-600 hover:bg-indigo-700"
                 >
-                  {busy === o.id ? (
-                    <Loader2 size={14} className="animate-spin" />
-                  ) : (
-                    <>
-                      <Check size={14} className="mr-1" /> Accepter
-                    </>
-                  )}
+                  <Truck size={14} className="mr-1" /> J'ai expédié le produit
                 </Button>
-                <Button
-                  size="sm"
-                  variant="outline"
-                  onClick={() => act("reject_price_offer", o)}
-                  disabled={busy !== null}
-                  className="flex-1 h-9 rounded-full"
-                >
-                  <X size={14} className="mr-1" /> Refuser
-                </Button>
-              </>
-            ) : null
-          }
+              );
+            }
+            if (o.status === "shipped") {
+              return (
+                <div className="flex-1 text-xs text-muted-foreground">
+                  Expédié le {new Date(o.shipped_at ?? o.updated_at).toLocaleDateString("fr-FR")}
+                  {o.tracking_number ? (
+                    <span className="block">
+                      Suivi : {o.tracking_carrier ? `${o.tracking_carrier} ` : ""}
+                      <span className="font-mono">{o.tracking_number}</span>
+                    </span>
+                  ) : null}
+                </div>
+              );
+            }
+            if (o.status === "received") {
+              return (
+                <span className="text-xs text-emerald-700 font-medium flex items-center gap-1">
+                  <PackageCheck size={14} /> Transaction terminée
+                </span>
+              );
+            }
+            return null;
+          }}
         />
       </TabsContent>
 
