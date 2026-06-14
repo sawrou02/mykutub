@@ -131,6 +131,24 @@ export function MyOffersList() {
     fetchAll();
   };
 
+  const callRpc = async (
+    rpc: "mark_offer_received" | "mark_offer_not_received",
+    offer: OfferRow,
+    successMsg: string,
+    openReview = false,
+  ) => {
+    setBusy(offer.id);
+    const { error } = await supabase.rpc(rpc, { _offer_id: offer.id });
+    setBusy(null);
+    if (error) {
+      toast.error(error.message);
+      return;
+    }
+    toast.success(successMsg);
+    if (openReview) setReviewFor(offer);
+    fetchAll();
+  };
+
   if (loading) {
     return (
       <div className="py-20 flex items-center justify-center text-muted-foreground">
