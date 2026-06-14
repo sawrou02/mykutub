@@ -27,6 +27,7 @@ export function ShippedModal({ open, onOpenChange, offerId, onDone }: Props) {
   const [carrier, setCarrier] = useState("");
   const [tracking, setTracking] = useState("");
   const [busy, setBusy] = useState(false);
+  const { user } = useAuth();
 
   const submit = async () => {
     setBusy(true);
@@ -35,11 +36,27 @@ export function ShippedModal({ open, onOpenChange, offerId, onDone }: Props) {
       _carrier: carrier || undefined,
       _tracking: tracking || undefined,
     });
-    setBusy(false);
     if (error) {
+      setBusy(false);
       toast.error(error.message);
       return;
     }
+    // Best-effort email to the buyer
+    if (user) {
+      const { data: fresh } = await supabase
+        .from("price_offers")
+        .select("*")
+        .eq("id", offerId)
+        .maybeSingle();
+      if (fresh) {
+        void notifyOfferEmail({
+          offer: fresh as PriceOffer,
+          user,
+          kind: "shipped",
+        });
+      }
+    }
+    setBusy(false);
     toast.success("Marqué comme expédié — acheteur notifié");
     setCarrier("");
     setTracking("");
