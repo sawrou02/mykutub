@@ -239,6 +239,38 @@ function PublishPage() {
     });
   }
 
+  function triggerReplace(index: number) {
+    replaceIndexRef.current = index;
+    replaceInputRef.current?.click();
+  }
+
+  async function handleReplaceSelected(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+    const idx = replaceIndexRef.current;
+    if (e.target) e.target.value = "";
+    replaceIndexRef.current = null;
+    if (!file || idx === null) return;
+    if (file.size > 5 * 1024 * 1024) {
+      toast.error(`"${file.name}" dépasse 5 Mo`);
+      return;
+    }
+    const { ok, ratio } = await validatePortraitRatio(file);
+    if (!ok) {
+      toast.error(
+        `Format invalide — utilisez une photo portrait au ratio 3:4 (actuel ${ratio ? ratio.toFixed(2) : "?"}).`,
+      );
+      return;
+    }
+    setPhotos((prev) => {
+      const copy = [...prev];
+      const old = copy[idx];
+      if (old) URL.revokeObjectURL(old.preview);
+      copy[idx] = { file, preview: URL.createObjectURL(file) };
+      return copy;
+    });
+    toast.success("Photo remplacée");
+  }
+
   function handleCitySelect(nom: string, codePostal?: string) {
     setCity(nom);
     setCityOpen(false);
