@@ -145,6 +145,14 @@ export function MyOffersList() {
       return;
     }
     toast.success(successMsg);
+    if (user) {
+      void notifyOfferEmail({
+        offer,
+        user,
+        kind: rpc === "mark_offer_received" ? "delivered" : "not_received",
+        toSeller: true,
+      });
+    }
     if (openReview) setReviewFor(offer);
     fetchAll();
   };
