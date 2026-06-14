@@ -23,7 +23,12 @@ const schema = z
     phone: z
       .string()
       .trim()
-      .regex(/^[+0-9 ().-]{6,20}$/, "Numéro de téléphone invalide"),
+      .max(20)
+      .refine((v) => v === "" || /^[+0-9 ().-]{6,20}$/.test(v), {
+        message: "Numéro de téléphone invalide",
+      })
+      .optional()
+      .or(z.literal("")),
     password: z.string().min(8, "Au moins 8 caractères").max(72),
     confirm: z.string(),
   })
@@ -65,12 +70,16 @@ function SignupPage() {
     }
     setLoading(true);
     const { firstName, lastName, email, phone, password } = parsed.data;
+    const phoneClean = (phone ?? "").trim();
     const { data, error } = await supabase.auth.signUp({
       email,
       password,
       options: {
         emailRedirectTo: `${window.location.origin}/login?verified=1`,
-        data: { display_name: `${firstName} ${lastName}`.trim(), phone },
+        data: {
+          display_name: `${firstName} ${lastName}`.trim(),
+          ...(phoneClean ? { phone: phoneClean } : {}),
+        },
       },
     });
     setLoading(false);
@@ -177,19 +186,18 @@ function SignupPage() {
             </div>
             <div className="space-y-1.5">
               <Label htmlFor="phone" className="text-sm font-medium">
-                Numéro de téléphone
+                Numéro de téléphone <span className="text-muted-foreground font-normal">(facultatif)</span>
               </Label>
               <Input
                 id="phone"
                 name="phone"
                 type="tel"
                 inputMode="tel"
-                required
                 placeholder="+33 6 12 34 56 78"
                 className="h-11 rounded-xl"
               />
               <p className="text-[11px] text-muted-foreground">
-                Obligatoire — un code de vérification à 6 chiffres vous sera envoyé.
+                Optionnel — vous pourrez l'ajouter plus tard depuis votre profil.
               </p>
               {errors.phone && <p className="text-xs text-destructive">{errors.phone}</p>}
             </div>

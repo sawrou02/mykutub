@@ -249,7 +249,6 @@ function PublishPage() {
     city: !!city,
     postal: /^[0-9]{4,5}$/.test(postalCode.trim()),
     priceOrDonation: isDonation || (price !== "" && Number(price) >= 0),
-    phone: /^[+0-9\s().-]{8,}$/.test(phone.trim()),
   };
   const checklistOk = Object.values(checklist).every(Boolean);
 
@@ -662,10 +661,10 @@ function PublishPage() {
             </div>
           </div>
 
-          {/* ---------------- Téléphone ---------------- */}
+          {/* ---------------- Téléphone (facultatif) ---------------- */}
           <div className="space-y-1.5">
             <Label htmlFor="phone" className="text-xs font-bold uppercase tracking-widest">
-              Téléphone *
+              Téléphone <span className="text-muted-foreground font-normal normal-case tracking-normal">(facultatif)</span>
             </Label>
             <Input
               id="phone"
@@ -676,7 +675,7 @@ function PublishPage() {
               className="h-11"
             />
             <p className="text-[11px] text-muted-foreground">
-              Visible uniquement par les acheteurs intéressés.
+              Optionnel. Visible uniquement par les acheteurs intéressés si vous l'activez dans votre profil.
             </p>
           </div>
 
@@ -760,7 +759,6 @@ function PublishPage() {
             <ChecklistItem ok={checklist.city} label="Ville renseignée" />
             <ChecklistItem ok={checklist.postal} label="Code postal valide" />
             <ChecklistItem ok={checklist.priceOrDonation} label="Prix renseigné ou don activé" />
-            <ChecklistItem ok={checklist.phone} label="Numéro de téléphone valide" />
           </div>
 
           <Button

@@ -22,8 +22,10 @@ import {
   Users,
   UserMinus,
   Tag,
+  History,
 } from "lucide-react";
 import { MyOffersList } from "@/components/MyOffersList";
+import { HistoryList } from "@/components/HistoryList";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { BookCard } from "@/components/BookCard";
 import { useAuth } from "@/hooks/useAuth";
@@ -295,31 +297,38 @@ function ProfilePage() {
 
       <div className="max-w-4xl mx-auto p-4">
         <Tabs defaultValue="info">
-          <TabsList className="w-full bg-transparent border-b rounded-none h-12 mb-6">
+          <TabsList className="w-full bg-transparent border-b rounded-none h-12 mb-6 overflow-x-auto justify-start sm:justify-center">
             <TabsTrigger
               value="info"
-              className="flex-1 rounded-none border-b-2 border-transparent data-[state=active]:border-primary font-bold"
+              className="flex-1 min-w-[80px] rounded-none border-b-2 border-transparent data-[state=active]:border-primary font-bold text-xs sm:text-sm"
             >
               {t("profile.tabInfo")}
             </TabsTrigger>
             <TabsTrigger
               value="ads"
-              className="flex-1 rounded-none border-b-2 border-transparent data-[state=active]:border-primary font-bold"
+              className="flex-1 min-w-[80px] rounded-none border-b-2 border-transparent data-[state=active]:border-primary font-bold text-xs sm:text-sm"
             >
               {t("profile.tabAds")}
             </TabsTrigger>
             <TabsTrigger
               value="likes"
-              className="flex-1 rounded-none border-b-2 border-transparent data-[state=active]:border-primary font-bold"
+              className="flex-1 min-w-[80px] rounded-none border-b-2 border-transparent data-[state=active]:border-primary font-bold text-xs sm:text-sm"
             >
               {t("profile.tabFavs")}
             </TabsTrigger>
             <TabsTrigger
               value="offers"
-              className="flex-1 rounded-none border-b-2 border-transparent data-[state=active]:border-primary font-bold"
+              className="flex-1 min-w-[110px] rounded-none border-b-2 border-transparent data-[state=active]:border-primary font-bold text-xs sm:text-sm"
             >
               <Tag size={14} className="mr-1.5" />
               Propositions
+            </TabsTrigger>
+            <TabsTrigger
+              value="history"
+              className="flex-1 min-w-[100px] rounded-none border-b-2 border-transparent data-[state=active]:border-primary font-bold text-xs sm:text-sm"
+            >
+              <History size={14} className="mr-1.5" />
+              Historique
             </TabsTrigger>
           </TabsList>
 
@@ -429,6 +438,10 @@ function ProfilePage() {
 
           <TabsContent value="offers">
             <MyOffersList />
+          </TabsContent>
+
+          <TabsContent value="history">
+            <HistoryList />
           </TabsContent>
 
           <TabsContent value="likes">
