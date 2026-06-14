@@ -34,6 +34,8 @@ interface Body {
   kind: Kind;
   offerId: string;
   chatId?: string | null;
+  trackingCarrier?: string | null;
+  trackingNumber?: string | null;
 }
 
 function buildContent(b: Body): { subject: string; bodyHtml: string; button: string } {
