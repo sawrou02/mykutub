@@ -290,6 +290,63 @@ export function MyOffersList() {
                 </>
               );
             }
+            if (o.status === "accepted") {
+              return (
+                <span className="text-xs text-muted-foreground flex-1">
+                  En attente d'expédition par le vendeur…
+                </span>
+              );
+            }
+            if (o.status === "shipped") {
+              return (
+                <>
+                  <Button
+                    size="sm"
+                    onClick={() =>
+                      callRpc("mark_offer_received", o, "Réception confirmée", true)
+                    }
+                    disabled={busy !== null}
+                    className="flex-1 h-9 rounded-full bg-emerald-600 hover:bg-emerald-700"
+                  >
+                    <PackageCheck size={14} className="mr-1" /> J'ai bien reçu
+                  </Button>
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    onClick={() =>
+                      callRpc(
+                        "mark_offer_not_received",
+                        o,
+                        "Vendeur prévenu",
+                        false,
+                      )
+                    }
+                    disabled={busy !== null}
+                    className="flex-1 h-9 rounded-full"
+                  >
+                    <PackageX size={14} className="mr-1" /> Pas encore reçu
+                  </Button>
+                </>
+              );
+            }
+            if (o.status === "received") {
+              if (o.review_id) {
+                return (
+                  <span className="text-xs text-emerald-700 font-medium flex items-center gap-1">
+                    <Star size={14} /> Avis déposé — merci !
+                  </span>
+                );
+              }
+              return (
+                <Button
+                  size="sm"
+                  onClick={() => setReviewFor(o)}
+                  className="flex-1 h-9 rounded-full bg-amber-500 hover:bg-amber-600"
+                >
+                  <Star size={14} className="mr-1" /> Laisser un avis
+                </Button>
+              );
+            }
             return null;
           }}
         />
