@@ -10,7 +10,10 @@ export type OfferEmailKind =
   | "withdrawn"
   | "countered"
   | "counter_accepted"
-  | "counter_rejected";
+  | "counter_rejected"
+  | "shipped"
+  | "delivered"
+  | "not_received";
 
 const COUNTER_KINDS: OfferEmailKind[] = ["countered", "counter_accepted", "counter_rejected"];
 
