@@ -12,6 +12,9 @@ import { Label } from "@/components/ui/label";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { Loader2, Truck } from "lucide-react";
+import { useAuth } from "@/hooks/useAuth";
+import { notifyOfferEmail } from "@/lib/offers";
+import type { PriceOffer } from "@/lib/types";
 
 type Props = {
   open: boolean;
