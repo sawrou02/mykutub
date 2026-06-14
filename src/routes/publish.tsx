@@ -456,6 +456,14 @@ function PublishPage() {
                           >
                             <X size={12} />
                           </button>
+                          <button
+                            type="button"
+                            onClick={() => triggerReplace(slot)}
+                            className="absolute bottom-1.5 right-1.5 px-2 py-1 bg-card/90 text-foreground text-[9px] font-semibold uppercase rounded-full shadow"
+                            aria-label="Reprendre"
+                          >
+                            Reprendre
+                          </button>
                           {slot === 0 && (
                             <span className="absolute bottom-1.5 left-1.5 bg-primary text-primary-foreground text-[9px] font-bold uppercase px-1.5 py-0.5 rounded">
                               Couverture
@@ -463,16 +471,28 @@ function PublishPage() {
                           )}
                         </>
                       ) : (
-                        <button
-                          type="button"
-                          onClick={() => fileInputRef.current?.click()}
-                          className="absolute inset-0 flex flex-col items-center justify-center gap-1 text-primary/60 hover:bg-primary/5"
-                        >
-                          <Plus size={20} />
-                          <span className="text-[10px] font-semibold uppercase tracking-wider text-center px-1">
-                            {label}
-                          </span>
-                        </button>
+                        <div className="absolute inset-0 flex flex-col">
+                          <button
+                            type="button"
+                            onClick={() => cameraInputRef.current?.click()}
+                            className="flex-1 flex flex-col items-center justify-center gap-1 text-primary/70 hover:bg-primary/5 border-b border-primary/10"
+                          >
+                            <Camera size={18} />
+                            <span className="text-[9px] font-semibold uppercase tracking-wider">
+                              Caméra
+                            </span>
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => fileInputRef.current?.click()}
+                            className="flex-1 flex flex-col items-center justify-center gap-1 text-primary/60 hover:bg-primary/5"
+                          >
+                            <Plus size={16} />
+                            <span className="text-[9px] font-semibold uppercase tracking-wider text-center px-1">
+                              {label}
+                            </span>
+                          </button>
+                        </div>
                       )}
                     </div>
                     <p
