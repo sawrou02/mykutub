@@ -20,7 +20,10 @@ type Kind =
   | "withdrawn"
   | "countered"
   | "counter_accepted"
-  | "counter_rejected";
+  | "counter_rejected"
+  | "shipped"
+  | "delivered"
+  | "not_received";
 
 interface Body {
   userId: string; // recipient
