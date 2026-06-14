@@ -57,6 +57,8 @@ export function MyOffersList() {
   const [sent, setSent] = useState<OfferRow[]>([]);
   const [loading, setLoading] = useState(true);
   const [busy, setBusy] = useState<string | null>(null);
+  const [shippedFor, setShippedFor] = useState<OfferRow | null>(null);
+  const [reviewFor, setReviewFor] = useState<OfferRow | null>(null);
 
   const fetchAll = async () => {
     if (!user) return;
