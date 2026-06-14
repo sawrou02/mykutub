@@ -158,6 +158,7 @@ export function MyOffersList() {
   }
 
   return (
+    <>
     <Tabs defaultValue="received">
       <TabsList className="w-full mb-4">
         <TabsTrigger value="received" className="flex-1 gap-1.5">
