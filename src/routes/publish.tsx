@@ -178,6 +178,9 @@ function PublishPage() {
   const { t } = useTranslation();
   const { user } = useAuth();
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const cameraInputRef = useRef<HTMLInputElement>(null);
+  const replaceInputRef = useRef<HTMLInputElement>(null);
+  const replaceIndexRef = useRef<number | null>(null);
 
   const [isDonation, setIsDonation] = useState(false);
   const [canDeliver, setCanDeliver] = useState(false);
@@ -234,6 +237,38 @@ function PublishPage() {
       if (removed) URL.revokeObjectURL(removed.preview);
       return copy;
     });
+  }
+
+  function triggerReplace(index: number) {
+    replaceIndexRef.current = index;
+    replaceInputRef.current?.click();
+  }
+
+  async function handleReplaceSelected(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+    const idx = replaceIndexRef.current;
+    if (e.target) e.target.value = "";
+    replaceIndexRef.current = null;
+    if (!file || idx === null) return;
+    if (file.size > 5 * 1024 * 1024) {
+      toast.error(`"${file.name}" dépasse 5 Mo`);
+      return;
+    }
+    const { ok, ratio } = await validatePortraitRatio(file);
+    if (!ok) {
+      toast.error(
+        `Format invalide — utilisez une photo portrait au ratio 3:4 (actuel ${ratio ? ratio.toFixed(2) : "?"}).`,
+      );
+      return;
+    }
+    setPhotos((prev) => {
+      const copy = [...prev];
+      const old = copy[idx];
+      if (old) URL.revokeObjectURL(old.preview);
+      copy[idx] = { file, preview: URL.createObjectURL(file) };
+      return copy;
+    });
+    toast.success("Photo remplacée");
   }
 
   function handleCitySelect(nom: string, codePostal?: string) {
@@ -377,6 +412,21 @@ function PublishPage() {
               onChange={handleFilesSelected}
               className="hidden"
             />
+            <input
+              ref={cameraInputRef}
+              type="file"
+              accept="image/*"
+              capture="environment"
+              onChange={handleFilesSelected}
+              className="hidden"
+            />
+            <input
+              ref={replaceInputRef}
+              type="file"
+              accept="image/*"
+              onChange={handleReplaceSelected}
+              className="hidden"
+            />
             <div className="grid grid-cols-3 gap-3">
               {[0, 1, 2].map((slot) => {
                 const photo = photos[slot];
@@ -406,6 +456,14 @@ function PublishPage() {
                           >
                             <X size={12} />
                           </button>
+                          <button
+                            type="button"
+                            onClick={() => triggerReplace(slot)}
+                            className="absolute bottom-1.5 right-1.5 px-2 py-1 bg-card/90 text-foreground text-[9px] font-semibold uppercase rounded-full shadow"
+                            aria-label="Reprendre"
+                          >
+                            Reprendre
+                          </button>
                           {slot === 0 && (
                             <span className="absolute bottom-1.5 left-1.5 bg-primary text-primary-foreground text-[9px] font-bold uppercase px-1.5 py-0.5 rounded">
                               Couverture
@@ -413,16 +471,28 @@ function PublishPage() {
                           )}
                         </>
                       ) : (
-                        <button
-                          type="button"
-                          onClick={() => fileInputRef.current?.click()}
-                          className="absolute inset-0 flex flex-col items-center justify-center gap-1 text-primary/60 hover:bg-primary/5"
-                        >
-                          <Plus size={20} />
-                          <span className="text-[10px] font-semibold uppercase tracking-wider text-center px-1">
-                            {label}
-                          </span>
-                        </button>
+                        <div className="absolute inset-0 flex flex-col">
+                          <button
+                            type="button"
+                            onClick={() => cameraInputRef.current?.click()}
+                            className="flex-1 flex flex-col items-center justify-center gap-1 text-primary/70 hover:bg-primary/5 border-b border-primary/10"
+                          >
+                            <Camera size={18} />
+                            <span className="text-[9px] font-semibold uppercase tracking-wider">
+                              Caméra
+                            </span>
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => fileInputRef.current?.click()}
+                            className="flex-1 flex flex-col items-center justify-center gap-1 text-primary/60 hover:bg-primary/5"
+                          >
+                            <Plus size={16} />
+                            <span className="text-[9px] font-semibold uppercase tracking-wider text-center px-1">
+                              {label}
+                            </span>
+                          </button>
+                        </div>
                       )}
                     </div>
                     <p
@@ -453,8 +523,16 @@ function PublishPage() {
                       type="button"
                       onClick={() => removePhoto(i + 3)}
                       className="absolute top-1 right-1 p-1 bg-destructive text-destructive-foreground rounded-full"
+                      aria-label="Retirer"
                     >
                       <X size={10} />
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => triggerReplace(i + 3)}
+                      className="absolute bottom-1 left-1 right-1 py-0.5 bg-card/90 text-foreground text-[8px] font-semibold uppercase rounded shadow"
+                    >
+                      Reprendre
                     </button>
                   </div>
                 ))}
@@ -466,15 +544,24 @@ function PublishPage() {
                 intérieure.
               </p>
             )}
-            <Button
-              type="button"
-              variant="outline"
-              size="sm"
-              onClick={() => fileInputRef.current?.click()}
-              className="mt-3"
-            >
-              <Plus size={14} className="mr-1" /> Ajouter une photo
-            </Button>
+            <div className="flex flex-wrap gap-2 mt-3">
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                onClick={() => cameraInputRef.current?.click()}
+              >
+                <Camera size={14} className="mr-1" /> Prendre une photo
+              </Button>
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                onClick={() => fileInputRef.current?.click()}
+              >
+                <Plus size={14} className="mr-1" /> Depuis la galerie
+              </Button>
+            </div>
           </div>
 
           {/* ---------------- Titre (optionnel) ---------------- */}
