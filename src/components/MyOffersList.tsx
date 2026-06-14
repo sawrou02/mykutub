@@ -5,10 +5,25 @@ import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { toast } from "sonner";
-import { Tag, Inbox, Send, Check, X, Undo2, MessageCircle, Loader2 } from "lucide-react";
+import {
+  Tag,
+  Inbox,
+  Send,
+  Check,
+  X,
+  Undo2,
+  MessageCircle,
+  Loader2,
+  Truck,
+  PackageCheck,
+  PackageX,
+  Star,
+} from "lucide-react";
 import { cn } from "@/lib/utils";
 import type { PriceOffer } from "@/lib/types";
 import { notifyOfferEmail, type OfferEmailKind } from "@/lib/offers";
+import { ShippedModal } from "@/components/ShippedModal";
+import { LeaveReviewModal } from "@/components/LeaveReviewModal";
 
 type OfferRow = PriceOffer & {
   book?: { id: string; title: string; image_url: string | null } | null;
@@ -21,6 +36,8 @@ const STATUS_LABEL: Record<PriceOffer["status"], string> = {
   rejected: "Refusée",
   withdrawn: "Retirée",
   expired: "Expirée",
+  shipped: "Expédiée",
+  received: "Reçue",
 };
 
 const STATUS_COLOR: Record<PriceOffer["status"], string> = {
@@ -30,6 +47,8 @@ const STATUS_COLOR: Record<PriceOffer["status"], string> = {
   rejected: "bg-red-100 text-red-800",
   withdrawn: "bg-gray-100 text-gray-700",
   expired: "bg-gray-100 text-gray-700",
+  shipped: "bg-indigo-100 text-indigo-800",
+  received: "bg-emerald-100 text-emerald-800",
 };
 
 export function MyOffersList() {
@@ -38,6 +57,8 @@ export function MyOffersList() {
   const [sent, setSent] = useState<OfferRow[]>([]);
   const [loading, setLoading] = useState(true);
   const [busy, setBusy] = useState<string | null>(null);
+  const [shippedFor, setShippedFor] = useState<OfferRow | null>(null);
+  const [reviewFor, setReviewFor] = useState<OfferRow | null>(null);
 
   const fetchAll = async () => {
     if (!user) return;
@@ -110,6 +131,24 @@ export function MyOffersList() {
     fetchAll();
   };
 
+  const callRpc = async (
+    rpc: "mark_offer_received" | "mark_offer_not_received",
+    offer: OfferRow,
+    successMsg: string,
+    openReview = false,
+  ) => {
+    setBusy(offer.id);
+    const { error } = await supabase.rpc(rpc, { _offer_id: offer.id });
+    setBusy(null);
+    if (error) {
+      toast.error(error.message);
+      return;
+    }
+    toast.success(successMsg);
+    if (openReview) setReviewFor(offer);
+    fetchAll();
+  };
+
   if (loading) {
     return (
       <div className="py-20 flex items-center justify-center text-muted-foreground">
@@ -119,6 +158,7 @@ export function MyOffersList() {
   }
 
   return (
+    <>
     <Tabs defaultValue="received">
       <TabsList className="w-full mb-4">
         <TabsTrigger value="received" className="flex-1 gap-1.5">
@@ -143,35 +183,70 @@ export function MyOffersList() {
         <OfferList
           offers={received}
           emptyText="Aucune proposition reçue pour le moment."
-          renderActions={(o) =>
-            o.status === "pending" ? (
-              <>
+          renderActions={(o) => {
+            if (o.status === "pending") {
+              return (
+                <>
+                  <Button
+                    size="sm"
+                    onClick={() => act("accept_price_offer", o)}
+                    disabled={busy !== null}
+                    className="flex-1 h-9 rounded-full bg-green-600 hover:bg-green-700"
+                  >
+                    {busy === o.id ? (
+                      <Loader2 size={14} className="animate-spin" />
+                    ) : (
+                      <>
+                        <Check size={14} className="mr-1" /> Accepter
+                      </>
+                    )}
+                  </Button>
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    onClick={() => act("reject_price_offer", o)}
+                    disabled={busy !== null}
+                    className="flex-1 h-9 rounded-full"
+                  >
+                    <X size={14} className="mr-1" /> Refuser
+                  </Button>
+                </>
+              );
+            }
+            if (o.status === "accepted") {
+              return (
                 <Button
                   size="sm"
-                  onClick={() => act("accept_price_offer", o)}
+                  onClick={() => setShippedFor(o)}
                   disabled={busy !== null}
-                  className="flex-1 h-9 rounded-full bg-green-600 hover:bg-green-700"
+                  className="flex-1 h-9 rounded-full bg-indigo-600 hover:bg-indigo-700"
                 >
-                  {busy === o.id ? (
-                    <Loader2 size={14} className="animate-spin" />
-                  ) : (
-                    <>
-                      <Check size={14} className="mr-1" /> Accepter
-                    </>
-                  )}
+                  <Truck size={14} className="mr-1" /> J'ai expédié le produit
                 </Button>
-                <Button
-                  size="sm"
-                  variant="outline"
-                  onClick={() => act("reject_price_offer", o)}
-                  disabled={busy !== null}
-                  className="flex-1 h-9 rounded-full"
-                >
-                  <X size={14} className="mr-1" /> Refuser
-                </Button>
-              </>
-            ) : null
-          }
+              );
+            }
+            if (o.status === "shipped") {
+              return (
+                <div className="flex-1 text-xs text-muted-foreground">
+                  Expédié le {new Date(o.shipped_at ?? o.updated_at).toLocaleDateString("fr-FR")}
+                  {o.tracking_number ? (
+                    <span className="block">
+                      Suivi : {o.tracking_carrier ? `${o.tracking_carrier} ` : ""}
+                      <span className="font-mono">{o.tracking_number}</span>
+                    </span>
+                  ) : null}
+                </div>
+              );
+            }
+            if (o.status === "received") {
+              return (
+                <span className="text-xs text-emerald-700 font-medium flex items-center gap-1">
+                  <PackageCheck size={14} /> Transaction terminée
+                </span>
+              );
+            }
+            return null;
+          }}
         />
       </TabsContent>
 
@@ -216,11 +291,87 @@ export function MyOffersList() {
                 </>
               );
             }
+            if (o.status === "accepted") {
+              return (
+                <span className="text-xs text-muted-foreground flex-1">
+                  En attente d'expédition par le vendeur…
+                </span>
+              );
+            }
+            if (o.status === "shipped") {
+              return (
+                <>
+                  <Button
+                    size="sm"
+                    onClick={() =>
+                      callRpc("mark_offer_received", o, "Réception confirmée", true)
+                    }
+                    disabled={busy !== null}
+                    className="flex-1 h-9 rounded-full bg-emerald-600 hover:bg-emerald-700"
+                  >
+                    <PackageCheck size={14} className="mr-1" /> J'ai bien reçu
+                  </Button>
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    onClick={() =>
+                      callRpc(
+                        "mark_offer_not_received",
+                        o,
+                        "Vendeur prévenu",
+                        false,
+                      )
+                    }
+                    disabled={busy !== null}
+                    className="flex-1 h-9 rounded-full"
+                  >
+                    <PackageX size={14} className="mr-1" /> Pas encore reçu
+                  </Button>
+                </>
+              );
+            }
+            if (o.status === "received") {
+              if (o.review_id) {
+                return (
+                  <span className="text-xs text-emerald-700 font-medium flex items-center gap-1">
+                    <Star size={14} /> Avis déposé — merci !
+                  </span>
+                );
+              }
+              return (
+                <Button
+                  size="sm"
+                  onClick={() => setReviewFor(o)}
+                  className="flex-1 h-9 rounded-full bg-amber-500 hover:bg-amber-600"
+                >
+                  <Star size={14} className="mr-1" /> Laisser un avis
+                </Button>
+              );
+            }
             return null;
           }}
         />
       </TabsContent>
     </Tabs>
+    {shippedFor && (
+      <ShippedModal
+        open={!!shippedFor}
+        onOpenChange={(v) => !v && setShippedFor(null)}
+        offerId={shippedFor.id}
+        onDone={fetchAll}
+      />
+    )}
+    {reviewFor && (
+      <LeaveReviewModal
+        open={!!reviewFor}
+        onOpenChange={(v) => !v && setReviewFor(null)}
+        offerId={reviewFor.id}
+        sellerId={reviewFor.seller_id}
+        chatId={reviewFor.chat_id}
+        onDone={fetchAll}
+      />
+    )}
+    </>
   );
 }
 

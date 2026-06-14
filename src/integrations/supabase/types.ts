@@ -571,8 +571,13 @@ export type Database = {
           message: string | null
           original_price: number
           proposed_price: number
+          received_at: string | null
+          review_id: string | null
           seller_id: string
+          shipped_at: string | null
           status: string
+          tracking_carrier: string | null
+          tracking_number: string | null
           updated_at: string
         }
         Insert: {
@@ -587,8 +592,13 @@ export type Database = {
           message?: string | null
           original_price: number
           proposed_price: number
+          received_at?: string | null
+          review_id?: string | null
           seller_id: string
+          shipped_at?: string | null
           status?: string
+          tracking_carrier?: string | null
+          tracking_number?: string | null
           updated_at?: string
         }
         Update: {
@@ -603,8 +613,13 @@ export type Database = {
           message?: string | null
           original_price?: number
           proposed_price?: number
+          received_at?: string | null
+          review_id?: string | null
           seller_id?: string
+          shipped_at?: string | null
           status?: string
+          tracking_carrier?: string | null
+          tracking_number?: string | null
           updated_at?: string
         }
         Relationships: [
@@ -620,6 +635,13 @@ export type Database = {
             columns: ["chat_id"]
             isOneToOne: false
             referencedRelation: "chats"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "price_offers_review_id_fkey"
+            columns: ["review_id"]
+            isOneToOne: false
+            referencedRelation: "reviews"
             referencedColumns: ["id"]
           },
         ]
@@ -1045,6 +1067,19 @@ export type Database = {
         Returns: boolean
       }
       is_user_sanctioned: { Args: { _uid: string }; Returns: boolean }
+      link_review_to_offer: {
+        Args: { _offer_id: string; _review_id: string }
+        Returns: undefined
+      }
+      mark_offer_not_received: {
+        Args: { _offer_id: string }
+        Returns: undefined
+      }
+      mark_offer_received: { Args: { _offer_id: string }; Returns: undefined }
+      mark_offer_shipped: {
+        Args: { _carrier?: string; _offer_id: string; _tracking?: string }
+        Returns: undefined
+      }
       notify_user_action: {
         Args: {
           _link?: string

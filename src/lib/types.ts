@@ -87,7 +87,9 @@ export type PriceOfferStatus =
   | "accepted"
   | "rejected"
   | "withdrawn"
-  | "expired";
+  | "expired"
+  | "shipped"
+  | "received";
 
 export type PriceOffer = {
   id: string;
@@ -104,6 +106,11 @@ export type PriceOffer = {
   expires_at: string;
   created_at: string;
   updated_at: string;
+  shipped_at?: string | null;
+  received_at?: string | null;
+  tracking_carrier?: string | null;
+  tracking_number?: string | null;
+  review_id?: string | null;
 };
 
 export type DigitalBook = {
