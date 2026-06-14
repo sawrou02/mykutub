@@ -178,6 +178,9 @@ function PublishPage() {
   const { t } = useTranslation();
   const { user } = useAuth();
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const cameraInputRef = useRef<HTMLInputElement>(null);
+  const replaceInputRef = useRef<HTMLInputElement>(null);
+  const replaceIndexRef = useRef<number | null>(null);
 
   const [isDonation, setIsDonation] = useState(false);
   const [canDeliver, setCanDeliver] = useState(false);
