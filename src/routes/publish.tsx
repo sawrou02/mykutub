@@ -544,15 +544,24 @@ function PublishPage() {
                 intérieure.
               </p>
             )}
-            <Button
-              type="button"
-              variant="outline"
-              size="sm"
-              onClick={() => fileInputRef.current?.click()}
-              className="mt-3"
-            >
-              <Plus size={14} className="mr-1" /> Ajouter une photo
-            </Button>
+            <div className="flex flex-wrap gap-2 mt-3">
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                onClick={() => cameraInputRef.current?.click()}
+              >
+                <Camera size={14} className="mr-1" /> Prendre une photo
+              </Button>
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                onClick={() => fileInputRef.current?.click()}
+              >
+                <Plus size={14} className="mr-1" /> Depuis la galerie
+              </Button>
+            </div>
           </div>
 
           {/* ---------------- Titre (optionnel) ---------------- */}
