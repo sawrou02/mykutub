@@ -10,7 +10,10 @@ export type OfferEmailKind =
   | "withdrawn"
   | "countered"
   | "counter_accepted"
-  | "counter_rejected";
+  | "counter_rejected"
+  | "shipped"
+  | "delivered"
+  | "not_received";
 
 const COUNTER_KINDS: OfferEmailKind[] = ["countered", "counter_accepted", "counter_rejected"];
 
@@ -27,9 +30,14 @@ export async function notifyOfferEmail(opts: {
   offer: PriceOffer;
   user: User;
   kind: OfferEmailKind;
+  /** When the buyer triggers an event toward the seller (shipped/delivered/not_received). */
+  toSeller?: boolean;
 }): Promise<void> {
-  const recipientId =
-    opts.offer.buyer_id === opts.user.id ? opts.offer.seller_id : opts.offer.buyer_id;
+  const recipientId = opts.toSeller
+    ? opts.offer.seller_id
+    : opts.offer.buyer_id === opts.user.id
+      ? opts.offer.seller_id
+      : opts.offer.buyer_id;
 
   const price =
     COUNTER_KINDS.includes(opts.kind) && opts.offer.counter_price
@@ -50,5 +58,7 @@ export async function notifyOfferEmail(opts: {
     kind: opts.kind,
     offerId: opts.offer.id,
     chatId: opts.offer.chat_id,
+    trackingCarrier: opts.offer.tracking_carrier ?? null,
+    trackingNumber: opts.offer.tracking_number ?? null,
   });
 }
