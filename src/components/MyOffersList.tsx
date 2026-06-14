@@ -353,6 +353,25 @@ export function MyOffersList() {
         />
       </TabsContent>
     </Tabs>
+    {shippedFor && (
+      <ShippedModal
+        open={!!shippedFor}
+        onOpenChange={(v) => !v && setShippedFor(null)}
+        offerId={shippedFor.id}
+        onDone={fetchAll}
+      />
+    )}
+    {reviewFor && (
+      <LeaveReviewModal
+        open={!!reviewFor}
+        onOpenChange={(v) => !v && setReviewFor(null)}
+        offerId={reviewFor.id}
+        sellerId={reviewFor.seller_id}
+        chatId={reviewFor.chat_id}
+        onDone={fetchAll}
+      />
+    )}
+    </>
   );
 }
 
