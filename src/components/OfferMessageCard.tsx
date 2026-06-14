@@ -21,6 +21,8 @@ const STATUS_LABEL: Record<PriceOffer["status"], string> = {
   rejected: "Refusée",
   withdrawn: "Retirée",
   expired: "Expirée",
+  shipped: "Expédiée",
+  received: "Reçue",
 };
 
 const STATUS_COLOR: Record<PriceOffer["status"], string> = {
@@ -30,6 +32,8 @@ const STATUS_COLOR: Record<PriceOffer["status"], string> = {
   rejected: "bg-red-100 text-red-800",
   withdrawn: "bg-gray-100 text-gray-700",
   expired: "bg-gray-100 text-gray-700",
+  shipped: "bg-indigo-100 text-indigo-800",
+  received: "bg-emerald-100 text-emerald-800",
 };
 
 type Action = "accept" | "reject" | "withdraw" | "accept_counter" | "reject_counter";
